@@ -1,0 +1,77 @@
+name: Deploy Tutorbot
+
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run tests (if any)
+      run: |
+        echo "Running basic syntax check..."
+        python -m py_compile main.py
+        python -m py_compile bot/*.py
+        echo "Syntax check passed!"
+        
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.PORT }}
+        script: |
+          echo "🚀 Starting deployment..."
+          
+          # Navigate to project directory
+          cd /home/stephen/tutorbot
+          
+          # Pull latest changes
+          echo "📥 Pulling latest changes..."
+          git pull origin master
+          
+          # Install/update dependencies
+          echo "📦 Installing dependencies..."
+          pip3 install -r requirements.txt
+          
+          # Setup systemd service if not exists
+          if [ ! -f /etc/systemd/system/tutorbot.service ]; then
+              echo "🔧 Setting up systemd service..."
+              sudo cp deploy/tutorbot.service /etc/systemd/system/
+              sudo systemctl daemon-reload
+              sudo systemctl enable tutorbot.service
+          fi
+          
+          # Restart the service
+          echo "🔄 Restarting tutorbot service..."
+          sudo systemctl restart tutorbot.service
+          
+          # Wait and check status
+          sleep 5
+          if sudo systemctl is-active --quiet tutorbot.service; then
+              echo "✅ Tutorbot successfully deployed and running!"
+              echo "📊 Service status:"
+              sudo systemctl status tutorbot.service --no-pager -l
+          else
+              echo "❌ Failed to start tutorbot service"
+              echo "📋 Service logs:"
+              sudo journalctl -u tutorbot.service -n 20 --no-pager
+              exit 1
+          fi 
