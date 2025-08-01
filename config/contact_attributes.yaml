@@ -1,0 +1,161 @@
+# Contact Attributes Configuration for Chatwoot
+# These are persistent profile properties that stay with the contact
+
+contact_attributes:
+  # Language preference (persistent)
+  language:
+    input_type: "text"
+    attribute_display_name: "Language"
+    attribute_display_type: "text"
+    description: "Preferred language: nl|en (default empty)"
+    default_value: ""
+    
+  # School level (persistent)
+  school_level:
+    input_type: "text" 
+    attribute_display_name: "School Level"
+    attribute_display_type: "text"
+    description: "Education level: po|vmbo|havo|vwo|mbo|university_wo|university_hbo|adult"
+    default_value: ""
+    
+  # Segment (optional)
+  segment:
+    input_type: "text"
+    attribute_display_name: "Segment"
+    attribute_display_type: "text"
+    description: "Optional segment: parent, student, company, etc."
+    default_value: ""
+    
+  # Legacy attributes (keeping for backward compatibility)
+  first_name:
+    input_type: "text"
+    attribute_display_name: "First Name"
+    attribute_display_type: "text"
+    description: "Contact's first name"
+    default_value: ""
+    
+  is_adult:
+    input_type: "text"
+    attribute_display_name: "Is Adult"
+    attribute_display_type: "text"
+    description: "Age verification status"
+    default_value: ""
+    
+  guardian_consent:
+    input_type: "text"
+    attribute_display_name: "Guardian Consent"
+    attribute_display_type: "text"
+    description: "Guardian consent status"
+    default_value: ""
+    
+  guardian_name:
+    input_type: "text"
+    attribute_display_name: "Guardian Name"
+    attribute_display_type: "text"
+    description: "Guardian's name"
+    default_value: ""
+    
+  guardian_phone:
+    input_type: "text"
+    attribute_display_name: "Guardian Phone"
+    attribute_display_type: "text"
+    description: "Guardian's phone number"
+    default_value: ""
+    
+  guardian_verified_at:
+    input_type: "text"
+    attribute_display_name: "Guardian Verified At"
+    attribute_display_type: "text"
+    description: "When guardian was verified"
+    default_value: ""
+    
+  is_student:
+    input_type: "text"
+    attribute_display_name: "Is Student"
+    attribute_display_type: "text"
+    description: "Student registration status"
+    default_value: ""
+    
+  is_parent:
+    input_type: "text"
+    attribute_display_name: "Is Parent"
+    attribute_display_type: "text"
+    description: "Parent registration status"
+    default_value: ""
+    
+  student_since:
+    input_type: "text"
+    attribute_display_name: "Student Since"
+    attribute_display_type: "text"
+    description: "When registered as student"
+    default_value: ""
+    
+  parent_since:
+    input_type: "text"
+    attribute_display_name: "Parent Since"
+    attribute_display_type: "text"
+    description: "When registered as parent"
+    default_value: ""
+    
+  education_level:
+    input_type: "text"
+    attribute_display_name: "Education Level"
+    attribute_display_type: "text"
+    description: "Current education level"
+    default_value: ""
+    
+  subject:
+    input_type: "text"
+    attribute_display_name: "Subject"
+    attribute_display_type: "text"
+    description: "Primary subject of interest"
+    default_value: ""
+    
+  year:
+    input_type: "text"
+    attribute_display_name: "Year"
+    attribute_display_type: "text"
+    description: "Current year/grade"
+    default_value: ""
+    
+  format_preference:
+    input_type: "text"
+    attribute_display_name: "Format Preference"
+    attribute_display_type: "text"
+    description: "Preferred lesson format"
+    default_value: ""
+    
+  welcome_done:
+    input_type: "text"
+    attribute_display_name: "Welcome Done"
+    attribute_display_type: "text"
+    description: "Whether welcome flow completed"
+    default_value: ""
+    
+  first_contact_at:
+    input_type: "text"
+    attribute_display_name: "First Contact At"
+    attribute_display_type: "text"
+    description: "When first contacted"
+    default_value: ""
+    
+  name_asked_at:
+    input_type: "text"
+    attribute_display_name: "Name Asked At"
+    attribute_display_type: "text"
+    description: "When name was requested"
+    default_value: ""
+    
+  age_verified_at:
+    input_type: "text"
+    attribute_display_name: "Age Verified At"
+    attribute_display_type: "text"
+    description: "When age was verified"
+    default_value: ""
+    
+  wknd_eligible:
+    input_type: "text"
+    attribute_display_name: "Weekend Eligible"
+    attribute_display_type: "text"
+    description: "Eligible for weekend discount"
+    default_value: "" 

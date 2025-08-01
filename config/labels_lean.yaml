@@ -1,0 +1,73 @@
+# Lean Labels Configuration for Chatwoot
+# Organized by category for routing & reporting
+
+labels:
+  # Audience (XOR - exactly one per conversation)
+  audience:
+    - "audience_po"           # Primary education
+    - "audience_vmbo"         # VMBO
+    - "audience_havo"         # HAVO
+    - "audience_vwo"          # VWO
+    - "audience_mbo"          # MBO
+    - "audience_university_wo"    # University (WO)
+    - "audience_university_hbo"   # University (HBO)
+    - "audience_adult"        # Adult education
+    
+  # Subject (can have multiple)
+  subject:
+    - "subject_math"          # Mathematics
+    - "subject_stats"         # Statistics
+    - "subject_science"       # Science (physics, chemistry, biology)
+    - "subject_english"       # English
+    - "subject_data_science"  # Data science
+    - "subject_programming"   # Programming
+    - "subject_didactics"     # Teaching methods
+    - "subject_economics"     # Economics
+    - "subject_creative"      # Creative subjects
+    
+  # Service (can have multiple)
+  service:
+    - "service_trial"         # Trial lesson
+    - "service_1on1"          # One-on-one lessons
+    - "service_group"         # Group lessons
+    - "service_exam_prep"     # Exam preparation
+    - "service_workshop"      # Workshop
+    - "service_project_supervision"  # Project supervision
+    - "service_consultancy"   # Consultancy
+    
+  # Process/Status (can have multiple)
+  process:
+    - "status_awaiting_reply"     # Waiting for user response
+    - "status_booked"             # Lesson booked
+    - "status_awaiting_pay"       # Waiting for payment
+    - "payment_paid"              # Payment received
+    - "payment_overdue"           # Payment overdue
+    - "priority_urgent"           # Urgent request
+    - "flag_vip"                  # VIP customer
+    - "flag_spam"                 # Spam/irrelevant
+    
+  # Intent (bot handoff reasons)
+  intent:
+    - "intent_handoff_duplicate"  # Bot sent same message twice
+    - "intent_handoff_auto"       # Automatic handoff triggered
+    - "intent_handoff_teacher"    # User requested Stephen
+    
+  # Pricing
+  price:
+    - "price_custom"              # Custom pricing applied
+    
+  # Source (optional)
+  source:
+    - "source_whatsapp"       # Came via WhatsApp
+    - "source_website"        # Came via website
+    - "source_referral"       # Referral
+    
+  # Legacy labels (keeping for backward compatibility)
+  legacy:
+    - "new_client"            # New client
+    - "returning_client"      # Returning client
+    - "needs_guardian"        # Needs guardian consent
+    - "minor"                 # Minor (under 18)
+    - "age_verified"          # Age verified
+    - "weekend_discount"      # Eligible for weekend discount
+    - "needs_parent_contact"  # Needs parent contact 

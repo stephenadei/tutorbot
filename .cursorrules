@@ -1,0 +1,204 @@
+# TutorBot - Chatwoot + WhatsApp Integration
+# Cursor Rules for Project Structure and Best Practices
+
+## 🏗️ PROJECT STRUCTURE
+# ALWAYS work within the tutorbot/ directory structure:
+# /home/stephen/tutorbot/
+# ├── main.py                    # Core Flask application
+# ├── requirements.txt           # Python dependencies
+# ├── docker-compose.yml         # Docker configuration
+# ├── Dockerfile                 # Docker image
+# ├── env_example.txt           # Environment variables template
+# ├── README.md                 # Project documentation
+            # ├── wipe.sh                   # Quick contact wipe script
+            # ├── wipe_all.sh               # Quick data wipe script (labels + attributes)
+            # ├── help.sh                   # Help and documentation script
+# ├── config/                   # Configuration files
+# │   ├── contact_attributes.yaml
+# │   ├── conversation_attributes.yaml
+# │   ├── labels_lean.yaml
+# │   └── automations.yaml
+# ├── scripts/                  # Setup and utility scripts
+# │   ├── setup_attributes.py
+# │   ├── setup_labels.py
+# │   ├── setup_all.py
+# │   ├── wipe_contacts.py
+# │   ├── wipe_all.py
+# │   ├── setup_automation_rules.py
+# │   └── audit_attributes.py
+# └── docs/                     # Documentation
+#     └── README_chatwoot_setup.md
+
+## 🚨 CRITICAL RULES
+
+### 1. DIRECTORY STRUCTURE
+- NEVER create files outside the tutorbot/ directory
+- NEVER create scripts/ or config/ directories in the root (/home/stephen/)
+- ALL project files must be inside /home/stephen/tutorbot/
+- Scripts must be in tutorbot/scripts/
+- Config files must be in tutorbot/config/
+- Documentation must be in tutorbot/docs/
+
+### 2. SCRIPT VALIDATION
+- ALL scripts must include the ensure_project_root() function
+- Scripts must validate they're running from the correct directory
+- Scripts must check for required files before proceeding
+- Scripts must use absolute paths based on PROJECT_ROOT
+
+### 3. FILE LOCATIONS
+- Python scripts: tutorbot/scripts/
+- YAML configs: tutorbot/config/
+- Documentation: tutorbot/docs/
+- Main application: tutorbot/main.py
+- Dependencies: tutorbot/requirements.txt
+
+## 🔧 SCRIPT TEMPLATE
+# Every new script should follow this pattern:
+
+```python
+#!/usr/bin/env python3
+"""
+Script Description
+"""
+
+import os
+import sys
+import yaml
+import requests
+from typing import Dict, Any
+
+def ensure_project_root():
+    """Ensure we're running from the project root directory"""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir)
+    
+    required_files = [
+        "main.py",
+        "requirements.txt", 
+        "config/contact_attributes.yaml"
+    ]
+    
+    missing_files = []
+    for file_path in required_files:
+        full_path = os.path.join(project_root, file_path)
+        if not os.path.exists(full_path):
+            missing_files.append(file_path)
+    
+    if missing_files:
+        print(f"❌ Error: Script must be run from the project root directory!")
+        print(f"   Current directory: {os.getcwd()}")
+        print(f"   Expected project root: {project_root}")
+        print(f"   Missing files: {', '.join(missing_files)}")
+        print(f"\n💡 Solution: Run from the project root:")
+        print(f"   cd {project_root}")
+        print(f"   python3 scripts/script_name.py")
+        sys.exit(1)
+    
+    if os.getcwd() != project_root:
+        print(f"🔄 Changing to project root: {project_root}")
+        os.chdir(project_root)
+    
+    return project_root
+
+# Ensure we're in the right directory before importing anything else
+PROJECT_ROOT = ensure_project_root()
+
+# Configuration
+CW_URL = os.getenv("CW_URL", "https://crm.stephenadei.nl")
+ACC_ID = os.getenv("CW_ACC_ID")
+ADMIN_TOKEN = os.getenv("CW_ADMIN_TOKEN")
+
+def main():
+    """Main function"""
+    print("🚀 Starting script...")
+    print(f"   Project root: {PROJECT_ROOT}")
+    
+    if not all([CW_URL, ACC_ID, ADMIN_TOKEN]):
+        print("❌ Missing required environment variables!")
+        print("   Please set: CW_URL, CW_ACC_ID, CW_ADMIN_TOKEN")
+        return
+    
+    # Script logic here
+    
+if __name__ == "__main__":
+    main()
+```
+
+## 📋 ENVIRONMENT VARIABLES
+# Required for all scripts:
+# - CW_URL=https://crm.stephenadei.nl
+# - CW_ACC_ID=1
+# - CW_ADMIN_TOKEN=your_admin_token
+
+## 🎯 BEST PRACTICES
+
+### 1. File Creation
+- ALWAYS create new files in the correct subdirectory
+- Use relative paths from tutorbot/ root
+- Check existing structure before adding files
+
+### 2. Script Development
+- Include proper error handling
+- Add validation for required files
+- Use descriptive print statements
+- Include usage instructions
+
+### 3. Configuration
+- Keep YAML files in config/ directory
+- Use consistent naming conventions
+- Document all configuration options
+
+### 4. Testing
+- Test scripts from the correct directory
+- Verify file paths are correct
+- Check environment variables are set
+
+## 🚫 COMMON MISTAKES TO AVOID
+
+1. ❌ Creating scripts outside tutorbot/
+2. ❌ Using relative paths without validation
+3. ❌ Forgetting to check environment variables
+4. ❌ Not validating project root directory
+5. ❌ Creating duplicate files in wrong locations
+
+## ✅ VALIDATION CHECKLIST
+
+Before creating any new file or script, verify:
+- [ ] File will be created in the correct tutorbot/ subdirectory
+- [ ] Script includes ensure_project_root() validation
+- [ ] All paths are relative to PROJECT_ROOT
+- [ ] Environment variables are checked
+- [ ] Error handling is included
+- [ ] Usage instructions are provided
+
+## 🚀 QUICK COMMANDS
+
+            ### Terminal Aliases (automatically available):
+            - `wipe` / `wipebot` - Wipe all contacts and conversations (automatic confirmation)
+            - `wipeall` / `wipeallbot` - Wipe all labels and attributes (automatic confirmation)
+            - `start` / `startbot` - Start the TutorBot server
+            - `validate` / `validatebot` - Validate project structure
+            - `help` / `helpbot` - Show all available commands and documentation
+
+            ### Usage Examples:
+            ```bash
+            # Quick testing workflow
+            wipe             # Clear all contacts (short)
+            wipeall          # Clear all data (short)
+            start            # Start server (short)
+            help             # Show all commands (short)
+            
+            # Development workflow
+            validate         # Check structure (short)
+            python3 scripts/setup_all.py  # Setup Chatwoot
+            ```
+
+## 📚 REFERENCES
+
+- Main application: tutorbot/main.py
+- Configuration examples: tutorbot/config/
+- Setup scripts: tutorbot/scripts/
+- Documentation: tutorbot/docs/
+- Quick scripts: tutorbot/wipe.sh, tutorbot/help.sh
+
+Remember: ALWAYS work within the tutorbot/ directory structure! 

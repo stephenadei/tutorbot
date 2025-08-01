@@ -1,0 +1,31 @@
+# TutorBot Environment Variables
+# Kopieer dit bestand naar .env en vul de waarden in
+
+# Chatwoot Configuration
+CW_URL=https://crm.stephenadei.nl
+CW_ACC_ID=1
+CW_TOKEN=R3vx2s67k7hUpXsLWqDrE6nR
+CW_ADMIN_TOKEN=mCNRQJzK4KbVuinP7NszBTug
+CW_HMAC_SECRET=e6cffc2ec52cedc73e616746e629d346ca55daee82d0c87286eca62aa8d71393
+
+# Stripe Configuration
+STRIPE_WEBHOOK_SECRET=whsec_your_stripe_webhook_secret_here
+STANDARD_PRICE_ID_60=price_your_standard_60min_price_id
+STANDARD_PRICE_ID_90=price_your_standard_90min_price_id
+WEEKEND_PRICE_ID_60=price_your_weekend_60min_price_id
+WEEKEND_PRICE_ID_90=price_your_weekend_90min_price_id
+
+# Google Calendar Configuration
+GCAL_SERVICE_ACCOUNT_JSON=/app/config/gcal-service-account.json
+GCAL_CALENDAR_ID=primary
+
+# Timezone
+TZ=Europe/Amsterdam
+
+# Bot Configuration
+FLASK_ENV=production
+
+# Instructies:
+# 1. Kopieer dit bestand naar .env
+# 2. Vervang de waarden met jouw echte Chatwoot gegevens
+# 3. Start de bot met: python main.py 

@@ -1,0 +1,403 @@
+# Automation Rules Configuration for Chatwoot
+# Complete rules specification for intelligent routing and labeling
+
+automations:
+  # 1. Bootstrap - New WhatsApp conversation
+  bootstrap_whatsapp:
+    event: "conversation_created"
+    conditions:
+      - field: "channel"
+        operator: "equal_to"
+        value: "whatsapp"
+    actions:
+      - action: "add_label"
+        value: "source:whatsapp"
+      - action: "set_conversation_attribute"
+        attribute: "language_prompted"
+        value: "false"
+      - action: "set_conversation_attribute"
+        attribute: "intake_completed"
+        value: "false"
+    description: "Initialize new WhatsApp conversations with source label and reset flags"
+    
+  # 2. Language detection - One-time prompt
+  language_prompt:
+    event: "conversation_created"
+    conditions:
+      - field: "contact.custom_attributes.language"
+        operator: "is_empty"
+      - field: "conversation.custom_attributes.language_prompted"
+        operator: "equal_to"
+        value: "false"
+    actions:
+      - action: "send_message"
+        content: "🌍 In welke taal wil je communiceren? / In which language would you like to communicate?"
+        content_type: "input_select"
+        content_attributes:
+          items:
+            - title: "🇳🇱 Nederlands"
+              value: "nl"
+            - title: "🇬🇧 English"
+              value: "en"
+      - action: "set_conversation_attribute"
+        attribute: "language_prompted"
+        value: "true"
+    description: "Ask for language preference if not set and not already asked"
+    
+  # 3. Language detection from message
+  language_detect_nl:
+    event: "message_created"
+    conditions:
+      - field: "message.content"
+        operator: "contains_any"
+        value: ["🇳🇱", "nederlands", "dutch", "nl", "hallo", "hoi", "dank", "alsjeblieft"]
+    actions:
+      - action: "set_contact_attribute"
+        attribute: "language"
+        value: "nl"
+      - action: "send_message"
+        content: "✅ Taal ingesteld op Nederlands. Hoe kan ik je helpen?"
+    description: "Detect and set Dutch language preference"
+    
+  language_detect_en:
+    event: "message_created"
+    conditions:
+      - field: "message.content"
+        operator: "contains_any"
+        value: ["🇬🇧", "english", "en", "hello", "hi", "thanks", "please", "help"]
+    actions:
+      - action: "set_contact_attribute"
+        attribute: "language"
+        value: "en"
+      - action: "send_message"
+        content: "✅ Language set to English. How can I help you?"
+    description: "Detect and set English language preference"
+    
+  # 4. Audience/School level detection
+  audience_detection:
+    event: "message_created"
+    conditions:
+      - field: "message.content"
+        operator: "contains_any"
+        value: ["po", "basisschool", "primary", "vmbo", "havo", "vwo", "mbo", "hbo", "wo", "university", "volwassen", "adult"]
+    actions:
+      - action: "set_contact_attribute"
+        attribute: "school_level"
+        value: "{{detected_level}}"
+      - action: "add_label"
+        value: "audience:{{detected_audience}}"
+      - action: "remove_label"
+        category: "audience"
+    description: "Detect school level and add appropriate audience label (XOR)"
+    
+  # 5. Program detection
+  program_detection:
+    event: "message_created"
+    conditions:
+      - field: "message.content"
+        operator: "contains_any"
+        value: ["2f", "3f", "ib", "cambridge", "international"]
+    actions:
+      - action: "set_conversation_attribute"
+        attribute: "program"
+        value: "{{detected_program}}"
+      - action: "add_label"
+        value: "subject:math"
+      - action: "add_label"
+        value: "subject:english"
+        condition: "if_cambridge"
+    description: "Detect specific programs and add baseline subject labels"
+    
+  # 6. Topic and tools detection
+  topic_tools_detection:
+    event: "message_created"
+    conditions:
+      - field: "message.content"
+        operator: "contains_any"
+        value: ["calculus", "algebra", "statistics", "python", "r", "spss", "excel", "power bi", "react", "next.js"]
+    actions:
+      - action: "set_conversation_attribute"
+        attribute: "topic_primary"
+        value: "{{detected_topic}}"
+      - action: "set_conversation_attribute"
+        attribute: "toolset"
+        value: "{{detected_tools}}"
+      - action: "add_label"
+        value: "{{detected_subject}}"
+    description: "Detect topics and tools, add appropriate subject labels"
+    
+  # 7. Service detection
+  service_detection:
+    event: "message_created"
+    conditions:
+      - field: "message.content"
+        operator: "contains_any"
+        value: ["proefles", "trial", "1-op-1", "1on1", "group", "workshop", "examentraining", "exam prep", "project", "consultancy"]
+    actions:
+      - action: "add_label"
+        value: "{{detected_service}}"
+    description: "Detect service type and add service label"
+    
+  # 8. Subject inference (fallback)
+  subject_inference:
+    event: "message_created"
+    conditions:
+      - field: "message.content"
+        operator: "contains_any"
+        value: ["wiskunde", "math", "rekenen", "statistics", "natuurkunde", "physics", "scheikunde", "chemistry", "engels", "english", "programming", "data"]
+    actions:
+      - action: "add_label"
+        value: "{{inferred_subject}}"
+    description: "Infer subject from keywords if not already labeled"
+    
+  # 9. Team routing
+  team_routing:
+    event: "label_added"
+    conditions:
+      - field: "conversation.labels"
+        operator: "contains_any"
+        value: ["subject:programming", "subject:data-science"]
+    actions:
+      - action: "assign_team"
+        value: "Data/Programming"
+    description: "Route programming/data-science to specialized team"
+    
+  team_routing_vo:
+    event: "label_added"
+    conditions:
+      - field: "conversation.labels"
+        operator: "contains_any"
+        value: ["audience:vmbo", "audience:havo", "audience:vwo"]
+      - field: "conversation.labels"
+        operator: "contains_any"
+        value: ["subject:math", "subject:science", "subject:english"]
+    actions:
+      - action: "assign_team"
+        value: "VO-docenten"
+    description: "Route secondary education to VO teachers"
+    
+  team_routing_ho:
+    event: "label_added"
+    conditions:
+      - field: "conversation.labels"
+        operator: "contains_any"
+        value: ["audience:university:wo", "audience:university:hbo"]
+    actions:
+      - action: "assign_team"
+        value: "HO/Universiteit"
+    description: "Route higher education to university team"
+    
+  team_routing_ib:
+    event: "label_added"
+    conditions:
+      - field: "conversation.custom_attributes.program"
+        operator: "contains_any"
+        value: ["ib_math_sl", "ib_math_hl"]
+    actions:
+      - action: "assign_team"
+        value: "International/IB"
+    description: "Route IB programs to international team"
+    
+  team_routing_finance:
+    event: "label_added"
+    conditions:
+      - field: "conversation.labels"
+        operator: "contains_any"
+        value: ["payment:info", "payment:paid", "payment:overdue"]
+    actions:
+      - action: "assign_team"
+        value: "Finance"
+    description: "Route payment-related to finance team"
+    
+  # 10. Finance tagging
+  finance_detection:
+    event: "message_created"
+    conditions:
+      - field: "message.content"
+        operator: "contains_any"
+        value: ["factuur", "btw", "tikkie", "betaal", "invoice", "paid", "openstaand", "payment"]
+    actions:
+      - action: "add_label"
+        value: "payment:info"
+      - action: "assign_team"
+        value: "Finance"
+    description: "Detect payment-related keywords and route to finance"
+    
+  # 11. Status and payment tracking
+  status_booked:
+    event: "message_created"
+    conditions:
+      - field: "message.content"
+        operator: "contains_any"
+        value: ["bevestigd", "confirmed", "tot dan", "see you then", "booked"]
+    actions:
+      - action: "add_label"
+        value: "status:booked"
+      - action: "remove_label"
+        value: "status:awaiting_reply"
+    description: "Mark conversation as booked when confirmed"
+    
+  status_paid:
+    event: "message_created"
+    conditions:
+      - field: "message.content"
+        operator: "contains_any"
+        value: ["betaald", "paid", "payment received"]
+    actions:
+      - action: "add_label"
+        value: "payment:paid"
+      - action: "remove_label"
+        value: "status:awaiting_pay"
+      - action: "remove_label"
+        value: "payment:overdue"
+    description: "Mark payment as received and clean up payment status"
+    
+  # 12. Urgency detection
+  urgency_detection:
+    event: "message_created"
+    conditions:
+      - field: "message.content"
+        operator: "contains_any"
+        value: ["vandaag", "today", "morgen", "tomorrow", "asap", "dringend", "urgent", "spoed"]
+    actions:
+      - action: "add_label"
+        value: "priority:urgent"
+      - action: "notify_team"
+        message: "🚨 Urgent request detected in conversation {{conversation.id}}"
+    description: "Detect urgent requests and notify team"
+    
+  # 13. Cleanup - XOR enforcement and label cap
+  cleanup_labels:
+    event: "label_added"
+    conditions:
+      - field: "conversation.labels"
+        operator: "count"
+        value: ">6"
+    actions:
+      - action: "remove_excess_labels"
+        priority_order: ["status", "priority", "service", "subject"]
+        max_count: 6
+    description: "Enforce maximum 6 labels per conversation, remove excess in priority order"
+    
+  audience_xor_enforcement:
+    event: "label_added"
+    conditions:
+      - field: "conversation.labels"
+        operator: "contains_multiple"
+        category: "audience"
+    actions:
+      - action: "remove_label"
+        category: "audience"
+        keep: "first_added"
+    description: "Ensure only one audience label per conversation (XOR)"
+    
+  # 14. Intake completion tracking
+  intake_completion:
+    event: "label_added"
+    conditions:
+      - field: "conversation.labels"
+        operator: "contains"
+        category: "audience"
+      - field: "conversation.labels"
+        operator: "contains"
+        category: "subject"
+      - field: "conversation.labels"
+        operator: "contains"
+        category: "service"
+    actions:
+      - action: "set_conversation_attribute"
+        attribute: "intake_completed"
+        value: "true"
+    description: "Mark intake as completed when audience+subject+service are set"
+    
+  # 15. Age verification tracking
+  age_verification:
+    event: "message_created"
+    conditions:
+      - field: "message.content"
+        operator: "contains_any"
+        value: ["18+", "volwassen", "adult", "minderjarig", "minor"]
+    actions:
+      - action: "set_conversation_attribute"
+        attribute: "is_adult"
+        value: "{{age_status}}"
+      - action: "add_label"
+        value: "{{age_label}}"
+    description: "Track age verification status"
+    
+  # 16. Lesson mode detection
+  lesson_mode_detection:
+    event: "message_created"
+    conditions:
+      - field: "message.content"
+        operator: "contains_any"
+        value: ["online", "zoom", "video", "offline", "thuis", "home", "hybrid"]
+    actions:
+      - action: "set_conversation_attribute"
+        attribute: "lesson_mode"
+        value: "{{detected_mode}}"
+    description: "Detect preferred lesson mode"
+    
+  # 17. VIP detection
+  vip_detection:
+    event: "message_created"
+    conditions:
+      - field: "message.content"
+        operator: "contains_any"
+        value: ["vip", "premium", "exclusive", "priority"]
+      - field: "contact.custom_attributes.is_student"
+        operator: "equal_to"
+        value: "true"
+    actions:
+      - action: "add_label"
+        value: "flag:vip"
+    description: "Detect VIP customers"
+    
+  # 18. Spam detection
+  spam_detection:
+    event: "message_created"
+    conditions:
+      - field: "message.content"
+        operator: "contains_any"
+        value: ["spam", "unsubscribe", "stop", "quit"]
+      - field: "contact.custom_attributes.first_contact_at"
+        operator: "is_empty"
+    actions:
+      - action: "add_label"
+        value: "flag:spam"
+      - action: "assign_team"
+        value: "Support"
+    description: "Detect potential spam messages"
+    
+  # 19. Weekend discount eligibility
+  weekend_discount:
+    event: "conversation_created"
+    conditions:
+      - field: "current_time"
+        operator: "is_weekend"
+      - field: "contact.custom_attributes.wknd_eligible"
+        operator: "equal_to"
+        value: "true"
+    actions:
+      - action: "add_label"
+        value: "weekend_discount"
+      - action: "send_message"
+        content: "🎉 Weekendkorting is nu actief voor jou! / Weekend discount is now active for you!"
+    description: "Apply weekend discount for eligible customers"
+    
+  # 20. Auto-close inactive conversations
+  auto_close_inactive:
+    event: "conversation_updated"
+    conditions:
+      - field: "conversation.last_activity_at"
+        operator: "older_than"
+        value: "7_days"
+      - field: "conversation.status"
+        operator: "equal_to"
+        value: "open"
+    actions:
+      - action: "change_status"
+        value: "resolved"
+      - action: "add_label"
+        value: "status:auto_closed"
+    description: "Auto-close conversations inactive for 7+ days" 

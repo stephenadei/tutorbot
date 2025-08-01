@@ -1,0 +1,130 @@
+# Conversation Attributes Configuration for Chatwoot
+# These are per-ticket properties that reset with each conversation
+
+conversation_attributes:
+  # Program (specific curriculum)
+  program:
+    input_type: "text"
+    attribute_display_name: "Program"
+    attribute_display_type: "text"
+    description: "Specific program: none|mbo_rekenen_2f|mbo_rekenen_3f|ib_math_sl|ib_math_hl|cambridge"
+    default_value: "none"
+    
+  # Primary topic
+  topic_primary:
+    input_type: "text"
+    attribute_display_name: "Primary Topic"
+    attribute_display_type: "text"
+    description: "Main topic (e.g., calculus, percentages)"
+    default_value: ""
+    
+  # Secondary topic
+  topic_secondary:
+    input_type: "text"
+    attribute_display_name: "Secondary Topic"
+    attribute_display_type: "text"
+    description: "Secondary topic"
+    default_value: ""
+    
+  # Tools needed
+  toolset:
+    input_type: "text"
+    attribute_display_name: "Toolset"
+    attribute_display_type: "text"
+    description: "Comma-separated tools (e.g., python,spss,r)"
+    default_value: ""
+    
+  # Lesson mode
+  lesson_mode:
+    input_type: "text"
+    attribute_display_name: "Lesson Mode"
+    attribute_display_type: "text"
+    description: "Lesson format: online|in_person|hybrid (or empty)"
+    default_value: ""
+    
+  # Adult check
+  is_adult:
+    input_type: "text"
+    attribute_display_name: "Is Adult"
+    attribute_display_type: "text"
+    description: "18+ check for this conversation"
+    default_value: ""
+    
+  # Anti-loop flag for language
+  language_prompted:
+    input_type: "text"
+    attribute_display_name: "Language Prompted"
+    attribute_display_type: "text"
+    description: "Anti-loop flag: has language question been asked in this conversation"
+    default_value: "false"
+    
+  # Intake completion status
+  intake_completed:
+    input_type: "text"
+    attribute_display_name: "Intake Completed"
+    attribute_display_type: "text"
+    description: "Minimum audience+subject+service set"
+    default_value: "false"
+    
+  # Intake step tracking
+  intake_step:
+    input_type: "text"
+    attribute_display_name: "Intake Step"
+    attribute_display_type: "text"
+    description: "Current step in intake flow: for_who|age_check|learner_name|level|subject|goals|times|mode"
+    default_value: ""
+    
+  # Learner information
+  learner_name:
+    input_type: "text"
+    attribute_display_name: "Learner Name"
+    attribute_display_type: "text"
+    description: "Name of the student/learner"
+    default_value: ""
+    
+  # Planning profile
+  planning_profile:
+    input_type: "text"
+    attribute_display_name: "Planning Profile"
+    attribute_display_type: "text"
+    description: "Planning profile: new|existing|returning_broadcast|weekend"
+    default_value: ""
+    
+  # Preferred times
+  preferred_times:
+    input_type: "text"
+    attribute_display_name: "Preferred Times"
+    attribute_display_type: "text"
+    description: "User's preferred lesson times"
+    default_value: ""
+    
+  # Relationship to learner
+  relationship_to_learner:
+    input_type: "text"
+    attribute_display_name: "Relationship to Learner"
+    attribute_display_type: "text"
+    description: "Relationship: parent|family|teacher|other"
+    default_value: ""
+    
+  # Last bot message (for duplicate detection)
+  last_bot_message:
+    input_type: "text"
+    attribute_display_name: "Last Bot Message"
+    attribute_display_type: "text"
+    description: "Last message sent by bot (for duplicate detection)"
+    default_value: ""
+    
+  # Legacy attributes (keeping for backward compatibility)
+  age_verified:
+    input_type: "text"
+    attribute_display_name: "Age Verified"
+    attribute_display_type: "text"
+    description: "Age verification status for this conversation"
+    default_value: ""
+    
+  pending_intent:
+    input_type: "text"
+    attribute_display_name: "Pending Intent"
+    attribute_display_type: "text"
+    description: "What the user wants to do after age verification"
+    default_value: "" 
