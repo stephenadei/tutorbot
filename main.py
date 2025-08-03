@@ -32,8 +32,8 @@ def t(key, lang="nl", **kwargs):
     translations = {
         # Language selection
         "language_question": {
-            "nl": "🌍 In welke taal wil je communiceren? 🇳🇱 Nederlands · 🇬🇧 English",
-            "en": "🌍 In which language would you like to communicate? 🇳🇱 Dutch · 🇬🇧 English"
+            "nl": "🌍 In welke taal wil je communiceren?",
+            "en": "🌍 In which language would you like to communicate?"
         },
         "language_set_nl": {
             "nl": "We gaan verder in het Nederlands.",
@@ -138,28 +138,56 @@ def t(key, lang="nl", **kwargs):
             "en": "📄 What information would you like?"
         },
         "info_tariffs": {
-            "nl": "💰 **Uitgebreide Tarieven** (versie 31 juli 2025)\n\n📚 **Hoger onderwijs:**\n• Enkel (1 les): €80\n• Twee (2 lessen): €135\n• Vier (4 lessen): €250\n\n🎓 **Voortgezet onderwijs 20+:**\n• Enkel: €75\n• Twee: €130\n• Vier: €230\n\n🎓 **Voortgezet onderwijs 20-:**\n• Enkel: €60\n• Twee: €100\n• Vier: €200\n\n👥 **Groepslessen:**\n• €45-65 per persoon (afhankelijk van groepsgrootte)\n\n🎯 **MBO Rekentrajecten:**\n• Spoedpakket (1 week, 4 uur): €275\n• Korte cursus (4 weken, 4 uur): €225\n• Volledig Commit (12 weken, 13-14 uur): €550\n• Volledig Flex (12 weken, 13-14 uur): €690 (3 termijnen)\n\n🌅 **Weekend programma's (Zuidoost):**\n• 50% korting: €30/uur i.p.v. €60\n• Gratis proefles van 30 minuten",
-            "en": "💰 **Comprehensive Rates** (version July 31, 2025)\n\n📚 **Higher education:**\n• Single (1 lesson): €80\n• Two (2 lessons): €135\n• Four (4 lessons): €250\n\n🎓 **Secondary education 20+:**\n• Single: €75\n• Two: €130\n• Four: €230\n\n🎓 **Secondary education 20-:**\n• Single: €60\n• Two: €100\n• Four: €200\n\n👥 **Group lessons:**\n• €45-65 per person (depending on group size)\n\n🎯 **MBO Math trajectories:**\n• Emergency package (1 week, 4 hours): €275\n• Short course (4 weeks, 4 hours): €225\n• Full Commit (12 weeks, 13-14 hours): €550\n• Full Flex (12 weeks, 13-14 hours): €690 (3 installments)\n\n🌅 **Weekend programs (Southeast):**\n• 50% discount: €30/hour instead of €60\n• Free trial lesson of 30 minutes"
+            "nl": "💰 *Uitgebreide Tarieven* (versie 31 juli 2025)\n\n📚 *Hoger onderwijs:*\n• Enkel (1 les): €80\n• Twee (2 lessen): €135\n• Vier (4 lessen): €250\n\n🎓 *Voortgezet onderwijs 20+:*\n• Enkel: €75\n• Twee: €130\n• Vier: €230\n\n🎓 *Voortgezet onderwijs 20-:*\n• Enkel: €60\n• Twee: €100\n• Vier: €200\n\n👥 *Groepslessen:*\n• €45-65 per persoon (afhankelijk van groepsgrootte)\n\n🎯 *MBO Rekentrajecten:*\n• Spoedpakket (1 week, 4 uur): €275\n• Korte cursus (4 weken, 4 uur): €225\n• Volledig Commit (12 weken, 13-14 uur): €550\n• Volledig Flex (12 weken, 13-14 uur): €690 (3 termijnen)\n\n🌅 *Weekend programma's (Zuidoost):*\n• 50% korting: €30/uur i.p.v. €60\n• Gratis proefles van 30 minuten",
+            "en": "💰 *Comprehensive Rates* (version July 31, 2025)\n\n📚 *Higher education:*\n• Single (1 lesson): €80\n• Two (2 lessons): €135\n• Four (4 lessons): €250\n\n🎓 *Secondary education 20+:*\n• Single: €75\n• Two: €130\n• Four: €230\n\n🎓 *Secondary education 20-:*\n• Single: €60\n• Two: €100\n• Four: €200\n\n👥 *Group lessons:*\n• €45-65 per person (depending on group size)\n\n🎯 *MBO Math trajectories:*\n• Emergency package (1 week, 4 hours): €275\n• Short course (4 weeks, 4 hours): €225\n• Full Commit (12 weeks, 13-14 hours): €550\n• Full Flex (12 weeks, 13-14 hours): €690 (3 installments)\n\n🌅 *Weekend programs (Southeast):*\n• 50% discount: €30/hour instead of €60\n• Free trial lesson of 30 minutes"
         },
         "info_travel_costs": {
-            "nl": "🚗 **Reiskosten (Amsterdam e.o.):**\n\n• VU/UvA (niet Science Park): €15\n• Bij jou thuis (Amsterdam e.o.): €40\n• Science Park: €0",
-            "en": "🚗 **Travel costs (Amsterdam area):**\n\n• VU/UvA (not Science Park): €15\n• At your home (Amsterdam area): €40\n• Science Park: €0"
+            "nl": "🚗 *Reiskosten (Amsterdam e.o.):*\n\n• VU/UvA (niet Science Park): €15\n• Bij jou thuis (Amsterdam e.o.): €40\n• Science Park: €0",
+            "en": "🚗 *Travel costs (Amsterdam area):*\n\n• VU/UvA (not Science Park): €15\n• At your home (Amsterdam area): €40\n• Science Park: €0"
         },
         "info_last_minute": {
-            "nl": "⏰ **Last-minute toeslagen (op het standaardtarief):**\n\n• Geboekt < 24 uur vooraf: +20%\n• Geboekt < 12 uur vooraf: +50%",
-            "en": "⏰ **Last-minute surcharges (on standard rate):**\n\n• Booked < 24 hours in advance: +20%\n• Booked < 12 hours in advance: +50%"
+            "nl": "⏰ *Last-minute toeslagen (op het standaardtarief):*\n\n• Geboekt < 24 uur vooraf: +20%\n• Geboekt < 12 uur vooraf: +50%",
+            "en": "⏰ *Last-minute surcharges (on standard rate):*\n\n• Booked < 24 hours in advance: +20%\n• Booked < 12 hours in advance: +50%"
         },
         "info_conditions": {
-            "nl": "📋 **Pakketvoorwaarden:**\n\n⏱️ **Geldigheid:**\n• Pakket van 2 lessen: geldig 2 weken na aankoopdatum\n• Pakket van 4 lessen: geldig 1 maand na aankoopdatum\n• Bij directe planning: geldigheid loopt vanaf eerste lesdatum\n\n🎯 **Flex-premium (alleen bij niet-direct plannen):**\n• Pakket van 2 lessen: +€15\n• Pakket van 4 lessen: +€30\n\n💳 **Betaling & factuur:**\n• Factuur na elke les\n• Termijn: 14 dagen\n\n❌ **Annuleren/verzetten:**\n• ≥24u vooraf: kosteloos\n• <24u vooraf: 100% van het tarief",
-            "en": "📋 **Package conditions:**\n\n⏱️ **Validity:**\n• Package of 2 lessons: valid 2 weeks after purchase date\n• Package of 4 lessons: valid 1 month after purchase date\n• With direct scheduling: validity runs from first lesson date\n\n🎯 **Flex-premium (only when not scheduling directly):**\n• Package of 2 lessons: +€15\n• Package of 4 lessons: +€30\n\n💳 **Payment & invoice:**\n• Invoice after each lesson\n• Term: 14 days\n\n❌ **Cancel/reschedule:**\n• ≥24h in advance: free\n• <24h in advance: 100% of the rate"
+            "nl": "📋 *Pakketvoorwaarden:*\n\n⏱️ *Geldigheid:*\n• Pakket van 2 lessen: geldig 2 weken na aankoopdatum\n• Pakket van 4 lessen: geldig 1 maand na aankoopdatum\n• Bij directe planning: geldigheid loopt vanaf eerste lesdatum\n\n🎯 *Flex-premium (alleen bij niet-direct plannen):*\n• Pakket van 2 lessen: +€15\n• Pakket van 4 lessen: +€30\n\n💳 *Betaling & factuur:*\n• Factuur na elke les\n• Termijn: 14 dagen\n\n❌ *Annuleren/verzetten:*\n• ≥24u vooraf: kosteloos\n• <24u vooraf: 100% van het tarief",
+            "en": "📋 *Package conditions:*\n\n⏱️ *Validity:*\n• Package of 2 lessons: valid 2 weeks after purchase date\n• Package of 4 lessons: valid 1 month after purchase date\n• With direct scheduling: validity runs from first lesson date\n\n🎯 *Flex-premium (only when not scheduling directly):*\n• Package of 2 lessons: +€15\n• Package of 4 lessons: +€30\n\n💳 *Payment & invoice:*\n• Invoice after each lesson\n• Term: 14 days\n\n❌ *Cancel/reschedule:*\n• ≥24h in advance: free\n• <24h in advance: 100% of the rate"
         },
         "info_work_method": {
-            "nl": "🎯 **Mijn Werkwijze & Aanpak**\n\n👨‍🏫 **Persoonlijke Achtergrond:**\n• Stephen Adei: Masterstudent uit Amsterdam met 10+ jaar ervaring\n• Persoonlijke reis: Van wiskunde-uitdagingen (gemiddelde 5) naar excellente resultaten (gemiddelde 10)\n• Expertise: Programmeren, wiskunde, statistiek, data-analyse\n\n🎯 **Kernwaarden:**\n• **Persoonlijke Aanpak**: Elke student is uniek - lessen aangepast aan individuele leerstijl\n• **Brede Expertise**: Multidisciplinaire achtergrond voor diverse perspectieven\n• **Flexibel Leren**: Flexibele planning en WhatsApp-ondersteuning\n• **Technologie-integratie**: iPad-aantekeningen, AI-tools, digitale ondersteuning\n\n📚 **Lesaanpak:**\n• **Persoonlijke begeleiding**: Afgestemd op individuele behoeften\n• **Interactieve lessen**: Combinatie van theorie, praktijk en real-world toepassingen\n• **Ongoing support**: 7 dagen WhatsApp-ondersteuning na elke les\n• **Differentiatie**: Scaffolding en andere technieken voor verschillende leerstijlen\n\n⏰ **Lesorganisatie:**\n• **Flexibele planning**: Online en fysiek mogelijk\n• **Duur**: 60-90 minuten (aanpasbaar)\n• **Frequentie**: Wekelijks (aanpasbaar)\n• **Locaties**: Science Park 904, Douwe Egberts (Zuidoost), aan huis\n\n🏆 **Kwaliteitsborging:**\n• **Gratis proefles**: Kennismaking met werkwijze\n• **Regelmatige evaluaties**: Voortgangsmonitoring\n• **Feedback-systeem**: Continue verbetering van methoden\n• **98% studenttevredenheid** en **gemiddelde beoordeling: 4.9/5**",
-            "en": "🎯 **My Work Method & Approach**\n\n👨‍🏫 **Personal Background:**\n• Stephen Adei: Master's student from Amsterdam with 10+ years of experience\n• Personal journey: From math challenges (average 5) to excellent results (average 10)\n• Expertise: Programming, mathematics, statistics, data analysis\n\n🎯 **Core Values:**\n• **Personal Approach**: Every student is unique - lessons adapted to individual learning style\n• **Broad Expertise**: Multidisciplinary background for diverse perspectives\n• **Flexible Learning**: Flexible scheduling and WhatsApp support\n• **Technology Integration**: iPad notes, AI tools, digital support\n\n📚 **Lesson Approach:**\n• **Personal guidance**: Tailored to individual needs\n• **Interactive lessons**: Combination of theory, practice and real-world applications\n• **Ongoing support**: 7 days WhatsApp support after each lesson\n• **Differentiation**: Scaffolding and other techniques for different learning styles\n\n⏰ **Lesson Organization:**\n• **Flexible scheduling**: Online and in-person possible\n• **Duration**: 60-90 minutes (adjustable)\n• **Frequency**: Weekly (adjustable)\n• **Locations**: Science Park 904, Douwe Egberts (Southeast), at home\n\n🏆 **Quality Assurance:**\n• **Free trial lesson**: Introduction to work method\n• **Regular evaluations**: Progress monitoring\n• **Feedback system**: Continuous improvement of methods\n• **98% student satisfaction** and **average rating: 4.9/5**"
+            "nl": "🎯 *Mijn Werkwijze & Aanpak*\n\n👨‍🏫 *Persoonlijke Achtergrond:*\n• Stephen Adei: MSc Data Science (UvA) met 10+ jaar ervaring\n• Persoonlijke reis: Van wiskunde-uitdagingen naar excellente resultaten\n• Expertise: Programmeren, wiskunde, statistiek, data-analyse\n• Visie: Onderwijs moet empoweren, niet alleen kennis overdragen\n\n🎯 *Kernwaarden:*\n• *Persoonlijke Aanpak*: Elke student is uniek - lessen aangepast aan individuele leerstijl\n• *Brede Expertise*: Multidisciplinaire achtergrond voor diverse perspectieven\n• *Flexibel Leren*: Flexibele planning en WhatsApp-ondersteuning\n• *Technologie-integratie*: iPad-aantekeningen, AI-tools, digitale ondersteuning\n• *Zelfredzaamheid*: Streef naar zelfvertrouwen en zelfstandig leren\n\n📚 *Lesaanpak:*\n• *Diagnostisch werken*: Start altijd met intake om niveau en doelen te bepalen\n• *Leerdoelgericht*: Elke les heeft een duidelijk doel\n• *Activerende didactiek*: Samen oefenen, real-life voorbeelden\n• *Formatieve evaluatie*: Regelmatige korte toetsmomenten\n• *Zelfregulatie*: Stimuleer leerlingen om zelf vragen te stellen\n• *Feedbackcultuur*: Geef en vraag actief om feedback\n• *Differentiatie*: Scaffolding voor verschillende leerstijlen\n• *Inclusiviteit*: Ervaring met autisme, dyscalculie, ADHD, NT2\n\n💻 *Technologie:*\n• iPad-aantekeningen gedeeld na elke les\n• AI-tools voor conceptverduidelijking\n• Online whiteboards voor afstandslessen\n• WhatsApp-ondersteuning: 7 dagen, reactie binnen 24 uur\n\n⏰ *Lesorganisatie:*\n• Flexibele planning: Online en fysiek mogelijk\n• Duur: 60-90 minuten (aanpasbaar)\n• Locaties: Science Park 904, Douwe Egberts, aan huis\n• Online boekingssysteem\n\n🏆 *Kwaliteitsborging:*\n• Gratis proefles\n• Regelmatige evaluaties\n• Voortgangsdossier per leerling\n• 98% studenttevredenheid\n• Gemiddelde beoordeling: 4.9/5\n\n📊 *Resultaten:*\n• 500+ studenten geholpen sinds 2012\n• 95% slagingspercentage MBO-rekentoets\n• Succesvolle CCVX-examens\n• Aantoonbare cijferstijging",
+            "en": "🎯 *My Work Method & Approach*\n\n👨‍🏫 *Personal Background:*\n• Stephen Adei: MSc Data Science (UvA) with 10+ years of experience\n• Personal journey: From math challenges to excellent results\n• Expertise: Programming, mathematics, statistics, data analysis\n• Vision: Education should empower, not just transfer knowledge\n\n🎯 *Core Values:*\n• *Personal Approach*: Every student is unique - lessons adapted to individual learning style\n• *Broad Expertise*: Multidisciplinary background for diverse perspectives\n• *Flexible Learning*: Flexible scheduling and WhatsApp support\n• *Technology Integration*: iPad notes, AI tools, digital support\n• *Self-reliance*: Strive for confidence and independent learning\n\n📚 *Teaching Approach:*\n• *Diagnostic work*: Always start with intake to determine level and goals\n• *Goal-oriented*: Each lesson has a clear objective\n• *Activating didactics*: Practice together, real-life examples\n• *Formative evaluation*: Regular short test moments\n• *Self-regulation*: Encourage students to ask questions\n• *Feedback culture*: Give and actively ask for feedback\n• *Differentiation*: Scaffolding for different learning styles\n• *Inclusivity*: Experience with autism, dyscalculia, ADHD, NT2\n\n💻 *Technology:*\n• iPad notes shared after each lesson\n• AI tools for concept clarification\n• Online whiteboards for distance lessons\n• WhatsApp support: 7 days, response within 24 hours\n\n⏰ *Lesson Organization:*\n• Flexible scheduling: Online and in-person possible\n• Duration: 60-90 minutes (adjustable)\n• Locations: Science Park 904, Douwe Egberts, at home\n• Online booking system\n\n🏆 *Quality Assurance:*\n• Free trial lesson\n• Regular evaluations\n• Progress dossier per student\n• 98% student satisfaction\n• Average rating: 4.9/5\n\n📊 *Results:*\n• 500+ students helped since 2012\n• 95% pass rate MBO math test\n• Successful CCVX exams\n• Demonstrable grade improvement"
+        },
+        "info_personal_background": {
+            "nl": "👨‍🏫 *Persoonlijke Achtergrond*\n\n*Stephen Adei - MSc Data Science*\n• 10+ jaar ervaring in onderwijs sinds 2012\n• Persoonlijke reis: Van wiskunde-uitdagingen naar excellente resultaten\n• Multidisciplinaire achtergrond: Wiskunde, programmeren, muziek, fotografie\n• Visie: Onderwijs moet empoweren, niet alleen kennis overdragen\n\n*Expertise:*\n• Wiskunde, statistiek, data-analyse\n• Programmeren (Python, R, SQL)\n• Onderwijskunde en didactiek\n• Ervaring met diverse leerstijlen en uitdagingen\n\n*Motivatie:*\n• Ik weet hoe het voelt om vast te lopen in wiskunde\n• Persoonlijke begeleiding maakte het verschil voor mij\n• Nu help ik anderen om hun potentieel te bereiken",
+            "en": "👨‍🏫 *Personal Background*\n\n*Stephen Adei - MSc Data Science*\n• 10+ years of teaching experience since 2012\n• Personal journey: From math challenges to excellent results\n• Multidisciplinary background: Math, programming, music, photography\n• Vision: Education should empower, not just transfer knowledge\n\n*Expertise:*\n• Mathematics, statistics, data analysis\n• Programming (Python, R, SQL)\n• Educational science and didactics\n• Experience with diverse learning styles and challenges\n\n*Motivation:*\n• I know how it feels to get stuck in math\n• Personal guidance made the difference for me\n• Now I help others reach their potential"
+        },
+        "info_didactic_methods": {
+            "nl": "📚 *Didactische Methoden*\n\n*Diagnostisch Werken:*\n• Start altijd met intake om niveau, leerstijl en doelen te bepalen\n• Analyse van voorkennis en eventuele belemmeringen\n• Persoonlijk leertraject op maat\n\n*Leerdoelgericht Onderwijs:*\n• Elke les heeft een concreet, meetbaar doel\n• Afgestemd op de individuele leerling\n• Regelmatige evaluatie van voortgang\n\n*Activerende Didactiek:*\n• Samen oefenen en uitleggen aan elkaar\n• Realistische voorbeelden uit de praktijk\n• Reflectie en zelfevaluatie\n• Interactieve werkvormen\n\n*Differentiatie & Scaffolding:*\n• Stapsgewijze opbouw van complexiteit\n• Aangepaste uitleg per leerling\n• Ondersteuning waar nodig, uitdaging waar mogelijk\n\n*Zelfregulatie Stimuleren:*\n• Leerlingen leren plannen en reflecteren\n• Eigen leerproces monitoren\n• Doelen stellen en evalueren\n\n*Feedbackcultuur:*\n• Directe, constructieve feedback\n• Digitale evaluatieformulieren na elke les\n• Continue verbetering van methoden",
+            "en": "📚 *Didactic Methods*\n\n*Diagnostic Work:*\n• Always start with intake to determine level, learning style and goals\n• Analysis of prior knowledge and potential obstacles\n• Personalized learning trajectory\n\n*Goal-Oriented Education:*\n• Each lesson has a concrete, measurable objective\n• Tailored to the individual student\n• Regular evaluation of progress\n\n*Activating Didactics:*\n• Practice together and explain to each other\n• Realistic examples from practice\n• Reflection and self-evaluation\n• Interactive teaching methods\n\n*Differentiation & Scaffolding:*\n• Step-by-step build-up of complexity\n• Adapted explanation per student\n• Support where needed, challenge where possible\n\n*Stimulating Self-Regulation:*\n• Students learn to plan and reflect\n• Monitor their own learning process\n• Set goals and evaluate\n\n*Feedback Culture:*\n• Direct, constructive feedback\n• Digital evaluation forms after each lesson\n• Continuous improvement of methods"
+        },
+        "info_technology_tools": {
+            "nl": "💻 *Technologie & Tools*\n\n*iPad-Aantekeningen:*\n• Digitale aantekeningen gedeeld na elke les\n• Overzichtelijke structuur en duidelijke uitleg\n• Altijd beschikbaar voor herhaling\n\n*AI-Tools:*\n• ChatGPT voor conceptverduidelijking\n• Gepersonaliseerde oefeningen en uitleg\n• Hulpmiddel bij huiswerk en voorbereiding\n\n*Apps & Platforms:*\n• GoodNotes voor digitale aantekeningen\n• Notion voor organisatie en planning\n• Google Classroom voor materiaal delen\n\n*Online Ondersteuning:*\n• Interactieve whiteboards voor afstandslessen\n• Scherm delen en video-opnames op verzoek\n• WhatsApp-ondersteuning: 7 dagen na elke les\n• Reactie binnen 24 uur op vragen\n\n*Digitale Materialen:*\n• Extra oefenmateriaal en video's\n• Online kennisbank voor veelgestelde vragen\n• Gepersonaliseerde leermiddelen",
+            "en": "💻 *Technology & Tools*\n\n*iPad Notes:*\n• Digital notes shared after each lesson\n• Clear structure and explanation\n• Always available for review\n\n*AI Tools:*\n• ChatGPT for concept clarification\n• Personalized exercises and explanations\n• Help with homework and preparation\n\n*Apps & Platforms:*\n• GoodNotes for digital notes\n• Notion for organization and planning\n• Google Classroom for sharing materials\n\n*Online Support:*\n• Interactive whiteboards for distance lessons\n• Screen sharing and video recordings on request\n• WhatsApp support: 7 days after each lesson\n• Response within 24 hours to questions\n\n*Digital Materials:*\n• Extra practice materials and videos\n• Online knowledge base for frequently asked questions\n• Personalized learning materials"
+        },
+        "info_results_success": {
+            "nl": "🏆 *Resultaten & Succes*\n\n*Kwantitatieve Resultaten:*\n• 500+ studenten geholpen sinds 2012\n• 98% studenttevredenheid\n• Gemiddelde beoordeling: 4.9/5\n• 95% slagingspercentage MBO-rekentoets\n• Aantoonbare cijferstijging bij de meeste leerlingen\n\n*Succesverhalen:*\n• Leerlingen die van onvoldoende naar voldoende gingen\n• Succesvolle CCVX-examens voor universitaire toelating\n• Verbeterd zelfvertrouwen en motivatie\n• Studenten die hun studie succesvol hebben afgerond\n\n*Kwalitatieve Impact:*\n• Meer zelfvertrouwen in wiskunde\n• Betere studievaardigheden en planning\n• Verhoogde motivatie en doorzettingsvermogen\n• Succesvolle doorstroom naar vervolgopleidingen\n\n*Testimonials:*\n• Positieve feedback van ouders en leerlingen\n• Aanbevelingen van tevreden klanten\n• Langdurige relaties met terugkerende studenten",
+            "en": "🏆 *Results & Success*\n\n*Quantitative Results:*\n• 500+ students helped since 2012\n• 98% student satisfaction\n• Average rating: 4.9/5\n• 95% pass rate MBO math test\n• Demonstrable grade improvement for most students\n\n*Success Stories:*\n• Students who went from failing to passing\n• Successful CCVX exams for university admission\n• Improved confidence and motivation\n• Students who successfully completed their studies\n\n*Qualitative Impact:*\n• More confidence in mathematics\n• Better study skills and planning\n• Increased motivation and perseverance\n• Successful progression to further education\n\n*Testimonials:*\n• Positive feedback from parents and students\n• Recommendations from satisfied customers\n• Long-term relationships with returning students"
+        },
+        "info_workshops_creative": {
+            "nl": "🎨 *Creatieve Workshops*\n\n*Fotografie & Visuele Communicatie:*\n• Basisprincipes van fotografie en compositie\n• Digitale bewerking en storytelling\n• Praktische opdrachten en feedback\n\n*Muziek & Creativiteit:*\n• Muziektheorie en praktische toepassing\n• Creatieve expressie en improvisatie\n• Samenwerking en performance\n\n*Interdisciplinaire Projecten:*\n• Combinatie van wiskunde en creativiteit\n• Projectmatig werken aan realistische opdrachten\n• Ontwikkeling van probleemoplossende vaardigheden\n\n*Doelgroep:*\n• Leerlingen die creatief willen leren\n• Groepen van 3-8 personen\n• Flexibele planning en locaties\n\n*Resultaten:*\n• Praktische vaardigheden en portfolio\n• Verhoogde creativiteit en zelfexpressie\n• Betere samenwerking en communicatie",
+            "en": "🎨 *Creative Workshops*\n\n*Photography & Visual Communication:*\n• Basic principles of photography and composition\n• Digital editing and storytelling\n• Practical assignments and feedback\n\n*Music & Creativity:*\n• Music theory and practical application\n• Creative expression and improvisation\n• Collaboration and performance\n\n*Interdisciplinary Projects:*\n• Combination of mathematics and creativity\n• Project-based work on realistic assignments\n• Development of problem-solving skills\n\n*Target Group:*\n• Students who want to learn creatively\n• Groups of 3-8 people\n• Flexible scheduling and locations\n\n*Results:*\n• Practical skills and portfolio\n• Increased creativity and self-expression\n• Better collaboration and communication"
+        },
+        "info_workshops_academic": {
+            "nl": "🎓 *Academische Workshops*\n\n*Wiskunde & Statistiek:*\n• Geavanceerde wiskundige concepten\n• Statistische analyse en interpretatie\n• Praktische toepassingen in onderzoek\n\n*Programmeren & Data Science:*\n• Python, R, SQL voor data-analyse\n• Machine learning en AI-basis\n• Projectmatig werken aan datasets\n\n*Onderzoeksmethoden:*\n• Wetenschappelijke methodologie\n• Dataverzameling en -analyse\n• Presentatie en rapportage\n\n*Doelgroep:*\n• Studenten in het hoger onderwijs\n• Onderzoekers en professionals\n• Groepen van 2-6 personen\n\n*Resultaten:*\n• Praktische vaardigheden en certificaten\n• Onderzoeksprojecten en publicaties\n• Carrière-ontwikkeling en netwerken",
+            "en": "🎓 *Academic Workshops*\n\n*Mathematics & Statistics:*\n• Advanced mathematical concepts\n• Statistical analysis and interpretation\n• Practical applications in research\n\n*Programming & Data Science:*\n• Python, R, SQL for data analysis\n• Machine learning and AI basics\n• Project-based work on datasets\n\n*Research Methods:*\n• Scientific methodology\n• Data collection and analysis\n• Presentation and reporting\n\n*Target Group:*\n• Students in higher education\n• Researchers and professionals\n• Groups of 2-6 people\n\n*Results:*\n• Practical skills and certificates\n• Research projects and publications\n• Career development and networking"
+        },
+        "info_consultancy": {
+            "nl": "💼 *Consultancy & Advies*\n\n*Onderwijsadvies:*\n• Analyse van leerprocessen en -methoden\n• Advies over didactische aanpak\n• Ontwikkeling van leermaterialen\n\n*Data-analyse & Statistiek:*\n• Statistische analyse van onderzoeksdata\n• Interpretatie en rapportage van resultaten\n• Ondersteuning bij wetenschappelijke publicaties\n\n*Technologie-implementatie:*\n• Advies over educatieve technologie\n• Implementatie van digitale tools\n• Training en ondersteuning\n\n*Doelgroep:*\n• Onderwijsinstellingen en docenten\n• Onderzoekers en studenten\n• Bedrijven en organisaties\n\n*Werkwijze:*\n• Intake en analyse van behoeften\n• Maatwerk oplossingen en advies\n• Implementatie en follow-up\n• Continue ondersteuning en evaluatie",
+            "en": "💼 *Consultancy & Advice*\n\n*Educational Advice:*\n• Analysis of learning processes and methods\n• Advice on didactic approach\n• Development of learning materials\n\n*Data Analysis & Statistics:*\n• Statistical analysis of research data\n• Interpretation and reporting of results\n• Support for scientific publications\n\n*Technology Implementation:*\n• Advice on educational technology\n• Implementation of digital tools\n• Training and support\n\n*Target Group:*\n• Educational institutions and teachers\n• Researchers and students\n• Companies and organizations\n\n*Working Method:*\n• Intake and analysis of needs\n• Custom solutions and advice\n• Implementation and follow-up\n• Continuous support and evaluation"
         },
         "info_services": {
-            "nl": "📚 **Mijn Diensten & Aanbod**\n\n🎓 **1. Privélessen & Bijles**\n**Vakken:**\n• **Basisonderwijs**: Rekenen, Taal\n• **Voortgezet Onderwijs**: Wiskunde A/B/C/D, Natuurkunde, Scheikunde, Engels\n• **Hoger Onderwijs**: Bedrijfsstatistiek, Calculus, Economie, Statistiek, Kansberekening, Lineaire Algebra, Verzamelingenleer\n• **Programmeren**: Python, Java, C#, C++, HTML, CSS, JavaScript, React, SQL, MATLAB, SPSS, R\n\n🎯 **2. MBO Rekenondersteuning**\n• **95% slagingspercentage** MBO-rekentoets\n• **500+ studenten** geholpen\n• **Gemiddelde beoordeling: 8.9/10**\n• Bewezen methoden en effectieve lesmaterialen\n\n📝 **3. Scriptiebegeleiding**\n• Methodologie en onderzoeksopzet\n• Statistische analyse (SPSS, R, Python)\n• Data-analyse en interpretatie\n• Structuur en planning\n• Eindredactie\n\n🎨 **4. Creatieve Workshops**\n• Muziekproductie & DJ (3 uur)\n• Analoge fotografie & bewerking (4 uur)\n• Visuele storytelling & design (3 uur)\n• Creatief coderen: Kunst & animatie (2 uur, 4 sessies)\n• AI & creativiteit (3 uur)\n• Escape room design (4 uur, 2 sessies)\n• Wiskundige kunst & patronen (3 uur)\n• Wiskundig verhalen vertellen (2.5 uur)\n• Wiskundige podcasting (3 uur, 2 sessies)\n• Educatieve wiskundevideo's (4 uur, 3 sessies)\n\n🎓 **5. Academische Workshops**\n• Statistiek project cursus (90 min, 6 sessies)\n• Wiskunde docenten innovatie (3 uur, 4 sessies)\n• AI & wiskunde (2 uur, 3 sessies)\n• Data visualisatie met Python (3 uur, 3 sessies)\n• Wiskundige spelontwikkeling (3 uur)\n• 3D wiskundig modelleren (3 uur, 4 sessies)\n• Innovatieve wiskundetoetsing (3 uur, 2 sessies)\n• Differentiatie in wiskundeonderwijs (3 uur, 3 sessies)\n• Mindfulness in wiskunde (2 uur)\n\n🧘 **6. Wellness Workshops**\n• Mindfulness (2 uur)\n• Tijdmanagement (2.5 uur)\n• Examenvoorbereiding (3 uur, 3 sessies)\n\n💼 **7. Consultancy & Advies**\n• Data-analyse en statistische modellering\n• Onderzoeksmethodologie\n• Machine learning en AI\n• Software ontwikkeling",
-            "en": "📚 **My Services & Offerings**\n\n🎓 **1. Private Lessons & Tutoring**\n**Subjects:**\n• **Primary Education**: Math, Language\n• **Secondary Education**: Math A/B/C/D, Physics, Chemistry, English\n• **Higher Education**: Business Statistics, Calculus, Economics, Statistics, Probability, Linear Algebra, Set Theory\n• **Programming**: Python, Java, C#, C++, HTML, CSS, JavaScript, React, SQL, MATLAB, SPSS, R\n\n🎯 **2. MBO Math Support**\n• **95% pass rate** MBO math test\n• **500+ students** helped\n• **Average rating: 8.9/10**\n• Proven methods and effective teaching materials\n\n📝 **3. Thesis Guidance**\n• Methodology and research design\n• Statistical analysis (SPSS, R, Python)\n• Data analysis and interpretation\n• Structure and planning\n• Final editing\n\n🎨 **4. Creative Workshops**\n• Music production & DJ (3 hours)\n• Analog photography & editing (4 hours)\n• Visual storytelling & design (3 hours)\n• Creative coding: Art & animation (2 hours, 4 sessions)\n• AI & creativity (3 hours)\n• Escape room design (4 hours, 2 sessions)\n• Mathematical art & patterns (3 hours)\n• Mathematical storytelling (2.5 hours)\n• Mathematical podcasting (3 hours, 2 sessions)\n• Educational math videos (4 hours, 3 sessions)\n\n🎓 **5. Academic Workshops**\n• Statistics project course (90 min, 6 sessions)\n• Math teacher innovation (3 hours, 4 sessions)\n• AI & mathematics (2 hours, 3 sessions)\n• Data visualization with Python (3 hours, 3 sessions)\n• Mathematical game development (3 hours)\n• 3D mathematical modeling (3 hours, 4 sessions)\n• Innovative math testing (3 hours, 2 sessions)\n• Differentiation in math education (3 hours, 3 sessions)\n• Mindfulness in mathematics (2 hours)\n\n🧘 **6. Wellness Workshops**\n• Mindfulness (2 hours)\n• Time management (2.5 hours)\n• Exam preparation (3 hours, 3 sessions)\n\n💼 **7. Consultancy & Advice**\n• Data analysis and statistical modeling\n• Research methodology\n• Machine learning and AI\n• Software development"
+            "nl": "📚 *Mijn Diensten & Aanbod*\n\n🎓 *1. Privélessen & Bijles*\n*Vakken:*\n• *Basisonderwijs*: Rekenen, Taal\n• *Voortgezet Onderwijs*: Wiskunde A/B/C/D, Natuurkunde, Scheikunde, Engels\n• *Hoger Onderwijs*: Bedrijfsstatistiek, Calculus, Economie, Statistiek, Kansberekening, Lineaire Algebra, Verzamelingenleer\n• *Programmeren*: Python, Java, C#, C++, HTML, CSS, JavaScript, React, SQL, MATLAB, SPSS, R\n\n🎯 *2. MBO Rekenondersteuning*\n• *95% slagingspercentage* MBO-rekentoets\n• *500+ studenten* geholpen\n• *Gemiddelde beoordeling: 8.9/10*\n• Bewezen methoden en effectieve lesmaterialen\n\n📝 *3. Scriptiebegeleiding*\n• Methodologie en onderzoeksopzet\n• Statistische analyse (SPSS, R, Python)\n• Data-analyse en interpretatie\n• Structuur en planning\n• Eindredactie\n\n🎨 *4. Creatieve Workshops*\n• Muziekproductie & DJ (3 uur)\n• Analoge fotografie & bewerking (4 uur)\n• Visuele storytelling & design (3 uur)\n• Creatief coderen: Kunst & animatie (2 uur, 4 sessies)\n• AI & creativiteit (3 uur)\n• Escape room design (4 uur, 2 sessies)\n• Wiskundige kunst & patronen (3 uur)\n• Wiskundig verhalen vertellen (2.5 uur)\n• Wiskundige podcasting (3 uur, 2 sessies)\n• Educatieve wiskundevideo's (4 uur, 3 sessies)\n\n🎓 *5. Academische Workshops*\n• Statistiek project cursus (90 min, 6 sessies)\n• Wiskunde docenten innovatie (3 uur, 4 sessies)\n• AI & wiskunde (2 uur, 3 sessies)\n• Data visualisatie met Python (3 uur, 3 sessies)\n• Wiskundige spelontwikkeling (3 uur)\n• 3D wiskundig modelleren (3 uur, 4 sessies)\n• Innovatieve wiskundetoetsing (3 uur, 2 sessies)\n• Differentiatie in wiskundeonderwijs (3 uur, 3 sessies)\n• Mindfulness in wiskunde (2 uur)\n\n🧘 *6. Wellness Workshops*\n• Mindfulness (2 uur)\n• Tijdmanagement (2.5 uur)\n• Examenvoorbereiding (3 uur, 3 sessies)\n\n💼 *7. Consultancy & Advies*\n• Data-analyse en statistische modellering\n• Onderzoeksmethodologie\n• Machine learning en AI\n• Software ontwikkeling",
+            "en": "📚 *My Services & Offerings*\n\n🎓 *1. Private Lessons & Tutoring*\n*Subjects:*\n• *Primary Education*: Math, Language\n• *Secondary Education*: Math A/B/C/D, Physics, Chemistry, English\n• *Higher Education*: Business Statistics, Calculus, Economics, Statistics, Probability, Linear Algebra, Set Theory\n• *Programming*: Python, Java, C#, C++, HTML, CSS, JavaScript, React, SQL, MATLAB, SPSS, R\n\n🎯 *2. MBO Math Support*\n• *95% pass rate* MBO math test\n• *500+ students* helped\n• *Average rating: 8.9/10*\n• Proven methods and effective teaching materials\n\n📝 *3. Thesis Guidance*\n• Methodology and research design\n• Statistical analysis (SPSS, R, Python)\n• Data analysis and interpretation\n• Structure and planning\n• Final editing\n\n🎨 *4. Creative Workshops*\n• Music production & DJ (3 hours)\n• Analog photography & editing (4 hours)\n• Visual storytelling & design (3 hours)\n• Creative coding: Art & animation (2 hours, 4 sessions)\n• AI & creativity (3 hours)\n• Escape room design (4 hours, 2 sessions)\n• Mathematical art & patterns (3 hours)\n• Mathematical storytelling (2.5 hours)\n• Mathematical podcasting (3 hours, 2 sessions)\n• Educational math videos (4 hours, 3 sessions)\n\n🎓 *5. Academic Workshops*\n• Statistics project course (90 min, 6 sessions)\n• Math teacher innovation (3 hours, 4 sessions)\n• AI & mathematics (2 hours, 3 sessions)\n• Data visualization with Python (3 hours, 3 sessions)\n• Mathematical game development (3 hours)\n• 3D mathematical modeling (3 hours, 4 sessions)\n• Innovative math testing (3 hours, 2 sessions)\n• Differentiation in math education (3 hours, 3 sessions)\n• Mindfulness in mathematics (2 hours)\n\n🧘 *6. Wellness Workshops*\n• Mindfulness (2 hours)\n• Time management (2.5 hours)\n• Exam preparation (3 hours, 3 sessions)\n\n💼 *7. Consultancy & Advice*\n• Data analysis and statistical modeling\n• Research methodology\n• Machine learning and AI\n• Software development"
         },
         "info_weekend_programs": {
             "nl": "🌅 **Weekend Programma's (Amsterdam Zuidoost)**\n\n🇬🇭 **Boa me na menboa mo (Ghanese gemeenschap):**\n• **50% korting** voor Ghanese jongeren: €30/uur i.p.v. €60\n• **Locatie**: Douwe Egberts (Dubbelink 2) of aan huis in Gein\n• **Tijden**: Zaterdag en zondag, flexibele tijden\n• **Gratis proefles** van 30 minuten\n\n🌅 **Weekend Bijles Zuidoost:**\n• **50% korting**: €30/uur i.p.v. €60\n• **Zelfde locaties** en tijden\n• **Voor alle bewoners** van Zuidoost\n\n📍 **Locaties:**\n• Douwe Egberts (Dubbelink 2, Amsterdam Zuidoost)\n• Aan huis in Gein en omgeving\n• Bijlmerplein 888, 1102 MG Amsterdam\n\n⏰ **Beschikbaarheid:**\n• Zaterdag: 10:00–18:00\n• Zondag: 10:00–18:00\n• Flexibele tijden mogelijk\n\n🎯 **Speciale Kenmerken:**\n• **Community focus**: Toegankelijke tarieven voor verschillende doelgroepen\n• **Ervaring met speciale behoeften**: Ervaring met leerlingen met lichte autisme\n• **Gestructureerde en geduldige leeromgeving**\n• **Aanpassing aan specifieke behoeften**\n\n📞 **Contact:**\n• Telefoon: +31 6 47357426\n• Email: info@stephenadei.nl\n• Website: stephensprivelessen.nl",
@@ -168,6 +196,34 @@ def t(key, lang="nl", **kwargs):
         "info_short_version": {
             "nl": "📝 **Korte versie:**\n\nHO: 1× €80 • 2× €135 • 4× €250\nVO 20+: 1× €75 • 2× €130 • 4× €230\nVO 20-: 1× €60 • 2× €100 • 4× €200\n\nReiskosten: VU/UvA (niet SP) €15 • Thuis (AMS e.o.) €40 • Science Park €0\n\nLast-minute: <24u +20% • <12u +50%\n\nPakketten: 2× geldig 2 weken • 4× geldig 1 maand; bij directe planning loopt geldigheid vanaf 1e les. Flex-premium (alleen bij niet-direct plannen): +€15 (2×) / +€30 (4×).\n\n🌅 Weekend programma's: 50% korting (€30/uur) in Zuidoost",
             "en": "📝 **Short version:**\n\nHE: 1× €80 • 2× €135 • 4× €250\nSE 20+: 1× €75 • 2× €130 • 4× €230\nSE 20-: 1× €60 • 2× €100 • 4× €200\n\nTravel: VU/UvA (not SP) €15 • Home (AMS area) €40 • Science Park €0\n\nLast-minute: <24h +20% • <12h +50%\n\nPackages: 2× valid 2 weeks • 4× valid 1 month; with direct scheduling validity runs from 1st lesson. Flex-premium (only when not scheduling directly): +€15 (2×) / +€30 (4×).\n\n🌅 Weekend programs: 50% discount (€30/hour) in Southeast"
+        },
+        "info_personal_background": {
+            "nl": "👨‍🏫 **Persoonlijke Achtergrond & Motivatie**\n\n**Stephen Adei** - MSc Data Science (UvA)\n• **10+ jaar ervaring** sinds 2012 in onderwijs en begeleiding\n• **Persoonlijke reis**: Van wiskunde-uitdagingen (gemiddelde 5 in 3e jaar) naar excellente resultaten (gemiddelde 10 in 4e/5e jaar)\n• **Expertise**: Programmeren, wiskunde, statistiek, data-analyse, multidisciplinaire achtergrond\n• **Passie**: Deze ervaring inspireerde tot het helpen van anderen met vergelijkbare uitdagingen\n\n**Visie & Filosofie:**\n• **Onderwijs moet empoweren**, niet alleen kennis overdragen\n• **Elke student kan leren**, mits de juiste begeleiding en motivatie\n• **Persoonlijke groei** staat centraal in mijn aanpak\n• **Zelfvertrouwen** is de basis voor succesvol leren\n\n**Multidisciplinaire Achtergrond:**\n• **Wiskunde & Statistiek**: Academische achtergrond en praktische toepassingen\n• **Programmeren**: Python, Java, C#, C++, web development\n• **Muziek & Creativiteit**: Muziekproductie, DJ, creatieve workshops\n• **Fotografie & Design**: Analoge fotografie, visuele storytelling\n• **AI & Innovatie**: Integratie van moderne technologie in onderwijs\n\n**Community Focus:**\n• **Ghanese gemeenschap**: Speciale programma's en ondersteuning\n• **Amsterdam Zuidoost**: Weekend programma's met toegankelijke tarieven\n• **Inclusiviteit**: Ervaring met diverse leerstijlen en speciale behoeften",
+            "en": "👨‍🏫 **Personal Background & Motivation**\n\n**Stephen Adei** - MSc Data Science (UvA)\n• **10+ years of experience** since 2012 in education and guidance\n• **Personal journey**: From math challenges (average 5 in 3rd year) to excellent results (average 10 in 4th/5th year)\n• **Expertise**: Programming, mathematics, statistics, data analysis, multidisciplinary background\n• **Passion**: This experience inspired helping others with similar challenges\n\n**Vision & Philosophy:**\n• **Education should empower**, not just transfer knowledge\n• **Every student can learn**, given the right guidance and motivation\n• **Personal growth** is central to my approach\n• **Self-confidence** is the foundation for successful learning\n\n**Multidisciplinary Background:**\n• **Mathematics & Statistics**: Academic background and practical applications\n• **Programming**: Python, Java, C#, C++, web development\n• **Music & Creativity**: Music production, DJ, creative workshops\n• **Photography & Design**: Analog photography, visual storytelling\n• **AI & Innovation**: Integration of modern technology in education\n\n**Community Focus:**\n• **Ghanaian community**: Special programs and support\n• **Amsterdam Southeast**: Weekend programs with accessible rates\n• **Inclusivity**: Experience with diverse learning styles and special needs"
+        },
+        "info_didactic_methods": {
+            "nl": "📚 **Didactische Aanpak & Methodiek**\n\n**Diagnostisch Werken:**\n• **Intake gesprek**: Start altijd met een uitgebreide intake om niveau, leerstijl en doelen te bepalen\n• **Leerdoelanalyse**: Identificeer specifieke uitdagingen en sterke punten\n• **Voorkennis assessment**: Bepaal het startniveau en voorkennis\n• **Leerstijl bepaling**: Visueel, auditief, kinesthetisch of combinatie\n\n**Leerdoelgericht Onderwijs:**\n• **SMART doelen**: Specifieke, meetbare, haalbare, relevante en tijdsgebonden doelen\n• **Stapsgewijze opbouw**: Complexe stof opdelen in behapbare stappen\n• **Voortgangsmonitoring**: Regelmatige evaluatie van leerdoelen\n• **Aanpassing**: Flexibele aanpassing van doelen op basis van voortgang\n\n**Activerende Didactiek:**\n• **Samen oefenen**: Interactieve oefeningen en samenwerking\n• **Uitleggen aan elkaar**: Peer teaching en kennis delen\n• **Real-life voorbeelden**: Praktische toepassingen en context\n• **Reflectie**: Regelmatige reflectie op leerproces en resultaten\n• **Probleemgestuurd leren**: Uitdagende problemen als startpunt\n\n**Formatieve Evaluatie:**\n• **Korte toetsmomenten**: Regelmatige korte assessments\n• **Directe feedback**: Onmiddellijke feedback tijdens lessen\n• **Zelfevaluatie**: Stimuleren van zelfreflectie bij leerlingen\n• **Ouderbetrokkenheid**: Regelmatige updates en feedback\n\n**Zelfregulatie & Metacognitie:**\n• **Planningsvaardigheden**: Leren plannen en organiseren\n• **Zelfmonitoring**: Eigen voortgang bijhouden en evalueren\n• **Strategieontwikkeling**: Ontwikkelen van eigen leerstrategieën\n• **Motivatiebehoud**: Technieken voor het behouden van motivatie\n\n**Differentiatie & Inclusiviteit:**\n• **Scaffolding**: Ondersteuning die geleidelijk wordt afgebouwd\n• **Tempo-aanpassing**: Verschillende snelheden per leerling\n• **Materiaal-aanpassing**: Verschillende werkvormen en materialen\n• **Ervaring met speciale behoeften**: Autisme, dyscalculie, ADHD, NT2\n• **Visuele, auditieve en kinesthetische leermiddelen**",
+            "en": "📚 **Didactic Approach & Methodology**\n\n**Diagnostic Work:**\n• **Intake conversation**: Always start with comprehensive intake to determine level, learning style and goals\n• **Learning goal analysis**: Identify specific challenges and strengths\n• **Prior knowledge assessment**: Determine starting level and prior knowledge\n• **Learning style determination**: Visual, auditory, kinesthetic or combination\n\n**Goal-Oriented Education:**\n• **SMART goals**: Specific, measurable, achievable, relevant and time-bound goals\n• **Step-by-step building**: Breaking complex material into manageable steps\n• **Progress monitoring**: Regular evaluation of learning goals\n• **Adaptation**: Flexible adjustment of goals based on progress\n\n**Activating Didactics:**\n• **Practice together**: Interactive exercises and collaboration\n• **Explain to each other**: Peer teaching and knowledge sharing\n• **Real-life examples**: Practical applications and context\n• **Reflection**: Regular reflection on learning process and results\n• **Problem-based learning**: Challenging problems as starting point\n\n**Formative Evaluation:**\n• **Short test moments**: Regular short assessments\n• **Direct feedback**: Immediate feedback during lessons\n• **Self-evaluation**: Encouraging self-reflection in students\n• **Parent involvement**: Regular updates and feedback\n\n**Self-Regulation & Metacognition:**\n• **Planning skills**: Learning to plan and organize\n• **Self-monitoring**: Tracking and evaluating own progress\n• **Strategy development**: Developing own learning strategies\n• **Motivation maintenance**: Techniques for maintaining motivation\n\n**Differentiation & Inclusivity:**\n• **Scaffolding**: Support that is gradually reduced\n• **Pace adjustment**: Different speeds per student\n• **Material adaptation**: Different work forms and materials\n• **Experience with special needs**: Autism, dyscalculia, ADHD, NT2\n• **Visual, auditory and kinesthetic learning materials**"
+        },
+        "info_technology_tools": {
+            "nl": "💻 **Technologie & Tools**\n\n**Digitale Aantekeningen & Organisatie:**\n• **iPad met Apple Pencil**: Digitale aantekeningen tijdens lessen\n• **GoodNotes**: Professionele notitie-app met OCR en organisatie\n• **Notion**: Kennisbank en organisatie van lesmaterialen\n• **Google Classroom**: Delen van materialen en opdrachten\n• **Digitale aantekeningen**: Na elke les gedeeld met leerlingen\n\n**AI & Innovatie:**\n• **ChatGPT**: Conceptverduidelijking en gepersonaliseerde uitleg\n• **AI-tools**: Voor oefenmateriaal en adaptieve leerpaden\n• **Gepersonaliseerde oefening**: AI-gestuurde aanbevelingen\n• **Huiswerk ondersteuning**: AI als hulpmiddel bij vragen\n\n**Online Lesgeven:**\n• **Zoom/Google Meet**: Professionele videoconferentie\n• **Online whiteboards**: Interactieve uitleg en samenwerking\n• **Scherm delen**: Demonstraties en presentaties\n• **Video-opnames**: Van uitleg op verzoek beschikbaar\n• **Chat functionaliteit**: Real-time vragen en antwoorden\n\n**Communicatie & Ondersteuning:**\n• **WhatsApp**: 7 dagen ondersteuning na elke les\n• **Reactietijd**: Binnen 24 uur op alle vragen\n• **Check-ins**: Korte motivatie- en planningsgesprekken\n• **FAQ systeem**: Kennisbank voor veelgestelde vragen\n• **Ouder communicatie**: Regelmatige updates en feedback\n\n**Praktische Tools:**\n• **Online boekingssysteem**: Eenvoudige planning en reminders\n• **Betaling integratie**: Veilige online betalingen\n• **Voortgangsmonitoring**: Digitale tracking van resultaten\n• **Evaluatieformulieren**: Anonieme feedback verzameling\n• **Kalender integratie**: Automatische herinneringen\n\n**Materiaal & Bronnen:**\n• **Digitale bibliotheek**: Uitgebreide collectie oefenmateriaal\n• **Video tutorials**: Stap-voor-stap uitleg van concepten\n• **Interactieve oefeningen**: Online quizzes en assessments\n• **E-books**: Digitale lesmaterialen en handleidingen\n• **Podcasts**: Audio content voor verschillende leerstijlen",
+            "en": "💻 **Technology & Tools**\n\n**Digital Notes & Organization:**\n• **iPad with Apple Pencil**: Digital notes during lessons\n• **GoodNotes**: Professional note app with OCR and organization\n• **Notion**: Knowledge base and organization of teaching materials\n• **Google Classroom**: Sharing materials and assignments\n• **Digital notes**: Shared with students after each lesson\n\n**AI & Innovation:**\n• **ChatGPT**: Concept clarification and personalized explanation\n• **AI tools**: For practice materials and adaptive learning paths\n• **Personalized practice**: AI-driven recommendations\n• **Homework support**: AI as aid for questions\n\n**Online Teaching:**\n• **Zoom/Google Meet**: Professional video conferencing\n• **Online whiteboards**: Interactive explanation and collaboration\n• **Screen sharing**: Demonstrations and presentations\n• **Video recordings**: Available on request\n• **Chat functionality**: Real-time questions and answers\n\n**Communication & Support:**\n• **WhatsApp**: 7 days support after each lesson\n• **Response time**: Within 24 hours on all questions\n• **Check-ins**: Short motivation and planning conversations\n• **FAQ system**: Knowledge base for frequently asked questions\n• **Parent communication**: Regular updates and feedback\n\n**Practical Tools:**\n• **Online booking system**: Easy planning and reminders\n• **Payment integration**: Secure online payments\n• **Progress monitoring**: Digital tracking of results\n• **Evaluation forms**: Anonymous feedback collection\n• **Calendar integration**: Automatic reminders\n\n**Materials & Resources:**\n• **Digital library**: Extensive collection of practice materials\n• **Video tutorials**: Step-by-step explanation of concepts\n• **Interactive exercises**: Online quizzes and assessments\n• **E-books**: Digital teaching materials and manuals\n• **Podcasts**: Audio content for different learning styles"
+        },
+        "info_results_success": {
+            "nl": "🏆 **Resultaten & Succesverhalen**\n\n**Kwantitatieve Resultaten:**\n• **500+ studenten** geholpen sinds 2012\n• **98% studenttevredenheid** op evaluaties\n• **Gemiddelde beoordeling: 4.9/5** sterren\n• **95% slagingspercentage** MBO-rekentoets\n• **Gemiddelde cijferstijging**: Aantoonbare verbetering in resultaten\n• **Succesvolle CCVX-examens**: Hoge slagingspercentages\n\n**Kwalitatieve Impact:**\n• **Zelfvertrouwen**: Significante toename in zelfvertrouwen bij leerlingen\n• **Motivatie**: Verbeterde motivatie en betrokkenheid\n• **Zelfstandigheid**: Ontwikkeling van zelfstandige leerstrategieën\n• **Doorzettingsvermogen**: Betere coping met uitdagingen\n• **Toekomstperspectief**: Duidelijkere visie op studie- en carrièrekeuzes\n\n**Specifieke Succesverhalen:**\n• **MBO-studenten**: Van onvoldoende naar voldoende op rekentoets\n• **Havo/Vwo leerlingen**: Van 4-5 naar 7-8 gemiddeld\n• **Hoger onderwijs**: Succesvolle afronding van moeilijke vakken\n• **CCVX-examens**: Hoge slagingspercentages voor universitaire toelating\n• **Scriptiebegeleiding**: Succesvolle afronding van onderzoeken\n\n**Community Impact:**\n• **Ghanese gemeenschap**: Toegankelijk onderwijs voor jongeren\n• **Amsterdam Zuidoost**: Betaalbare kwaliteitsonderwijs\n• **Speciale behoeften**: Inclusief onderwijs voor diverse leerlingen\n• **Ouderbetrokkenheid**: Positieve feedback van ouders\n\n**Langetermijn Resultaten:**\n• **Studievoortgang**: Verbeterde studieprestaties op langere termijn\n• **Carrière ontwikkeling**: Betere voorbereiding op vervolgstudies\n• **Leerhouding**: Duurzame verandering in leerattitude\n• **Netwerk**: Opbouw van ondersteunende netwerken\n\n**Testimonials & Ervaringen:**\n• **Leerling testimonials**: Persoonlijke verhalen van vooruitgang\n• **Ouder feedback**: Positieve ervaringen van ouders\n• **School feedback**: Samenwerking met scholen en docenten\n• **Peer reviews**: Erkenning van collega's in het onderwijsveld",
+            "en": "🏆 **Results & Success Stories**\n\n**Quantitative Results:**\n• **500+ students** helped since 2012\n• **98% student satisfaction** on evaluations\n• **Average rating: 4.9/5** stars\n• **95% pass rate** MBO math test\n• **Average grade improvement**: Demonstrable improvement in results\n• **Successful CCVX exams**: High pass rates\n\n**Qualitative Impact:**\n• **Self-confidence**: Significant increase in student confidence\n• **Motivation**: Improved motivation and engagement\n• **Independence**: Development of independent learning strategies\n• **Perseverance**: Better coping with challenges\n• **Future perspective**: Clearer vision of study and career choices\n\n**Specific Success Stories:**\n• **MBO students**: From insufficient to sufficient on math test\n• **Havo/Vwo students**: From 4-5 to 7-8 average\n• **Higher education**: Successful completion of difficult subjects\n• **CCVX exams**: High pass rates for university admission\n• **Thesis guidance**: Successful completion of research\n\n**Community Impact:**\n• **Ghanaian community**: Accessible education for youth\n• **Amsterdam Southeast**: Affordable quality education\n• **Special needs**: Inclusive education for diverse students\n• **Parent involvement**: Positive feedback from parents\n\n**Long-term Results:**\n• **Study progress**: Improved academic performance in the long term\n• **Career development**: Better preparation for further studies\n• **Learning attitude**: Sustainable change in learning attitude\n• **Network**: Building supportive networks\n\n**Testimonials & Experiences:**\n• **Student testimonials**: Personal stories of progress\n• **Parent feedback**: Positive experiences from parents\n• **School feedback**: Collaboration with schools and teachers\n• **Peer reviews**: Recognition from colleagues in education"
+        },
+        "info_workshops_creative": {
+            "nl": "🎨 **Creatieve Workshops & Cursussen**\n\n**Muziek & Audio:**\n• **Muziekproductie & DJ** (3 uur)\n  - Basis van muziekproductie en DJ-technieken\n  - Praktische ervaring met apparatuur\n  - Creatieve expressie door muziek\n\n• **Wiskundige podcasting** (3 uur, 2 sessies)\n  - Combineren van wiskunde en storytelling\n  - Audio editing en productie\n  - Educatieve content creatie\n\n**Fotografie & Visuele Kunsten:**\n• **Analoge fotografie & bewerking** (4 uur)\n  - Traditionele fotografie technieken\n  - Darkroom processen en bewerking\n  - Artistieke visuele expressie\n\n• **Visuele storytelling & design** (3 uur)\n  - Verhalen vertellen door beeld\n  - Design principes en creativiteit\n  - Digitale en analoge technieken\n\n**Creatief Coderen & Technologie:**\n• **Creatief coderen: Kunst & animatie** (2 uur, 4 sessies)\n  - Programmeren voor artistieke doeleinden\n  - Animaties en visuele effecten\n  - Interactieve kunstinstallaties\n\n• **AI & creativiteit** (3 uur)\n  - Kunstmatige intelligentie in creatieve processen\n  - AI-tools voor kunst en design\n  - Toekomst van creatieve technologie\n\n**Wiskundige Kunst & Patronen:**\n• **Wiskundige kunst & patronen** (3 uur)\n  - Wiskunde als basis voor kunst\n  - Geometrische patronen en fractals\n  - Wiskundige schoonheid in kunst\n\n• **Wiskundig verhalen vertellen** (2.5 uur)\n  - Verhalen met wiskundige concepten\n  - Educatieve storytelling\n  - Wiskunde toegankelijk maken\n\n**Interactieve & Gamification:**\n• **Escape room design** (4 uur, 2 sessies)\n  - Puzzel design en logica\n  - Interactieve ervaringen\n  - Teamwork en probleemoplossing\n\n• **Educatieve wiskundevideo's** (4 uur, 3 sessies)\n  - Video productie voor onderwijs\n  - Visuele uitleg van concepten\n  - Digitale content creatie\n\n**Workshop Kenmerken:**\n• **Kleine groepen**: Persoonlijke aandacht en begeleiding\n• **Praktisch gericht**: Hands-on ervaring en experimenteren\n• **Interdisciplinair**: Combineren van verschillende vakgebieden\n• **Creatieve vrijheid**: Ruimte voor eigen interpretatie en expressie\n• **Technologie integratie**: Moderne tools en technieken\n• **Community focus**: Samenwerking en kennis delen",
+            "en": "🎨 **Creative Workshops & Courses**\n\n**Music & Audio:**\n• **Music production & DJ** (3 hours)\n  - Basics of music production and DJ techniques\n  - Practical experience with equipment\n  - Creative expression through music\n\n• **Mathematical podcasting** (3 hours, 2 sessions)\n  - Combining mathematics and storytelling\n  - Audio editing and production\n  - Educational content creation\n\n**Photography & Visual Arts:**\n• **Analog photography & editing** (4 hours)\n  - Traditional photography techniques\n  - Darkroom processes and editing\n  - Artistic visual expression\n\n• **Visual storytelling & design** (3 hours)\n  - Storytelling through images\n  - Design principles and creativity\n  - Digital and analog techniques\n\n**Creative Coding & Technology:**\n• **Creative coding: Art & animation** (2 hours, 4 sessions)\n  - Programming for artistic purposes\n  - Animations and visual effects\n  - Interactive art installations\n\n• **AI & creativity** (3 hours)\n  - Artificial intelligence in creative processes\n  - AI tools for art and design\n  - Future of creative technology\n\n**Mathematical Art & Patterns:**\n• **Mathematical art & patterns** (3 hours)\n  - Mathematics as basis for art\n  - Geometric patterns and fractals\n  - Mathematical beauty in art\n\n• **Mathematical storytelling** (2.5 hours)\n  - Stories with mathematical concepts\n  - Educational storytelling\n  - Making mathematics accessible\n\n**Interactive & Gamification:**\n• **Escape room design** (4 hours, 2 sessions)\n  - Puzzle design and logic\n  - Interactive experiences\n  - Teamwork and problem solving\n\n• **Educational math videos** (4 hours, 3 sessions)\n  - Video production for education\n  - Visual explanation of concepts\n  - Digital content creation\n\n**Workshop Features:**\n• **Small groups**: Personal attention and guidance\n• **Practical focus**: Hands-on experience and experimentation\n• **Interdisciplinary**: Combining different fields\n• **Creative freedom**: Space for own interpretation and expression\n• **Technology integration**: Modern tools and techniques\n• **Community focus**: Collaboration and knowledge sharing"
+        },
+        "info_workshops_academic": {
+            "nl": "🎓 **Academische Workshops & Cursussen**\n\n**Statistiek & Data Analyse:**\n• **Statistiek project cursus** (90 min, 6 sessies)\n  - Praktische statistische analyses\n  - Project-gebaseerd leren\n  - Real-world data toepassingen\n\n• **Data visualisatie met Python** (3 uur, 3 sessies)\n  - Python voor data analyse\n  - Visuele presentatie van data\n  - Interactieve grafieken en dashboards\n\n**Wiskunde & Onderwijs:**\n• **Wiskunde docenten innovatie** (3 uur, 4 sessies)\n  - Nieuwe didactische methoden\n  - Technologie in wiskundeonderwijs\n  - Differentiatie en inclusiviteit\n\n• **AI & wiskunde** (2 uur, 3 sessies)\n  - Kunstmatige intelligentie in wiskunde\n  - AI-tools voor wiskundeonderwijs\n  - Toekomst van wiskundeonderwijs\n\n• **Wiskundige spelontwikkeling** (3 uur)\n  - Games voor wiskundeonderwijs\n  - Gamification van leren\n  - Interactieve wiskunde\n\n**3D & Modellering:**\n• **3D wiskundig modelleren** (3 uur, 4 sessies)\n  - 3D visualisatie van wiskundige concepten\n  - Moderne modelleringstechnieken\n  - Praktische toepassingen\n\n**Onderwijs Innovatie:**\n• **Innovatieve wiskundetoetsing** (3 uur, 2 sessies)\n  - Moderne toetsmethoden\n  - Formatief toetsen\n  - Technologie in toetsing\n\n• **Differentiatie in wiskundeonderwijs** (3 uur, 3 sessies)\n  - Individuele aanpak in groepen\n  - Scaffolding technieken\n  - Inclusief onderwijs\n\n• **Mindfulness in wiskunde** (2 uur)\n  - Stress reductie bij wiskunde\n  - Focus en concentratie\n  - Positieve leerhouding\n\n**Wellness & Studievaardigheden:**\n• **Mindfulness** (2 uur)\n  - Meditatie en bewustzijn\n  - Stress management\n  - Emotionele balans\n\n• **Tijdmanagement** (2.5 uur)\n  - Studieplanning en organisatie\n  - Prioriteiten stellen\n  - Effectief leren\n\n• **Examenvoorbereiding** (3 uur, 3 sessies)\n  - Strategieën voor examens\n  - Angst en stress management\n  - Optimale voorbereiding\n\n**Workshop Kenmerken:**\n• **Evidence-based**: Gebaseerd op wetenschappelijk onderzoek\n• **Praktisch toepasbaar**: Direct bruikbaar in onderwijs\n• **Interactief**: Actieve deelname en discussie\n• **Flexibel**: Aanpasbaar aan verschillende niveaus\n• **Ondersteunend materiaal**: Handouts, digitale bronnen, oefeningen\n• **Follow-up**: Vervolg ondersteuning en coaching\n\n**Doelgroepen:**\n• **Docenten**: Professionalisering en innovatie\n• **Studenten**: Studievaardigheden en zelfvertrouwen\n• **Ouders**: Ondersteuning bij begeleiding\n• **Professionals**: Werkgerelateerde vaardigheden",
+            "en": "🎓 **Academic Workshops & Courses**\n\n**Statistics & Data Analysis:**\n• **Statistics project course** (90 min, 6 sessions)\n  - Practical statistical analyses\n  - Project-based learning\n  - Real-world data applications\n\n• **Data visualization with Python** (3 hours, 3 sessions)\n  - Python for data analysis\n  - Visual presentation of data\n  - Interactive graphs and dashboards\n\n**Mathematics & Education:**\n• **Math teacher innovation** (3 hours, 4 sessions)\n  - New didactic methods\n  - Technology in mathematics education\n  - Differentiation and inclusivity\n\n• **AI & mathematics** (2 hours, 3 sessions)\n  - Artificial intelligence in mathematics\n  - AI tools for mathematics education\n  - Future of mathematics education\n\n• **Mathematical game development** (3 hours)\n  - Games for mathematics education\n  - Gamification of learning\n  - Interactive mathematics\n\n**3D & Modeling:**\n• **3D mathematical modeling** (3 hours, 4 sessions)\n  - 3D visualization of mathematical concepts\n  - Modern modeling techniques\n  - Practical applications\n\n**Educational Innovation:**\n• **Innovative mathematics testing** (3 hours, 2 sessions)\n  - Modern testing methods\n  - Formative assessment\n  - Technology in testing\n\n• **Differentiation in mathematics education** (3 hours, 3 sessions)\n  - Individual approach in groups\n  - Scaffolding techniques\n  - Inclusive education\n\n• **Mindfulness in mathematics** (2 hours)\n  - Stress reduction in mathematics\n  - Focus and concentration\n  - Positive learning attitude\n\n**Wellness & Study Skills:**\n• **Mindfulness** (2 hours)\n  - Meditation and awareness\n  - Stress management\n  - Emotional balance\n\n• **Time management** (2.5 hours)\n  - Study planning and organization\n  - Setting priorities\n  - Effective learning\n\n• **Exam preparation** (3 hours, 3 sessions)\n  - Strategies for exams\n  - Anxiety and stress management\n  - Optimal preparation\n\n**Workshop Features:**\n• **Evidence-based**: Based on scientific research\n• **Practically applicable**: Directly usable in education\n• **Interactive**: Active participation and discussion\n• **Flexible**: Adaptable to different levels\n• **Supporting materials**: Handouts, digital resources, exercises\n• **Follow-up**: Continued support and coaching\n\n**Target Groups:**\n• **Teachers**: Professionalization and innovation\n• **Students**: Study skills and self-confidence\n• **Parents**: Support in guidance\n• **Professionals**: Work-related skills"
+        },
+        "info_consultancy": {
+            "nl": "💼 **Consultancy & Advies**\n\n**Data-analyse & Statistische Modellering:**\n• **Statistische analyses**: Uitgebreide data-analyse en interpretatie\n• **Predictive modeling**: Voorspellende modellen en trends\n• **Data visualisatie**: Interactieve dashboards en rapporten\n• **Kwaliteitscontrole**: Statistische kwaliteitsborging\n• **Onderzoeksdesign**: Experimentele opzet en methodologie\n\n**Onderzoeksmethodologie:**\n• **Onderzoeksopzet**: Design van wetenschappelijke studies\n• **Steekproefmethoden**: Representatieve dataverzameling\n• **Validatie**: Betrouwbaarheid en validiteit van onderzoek\n• **Ethiek**: Onderzoeksethiek en privacybescherming\n• **Rapportage**: Wetenschappelijke rapportage en presentatie\n\n**Machine Learning & AI:**\n• **Algoritme ontwikkeling**: Custom machine learning modellen\n• **Data preprocessing**: Data cleaning en feature engineering\n• **Model evaluatie**: Performance assessment en validatie\n• **AI implementatie**: Praktische toepassingen van AI\n• **Ethische AI**: Verantwoorde AI ontwikkeling\n\n**Software Ontwikkeling:**\n• **Web development**: Frontend en backend ontwikkeling\n• **Database design**: Data architectuur en optimalisatie\n• **API ontwikkeling**: Integratie en systeemkoppeling\n• **Testing & QA**: Kwaliteitsborging en debugging\n• **Deployment**: Implementatie en onderhoud\n\n**Consultancy Aanpak:**\n\n**1. Eerste Gesprek & Behoefteanalyse**\n• Intake gesprek om doelen en uitdagingen te begrijpen\n• Analyse van huidige situatie en wensen\n• Bepaling van scope en verwachtingen\n• Opstellen van projectplan en tijdlijn\n\n**2. Data-evaluatie & Assessment**\n• Analyse van beschikbare data en systemen\n• Identificatie van verbeterpunten en kansen\n• Assessment van technische infrastructuur\n• Benchmarking tegen best practices\n\n**3. Oplossing Ontwerp**\n• Ontwikkeling van maatwerk oplossingen\n• Technische specificaties en architectuur\n• Implementatie strategie en planning\n• Risico analyse en mitigatie\n\n**4. Implementatie & Begeleiding**\n• Stapsgewijze implementatie van oplossingen\n• Training en kennisoverdracht\n• Monitoring en evaluatie van resultaten\n• Continue ondersteuning en optimalisatie\n\n**5. Kennisoverdracht & Ondersteuning**\n• Documentatie en handleidingen\n• Training van medewerkers\n• Best practices en procedures\n• Langdurige ondersteuning en onderhoud\n\n**Sectoren & Toepassingen:**\n• **Onderwijs**: Onderwijstechnologie en data-analyse\n• **Healthcare**: Medische data-analyse en statistiek\n• **Finance**: Financiële modellering en risico-analyse\n• **Marketing**: Customer analytics en targeting\n• **Research**: Wetenschappelijk onderzoek en publicaties\n\n**Deliverables:**\n• **Rapporten**: Uitgebreide analyses en aanbevelingen\n• **Dashboards**: Interactieve data visualisaties\n• **Modellen**: Machine learning en statistische modellen\n• **Software**: Custom applicaties en tools\n• **Training**: Workshops en kennisoverdracht\n• **Ondersteuning**: Continue begeleiding en optimalisatie",
+            "en": "💼 **Consultancy & Advice**\n\n**Data Analysis & Statistical Modeling:**\n• **Statistical analyses**: Comprehensive data analysis and interpretation\n• **Predictive modeling**: Predictive models and trends\n• **Data visualization**: Interactive dashboards and reports\n• **Quality control**: Statistical quality assurance\n• **Research design**: Experimental design and methodology\n\n**Research Methodology:**\n• **Research design**: Design of scientific studies\n• **Sampling methods**: Representative data collection\n• **Validation**: Reliability and validity of research\n• **Ethics**: Research ethics and privacy protection\n• **Reporting**: Scientific reporting and presentation\n\n**Machine Learning & AI:**\n• **Algorithm development**: Custom machine learning models\n• **Data preprocessing**: Data cleaning and feature engineering\n• **Model evaluation**: Performance assessment and validation\n• **AI implementation**: Practical applications of AI\n• **Ethical AI**: Responsible AI development\n\n**Software Development:**\n• **Web development**: Frontend and backend development\n• **Database design**: Data architecture and optimization\n• **API development**: Integration and system coupling\n• **Testing & QA**: Quality assurance and debugging\n• **Deployment**: Implementation and maintenance\n\n**Consultancy Approach:**\n\n**1. Initial Conversation & Needs Analysis**\n• Intake conversation to understand goals and challenges\n• Analysis of current situation and wishes\n• Determination of scope and expectations\n• Development of project plan and timeline\n\n**2. Data Evaluation & Assessment**\n• Analysis of available data and systems\n• Identification of improvement points and opportunities\n• Assessment of technical infrastructure\n• Benchmarking against best practices\n\n**3. Solution Design**\n• Development of custom solutions\n• Technical specifications and architecture\n• Implementation strategy and planning\n• Risk analysis and mitigation\n\n**4. Implementation & Guidance**\n• Step-by-step implementation of solutions\n• Training and knowledge transfer\n• Monitoring and evaluation of results\n• Continuous support and optimization\n\n**5. Knowledge Transfer & Support**\n• Documentation and manuals\n• Staff training\n• Best practices and procedures\n• Long-term support and maintenance\n\n**Sectors & Applications:**\n• **Education**: Educational technology and data analysis\n• **Healthcare**: Medical data analysis and statistics\n• **Finance**: Financial modeling and risk analysis\n• **Marketing**: Customer analytics and targeting\n• **Research**: Scientific research and publications\n\n**Deliverables:**\n• **Reports**: Comprehensive analyses and recommendations\n• **Dashboards**: Interactive data visualizations\n• **Models**: Machine learning and statistical models\n• **Software**: Custom applications and tools\n• **Training**: Workshops and knowledge transfer\n• **Support**: Continuous guidance and optimization"
         },
         "menu_tariffs": {
             "nl": "💰 Tarieven",
@@ -201,11 +257,91 @@ def t(key, lang="nl", **kwargs):
             "nl": "📝 Korte versie",
             "en": "📝 Short version"
         },
+        "menu_personal_background": {
+            "nl": "👨‍🏫 Persoonlijke Achtergrond",
+            "en": "👨‍🏫 Personal Background"
+        },
+        "menu_didactic_methods": {
+            "nl": "📚 Didactische Methoden",
+            "en": "📚 Didactic Methods"
+        },
+        "menu_technology_tools": {
+            "nl": "💻 Technologie & Tools",
+            "en": "💻 Technology & Tools"
+        },
+        "menu_results_success": {
+            "nl": "🏆 Resultaten & Succes",
+            "en": "🏆 Results & Success"
+        },
+        "menu_workshops_creative": {
+            "nl": "🎨 Creatieve Workshops",
+            "en": "🎨 Creative Workshops"
+        },
+        "menu_workshops_academic": {
+            "nl": "🎓 Academische Workshops",
+            "en": "🎓 Academic Workshops"
+        },
+        "menu_consultancy": {
+            "nl": "💼 Consultancy & Advies",
+            "en": "💼 Consultancy & Advice"
+        },
+        "menu_more_info": {
+            "nl": "📖 Meer informatie",
+            "en": "📖 More information"
+        },
+        "detailed_info_menu_text": {
+            "nl": "📖 Kies een onderwerp voor meer details:",
+            "en": "📖 Choose a topic for more details:"
+        },
+        "menu_back_to_main": {
+            "nl": "⬅️ Terug naar hoofdmenu",
+            "en": "⬅️ Back to main menu"
+        },
+        "menu_didactic_methods": {
+            "nl": "📚 Didactische Methoden",
+            "en": "📚 Didactic Methods"
+        },
+        "menu_technology_tools": {
+            "nl": "💻 Technologie & Tools",
+            "en": "💻 Technology & Tools"
+        },
+        "menu_results_success": {
+            "nl": "🏆 Resultaten & Succes",
+            "en": "🏆 Results & Success"
+        },
+        "menu_workshops_creative": {
+            "nl": "🎨 Creatieve Workshops",
+            "en": "🎨 Creative Workshops"
+        },
+        "menu_workshops_academic": {
+            "nl": "🎓 Academische Workshops",
+            "en": "🎓 Academic Workshops"
+        },
+        "menu_consultancy": {
+            "nl": "💼 Consultancy & Advies",
+            "en": "💼 Consultancy & Advice"
+        },
         
         # Handoff
         "handoff_teacher": {
             "nl": "Ik verbind je door met Stephen. Een moment geduld...",
             "en": "I'm connecting you with Stephen. One moment please..."
+        },
+        "handoff_menu_text": {
+            "nl": "🤖 Wil je terug naar de bot of liever met Stephen blijven praten?",
+            "en": "🤖 Do you want to return to the bot or prefer to continue talking with Stephen?"
+        },
+        "menu_return_to_bot": {
+            "nl": "🤖 Terug naar bot",
+            "en": "🤖 Return to bot"
+        },
+        "menu_stay_with_stephen": {
+            "nl": "👨‍🏫 Blijf bij Stephen",
+            "en": "👨‍🏫 Stay with Stephen"
+        },
+        "handoff_stay_with_stephen": {
+            "nl": "👨‍🏫 Perfect! Stephen neemt het gesprek over. Je kunt hem direct vragen stellen.",
+            "en": "👨‍🏫 Perfect! Stephen will take over the conversation. You can ask him questions directly."
         },
         
         # Menu options
@@ -398,6 +534,9 @@ def send_handoff_message(conversation_id, text):
             set_conv_attrs(conversation_id, {"pending_intent": "handoff"})
             # Assign to Stephen (user_id=2)
             assign_conversation(conversation_id, 2)
+            
+            # Send menu with option to return to main menu
+            send_handoff_menu(conversation_id)
             return True
         else:
             print(f"⚠️ Handoff message failed: {response.status_code} - {response.text[:100]}")
@@ -405,6 +544,39 @@ def send_handoff_message(conversation_id, text):
     except Exception as e:
         print(f"❌ Handoff message error: {e}")
         return False
+
+def send_handoff_menu(conversation_id):
+    """Send menu with option to return to main menu after handoff"""
+    # Get contact language
+    contact_id = get_contact_id_from_conversation(conversation_id)
+    contact_attrs = get_contact_attrs(contact_id)
+    lang = contact_attrs.get("language", "nl")
+    
+    # Send menu with return option
+    send_interactive_menu(conversation_id, t("handoff_menu_text", lang), [
+        (t("menu_return_to_bot", lang), "return_to_bot"),
+        (t("menu_stay_with_stephen", lang), "stay_with_stephen")
+    ])
+
+def get_contact_id_from_conversation(conversation_id):
+    """Get contact ID from conversation ID"""
+    url = f"{CW}/api/v1/accounts/{ACC}/conversations/{conversation_id}"
+    headers = {
+        "api_access_token": TOK,
+        "Content-Type": "application/json"
+    }
+    
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("contact_inbox", {}).get("contact_id")
+        else:
+            print(f"⚠️ Failed to get conversation details: {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"❌ Error getting conversation details: {e}")
+        return None
 
 def send_quick_replies(conversation_id, text, options):
     """Send Chatwoot quick replies using input_select format"""
@@ -1122,9 +1294,10 @@ def handle_message_created(data):
     print(f"📝 Content: '{msg_content}'")
     print(f"🎯 Pending intent: {conv_attrs.get('pending_intent', 'none')}")
     
-    # Skip processing if conversation is in handoff state
+    # Handle handoff menu selections
     if conv_attrs.get("pending_intent") == "handoff":
-        print(f"👨‍🏫 Conversation is in handoff state - ignoring message")
+        print(f"👨‍🏫 Processing handoff menu selection")
+        handle_handoff_menu_selection(cid, contact_id, msg_content, lang)
         return
     
     # Handle language selection FIRST (including input_select values and numbers)
@@ -1206,10 +1379,10 @@ def show_info_menu(cid, lang):
         (t("menu_work_method", lang), "work_method"),
         (t("menu_services", lang), "services"),
         (t("menu_travel_costs", lang), "travel_costs"),
-        (t("menu_last_minute", lang), "last_minute"),
         (t("menu_conditions", lang), "conditions"),
         (t("menu_weekend_programs", lang), "weekend_programs"),
         (t("menu_short_version", lang), "short_version"),
+        (t("menu_more_info", lang), "more_info"),
         (t("menu_option_handoff", lang), "handoff")
     ])
 
@@ -1279,17 +1452,120 @@ def handle_info_menu_selection(cid, contact_id, msg_content, lang):
         show_info_menu(cid, lang)
         return
     
+    # Handle personal background
+    if msg_content.lower() in ["personal_background", "persoonlijke achtergrond", "11"] or "👨‍🏫 persoonlijke" in msg_content.lower():
+        print(f"👨‍🏫 Showing personal background")
+        send_text_with_duplicate_check(cid, t("info_personal_background", lang))
+        show_info_menu(cid, lang)
+        return
+    
+    # Handle didactic methods
+    if msg_content.lower() in ["didactic_methods", "didactische methoden", "12"] or "📚 didactische" in msg_content.lower():
+        print(f"📚 Showing didactic methods")
+        send_text_with_duplicate_check(cid, t("info_didactic_methods", lang))
+        show_info_menu(cid, lang)
+        return
+    
+    # Handle technology tools
+    if msg_content.lower() in ["technology_tools", "technologie tools", "13"] or "💻 technologie" in msg_content.lower():
+        print(f"💻 Showing technology tools")
+        send_text_with_duplicate_check(cid, t("info_technology_tools", lang))
+        show_info_menu(cid, lang)
+        return
+    
+    # Handle results success
+    if msg_content.lower() in ["results_success", "resultaten succes", "14"] or "🏆 resultaten" in msg_content.lower():
+        print(f"🏆 Showing results and success")
+        send_text_with_duplicate_check(cid, t("info_results_success", lang))
+        show_info_menu(cid, lang)
+        return
+    
+    # Handle creative workshops
+    if msg_content.lower() in ["workshops_creative", "creatieve workshops", "15"] or "🎨 creatieve" in msg_content.lower():
+        print(f"🎨 Showing creative workshops")
+        send_text_with_duplicate_check(cid, t("info_workshops_creative", lang))
+        show_info_menu(cid, lang)
+        return
+    
+    # Handle academic workshops
+    if msg_content.lower() in ["workshops_academic", "academische workshops", "16"] or "🎓 academische" in msg_content.lower():
+        print(f"🎓 Showing academic workshops")
+        send_text_with_duplicate_check(cid, t("info_workshops_academic", lang))
+        show_info_menu(cid, lang)
+        return
+    
+    # Handle consultancy
+    if msg_content.lower() in ["consultancy", "advies", "17"] or "💼 consultancy" in msg_content.lower():
+        print(f"💼 Showing consultancy")
+        send_text_with_duplicate_check(cid, t("info_consultancy", lang))
+        show_info_menu(cid, lang)
+        return
+    
+    # Handle back to main info menu
+    if msg_content.lower() in ["back_to_main_info", "terug naar hoofdmenu", "⬅️"] or "⬅️ terug" in msg_content.lower():
+        print(f"⬅️ Returning to main info menu")
+        show_info_menu(cid, lang)
+        return
+    
+    # Handle more info
+    if msg_content.lower() in ["more_info", "meer informatie", "📖"] or "📖 meer" in msg_content.lower():
+        print(f"📖 Showing detailed info menu")
+        show_detailed_info_menu(cid, lang)
+        return
+    
     # Handle handoff
     if msg_content.lower() in ["handoff", "stephen spreken", "10"] or "👨‍🏫" in msg_content:
         print(f"👨‍🏫 Handoff to Stephen requested")
-        send_text_with_duplicate_check(cid, t("handoff_teacher", lang))
-        add_conv_labels(cid, ["intent_handoff_teacher"])
-        set_conv_attrs(cid, {"pending_intent": "handoff"})
+        send_handoff_message(cid, t("handoff_teacher", lang))
         return
     
     # If no valid option, show the info menu again
     print(f"❓ Unknown info menu option: '{msg_content}' - showing info menu")
     show_info_menu(cid, lang)
+
+def show_detailed_info_menu(cid, lang):
+    """Show detailed information menu with all submenu options"""
+    print(f"📖 Showing detailed info menu in {lang}")
+    print(f"🔧 Setting pending_intent to 'info_menu' for conversation {cid}")
+    set_conv_attrs(cid, {"pending_intent": "info_menu"})
+    print(f"🔧 Pending intent set, now sending interactive menu")
+    send_interactive_menu(cid, t("detailed_info_menu_text", lang), [
+        (t("menu_personal_background", lang), "personal_background"),
+        (t("menu_didactic_methods", lang), "didactic_methods"),
+        (t("menu_technology_tools", lang), "technology_tools"),
+        (t("menu_results_success", lang), "results_success"),
+        (t("menu_workshops_creative", lang), "workshops_creative"),
+        (t("menu_workshops_academic", lang), "workshops_academic"),
+        (t("menu_consultancy", lang), "consultancy"),
+        (t("menu_back_to_main", lang), "back_to_main_info")
+    ])
+
+def handle_handoff_menu_selection(cid, contact_id, msg_content, lang):
+    """Handle handoff menu selections"""
+    print(f"👨‍🏫 Handoff menu selection: '{msg_content}'")
+    
+    # Handle return to bot
+    if msg_content.lower() in ["return_to_bot", "terug naar bot", "bot", "🤖"] or "🤖 terug" in msg_content.lower():
+        print(f"🤖 Returning to bot")
+        # Clear handoff state and return to main menu
+        set_conv_attrs(cid, {"pending_intent": "none"})
+        # Unassign from Stephen (assign back to bot)
+        assign_conversation(cid, 1)  # Bot user_id=1
+        # Show main menu
+        contact_attrs = get_contact_attrs(contact_id)
+        segment = detect_segment(contact_id)
+        show_segment_menu(cid, contact_id, segment, lang)
+        return
+    
+    # Handle stay with Stephen
+    if msg_content.lower() in ["stay_with_stephen", "blijf bij stephen", "stephen", "👨‍🏫"] or "👨‍🏫 blijf" in msg_content.lower():
+        print(f"👨‍🏫 Staying with Stephen")
+        send_text_with_duplicate_check(cid, t("handoff_stay_with_stephen", lang))
+        return
+    
+    # If no valid option, show the handoff menu again
+    print(f"❓ Unknown handoff menu option: '{msg_content}' - showing handoff menu again")
+    send_handoff_menu(cid)
 
 def show_segment_menu(cid, contact_id, segment, lang):
     """Show appropriate menu based on segment"""
@@ -1402,9 +1678,7 @@ def handle_menu_selection(cid, contact_id, msg_content, lang):
         "👨‍🏫 stephen spreken" in msg_content.lower() or
         "👨‍🏫 speak to stephen" in msg_content.lower()):
         print(f"👨‍🏫 Handoff to Stephen requested")
-        send_text_with_duplicate_check(cid, t("handoff_teacher", lang))
-        add_conv_labels(cid, ["intent_handoff_teacher"])
-        set_conv_attrs(cid, {"pending_intent": "handoff"})
+        send_handoff_message(cid, t("handoff_teacher", lang))
         return
     
     # If no valid menu option, show the menu again

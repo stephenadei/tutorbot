@@ -149,10 +149,15 @@ class ChatwootAPI:
         """Set conversation custom attributes"""
         url = f"{CW_URL}/api/v1/accounts/{ACC}/conversations/{conversation_id}/custom_attributes"
         try:
+            # Get existing attributes first
+            existing_attrs = ChatwootAPI.get_conv_attrs(conversation_id)
+            # Merge with new attributes
+            merged_attrs = {**existing_attrs, **attrs}
+            
             response = requests.post(
                 url, 
                 headers=_user_headers(), 
-                json={"custom_attributes": attrs}, 
+                json={"custom_attributes": merged_attrs}, 
                 timeout=10
             )
             response.raise_for_status()
