@@ -156,6 +156,16 @@ class ChatwootAPI:
             except Exception as e2:
                 print(f"❌ Get conversation SSL fallback failed: {e2}")
                 return None
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 401:
+                print(f"❌ Unauthorized (401) - API credentials may be invalid or expired")
+                return None
+            elif e.response.status_code == 404:
+                print(f"❌ Conversation not found (404) - conversation_id: {conversation_id}")
+                return None
+            else:
+                print(f"❌ HTTP error in get conversation: {e.response.status_code} - {e}")
+                return None
         except Exception as e:
             print(f"❌ Get conversation failed: {e}")
             return None
@@ -202,6 +212,16 @@ class ChatwootAPI:
                 return True
             except Exception as e2:
                 print(f"❌ Set conversation attributes SSL fallback failed: {e2}")
+                return False
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 401:
+                print(f"❌ Unauthorized (401) - API credentials may be invalid or expired")
+                return False
+            elif e.response.status_code == 404:
+                print(f"❌ Conversation not found (404) - conversation_id: {conversation_id}")
+                return False
+            else:
+                print(f"❌ HTTP error in set conversation attributes: {e.response.status_code} - {e}")
                 return False
         except Exception as e:
             print(f"❌ Set conversation attributes failed: {e}")

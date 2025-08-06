@@ -64,7 +64,7 @@ def run_specific_test_category(category, verbosity=2):
         'error': ['TestErrorHandling'],
         'core': ['TestTranslation', 'TestMessageHandling', 'TestUtilityFunctions'],
         'flow': ['TestIntakeFlow', 'TestMenuHandling', 'TestIntegrationScenarios'],
-        'api': ['TestOpenAIIntegration', 'TestPaymentFunctionality', 'TestWebhookHandling']
+        'api': ['TestOpenAIIntegration', 'TestPaymentFunctionality', 'TestWebhookHandling', 'test_api_connection']
     }
     
     if category not in test_categories:

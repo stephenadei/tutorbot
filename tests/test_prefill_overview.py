@@ -8,8 +8,8 @@ import sys
 import requests
 import json
 
-# Add the current directory to Python path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Add the project root to Python path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from main import prefill_intake_from_message, send_interactive_menu, set_conv_attrs, get_conv_attrs
 

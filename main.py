@@ -10,6 +10,17 @@ from zoneinfo import ZoneInfo
 import re
 from scripts.cw_api import ChatwootAPI, get_contact_attrs, set_contact_attrs, get_conv_attrs, set_conv_attrs, add_conv_labels, send_text
 
+def safe_set_conv_attrs(conversation_id, attrs):
+    """Safely set conversation attributes with error handling"""
+    try:
+        success = set_conv_attrs(conversation_id, attrs)
+        if not success:
+            print(f"⚠️ Failed to set conversation attributes for conv {conversation_id}")
+        return success
+    except Exception as e:
+        print(f"❌ Exception in set_conv_attrs: {e}")
+        return False
+
 # =============================================================================
 # CONFIGURATION CONSTANTS
 # =============================================================================
@@ -526,7 +537,9 @@ def send_text_with_duplicate_check(conversation_id, text):
     # Store this message as the last sent message (preserve pending_intent)
     current_attrs = get_conv_attrs(conversation_id)
     current_attrs["last_bot_message"] = text
-    set_conv_attrs(conversation_id, current_attrs)
+    attrs_success = safe_set_conv_attrs(conversation_id, current_attrs)
+    if not attrs_success:
+        print(f"⚠️ Failed to update conversation attributes, but continuing with message send")
     
     # Use the new API client
     success = send_text(conversation_id, text)
@@ -540,7 +553,7 @@ def assign_conversation(conversation_id, assignee_id):
     """Assign a conversation to a specific Chatwoot user"""
     url = f"{CW}/api/v1/accounts/{ACC}/conversations/{conversation_id}/assignments"
     headers = {
-        "api_access_token": TOK,
+        "api_access_token": ADMIN_TOK,
         "Content-Type": "application/json"
     }
     data = {"assignee_id": assignee_id}
@@ -557,7 +570,7 @@ def send_handoff_message(conversation_id, text):
     """Send handoff message and set labels"""
     url = f"{CW}/api/v1/accounts/{ACC}/conversations/{conversation_id}/messages"
     headers = {
-        "api_access_token": TOK,
+        "api_access_token": ADMIN_TOK,
         "Content-Type": "application/json"
     }
     data = {
@@ -571,7 +584,7 @@ def send_handoff_message(conversation_id, text):
             print(f"👨‍🏫 Handoff message sent: '{text[:50]}{'...' if len(text) > 50 else ''}'")
             # Add handoff labels
             add_conv_labels(conversation_id, ["intent_handoff_duplicate", "intent_handoff_auto"])
-            set_conv_attrs(conversation_id, {"pending_intent": "handoff"})
+            safe_set_conv_attrs(conversation_id, {"pending_intent": "handoff"})
             # Assign to Stephen (user_id=2)
             assign_conversation(conversation_id, 2)
             
@@ -986,7 +999,7 @@ def get_contact_id_from_conversation(conversation_id):
     """Get contact ID from conversation ID"""
     url = f"{CW}/api/v1/accounts/{ACC}/conversations/{conversation_id}"
     headers = {
-        "api_access_token": TOK,
+        "api_access_token": ADMIN_TOK,
         "Content-Type": "application/json"
     }
     
@@ -1006,7 +1019,7 @@ def send_quick_replies(conversation_id, text, options):
     """Send Chatwoot quick replies using input_select format"""
     url = f"{CW}/api/v1/accounts/{ACC}/conversations/{conversation_id}/messages"
     headers = {
-        "api_access_token": TOK,
+        "api_access_token": ADMIN_TOK,
         "Content-Type": "application/json"
     }
     
@@ -1084,7 +1097,7 @@ def send_input_select_only(conversation_id, text, options):
     """Send input_select format only - no fallbacks with strict WhatsApp formatting rules"""
     url = f"{CW}/api/v1/accounts/{ACC}/conversations/{conversation_id}/messages"
     headers = {
-        "api_access_token": TOK,
+        "api_access_token": ADMIN_TOK,
         "Content-Type": "application/json"
     }
     
@@ -1156,7 +1169,7 @@ def send_input_select_fallback_no_duplicate_check(conversation_id, text, options
     """Fallback to input_select format without duplicate detection (for use by send_interactive_menu)"""
     url = f"{CW}/api/v1/accounts/{ACC}/conversations/{conversation_id}/messages"
     headers = {
-        "api_access_token": TOK,
+        "api_access_token": ADMIN_TOK,
         "Content-Type": "application/json"
     }
     
@@ -1226,7 +1239,7 @@ def send_input_select_fallback(conversation_id, text, options):
     
     url = f"{CW}/api/v1/accounts/{ACC}/conversations/{conversation_id}/messages"
     headers = {
-        "api_access_token": TOK,
+        "api_access_token": ADMIN_TOK,
         "Content-Type": "application/json"
     }
     
@@ -1267,7 +1280,7 @@ def send_intake_form(conversation_id, lang):
     """Send comprehensive intake form using Chatwoot form content_type with fallback"""
     url = f"{CW}/api/v1/accounts/{ACC}/conversations/{conversation_id}/messages"
     headers = {
-        "api_access_token": TOK,
+        "api_access_token": ADMIN_TOK,
         "Content-Type": "application/json"
     }
     
