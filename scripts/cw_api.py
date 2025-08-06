@@ -3,7 +3,11 @@ Chatwoot API client following best practices
 """
 import os
 import requests
+import urllib3
 from typing import Dict, List, Optional, Any
+
+# Disable SSL warnings and verification for development
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Configuration
 CW_URL = os.environ.get("CW_URL", "https://crm.stephenadei.nl")
@@ -40,7 +44,8 @@ class ChatwootAPI:
                 url, 
                 headers=_admin_headers(), 
                 params={"q": query}, 
-                timeout=10
+                timeout=10,
+                verify=False
             )
             response.raise_for_status()
             data = response.json()
@@ -64,7 +69,7 @@ class ChatwootAPI:
             payload["custom_attributes"] = attrs
             
         try:
-            response = requests.post(url, headers=_admin_headers(), json=payload, timeout=10)
+            response = requests.post(url, headers=_admin_headers(), json=payload, timeout=10, verify=False)
             response.raise_for_status()
             return response.json()
         except Exception as e:
@@ -82,7 +87,7 @@ class ChatwootAPI:
             payload["name"] = name
             
         try:
-            response = requests.put(url, headers=_admin_headers(), json=payload, timeout=10)
+            response = requests.put(url, headers=_admin_headers(), json=payload, timeout=10, verify=False)
             response.raise_for_status()
             return response.json()
         except Exception as e:
@@ -94,7 +99,7 @@ class ChatwootAPI:
         """Get contact details including custom attributes"""
         url = f"{CW_URL}/api/v1/accounts/{ACC}/contacts/{contact_id}"
         try:
-            response = requests.get(url, headers=_admin_headers(), timeout=10)
+            response = requests.get(url, headers=_admin_headers(), timeout=10, verify=False)
             response.raise_for_status()
             data = response.json()
             # Handle both direct response and payload wrapper
@@ -129,9 +134,28 @@ class ChatwootAPI:
         """Get conversation details"""
         url = f"{CW_URL}/api/v1/accounts/{ACC}/conversations/{conversation_id}"
         try:
-            response = requests.get(url, headers=_user_headers(), timeout=10)
+            response = requests.get(url, headers=_user_headers(), timeout=60, verify=False)
             response.raise_for_status()
             return response.json()
+        except requests.exceptions.Timeout:
+            print(f"❌ Get conversation timeout - retrying once")
+            try:
+                response = requests.get(url, headers=_user_headers(), timeout=120, verify=False)
+                response.raise_for_status()
+                return response.json()
+            except Exception as e:
+                print(f"❌ Get conversation retry failed: {e}")
+                return None
+        except requests.exceptions.SSLError as e:
+            print(f"❌ SSL error in get conversation: {e}")
+            # Try without SSL verification as fallback
+            try:
+                response = requests.get(url, headers=_user_headers(), timeout=60, verify=False)
+                response.raise_for_status()
+                return response.json()
+            except Exception as e2:
+                print(f"❌ Get conversation SSL fallback failed: {e2}")
+                return None
         except Exception as e:
             print(f"❌ Get conversation failed: {e}")
             return None
@@ -158,10 +182,27 @@ class ChatwootAPI:
                 url, 
                 headers=_user_headers(), 
                 json={"custom_attributes": merged_attrs}, 
-                timeout=10
+                timeout=60,
+                verify=False
             )
             response.raise_for_status()
             return True
+        except requests.exceptions.SSLError as e:
+            print(f"❌ SSL error in set conversation attributes: {e}")
+            # Try without SSL verification as fallback
+            try:
+                response = requests.post(
+                    url, 
+                    headers=_user_headers(), 
+                    json={"custom_attributes": merged_attrs}, 
+                    timeout=60,
+                    verify=False
+                )
+                response.raise_for_status()
+                return True
+            except Exception as e2:
+                print(f"❌ Set conversation attributes SSL fallback failed: {e2}")
+                return False
         except Exception as e:
             print(f"❌ Set conversation attributes failed: {e}")
             return False
@@ -171,7 +212,7 @@ class ChatwootAPI:
         """Get conversation labels"""
         url = f"{CW_URL}/api/v1/accounts/{ACC}/conversations/{conversation_id}/labels"
         try:
-            response = requests.get(url, headers=_user_headers(), timeout=10)
+            response = requests.get(url, headers=_user_headers(), timeout=10, verify=False)
             response.raise_for_status()
             data = response.json()
             return data.get("labels", [])
@@ -188,7 +229,8 @@ class ChatwootAPI:
                 url, 
                 headers=_user_headers(), 
                 json={"labels": labels}, 
-                timeout=10
+                timeout=10,
+                verify=False
             )
             response.raise_for_status()
             return True
@@ -218,7 +260,7 @@ class ChatwootAPI:
             payload["content_attributes"] = content_attributes
             
         try:
-            response = requests.post(url, headers=_user_headers(), json=payload, timeout=10)
+            response = requests.post(url, headers=_user_headers(), json=payload, timeout=10, verify=False)
             response.raise_for_status()
             return True
         except Exception as e:
