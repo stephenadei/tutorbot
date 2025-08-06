@@ -1,170 +1,100 @@
 # 📚 TutorBot Documentation
 
-Welcome to the TutorBot documentation! This guide helps you navigate through all the available documentation for the TutorBot WhatsApp integration system.
+Welcome to the TutorBot documentation! This comprehensive guide covers everything you need to know about setting up, developing, and deploying TutorBot.
 
-## 🎯 Documentation Overview
-
-TutorBot is a comprehensive WhatsApp bot system for tutoring services, integrated with Chatwoot, Google Calendar, and Stripe payments. This documentation covers everything from quick setup to advanced configuration.
-
-## 📁 Documentation Structure
+## 🗂️ **Documentation Structure**
 
 ### 🚀 **Getting Started**
-- **[Quick Start Guide](QUICK_START.md)** - Get up and running in 5 minutes
-- **[Main README](../README.md)** - Complete project overview and features
-- **[Environment Setup](SETUP/ENVIRONMENT.md)** - Environment configuration guide
+- **[Quick Start Guide](SETUP/QUICK_START.md)** - Get up and running in minutes
+- **[Environment Setup](SETUP/ENVIRONMENT.md)** - Configure your development environment
+- **[Docker Setup](SETUP/DOCKER.md)** - Containerized deployment
+- **[Chatwoot Setup](SETUP/CHATWOOT_SETUP.md)** - Configure Chatwoot integration
 
-### 🔧 **Setup & Configuration**
-- **[Chatwoot Setup](SETUP/CHATWOOT_SETUP.md)** - Complete Chatwoot integration guide
+### 🏗️ **Architecture & Setup**
+- **[Project Organization](ARCHITECTURE/PROJECT_ORGANIZATION.md)** - Code structure and conventions
 - **[Age Verification](SETUP/AGE_VERIFICATION.md)** - Age verification system setup
-- **[Docker Setup](SETUP/DOCKER.md)** - Docker configuration and deployment
-- **[Scripts Documentation](../scripts/README.md)** - All available scripts and utilities
 
-### 🧪 **Testing & Development**
-- **[Test Suite Guide](TESTING/TEST_SUITE.md)** - Comprehensive testing documentation
-- **[Test Scenarios](TESTING/TEST_SCENARIOS.md)** - Real-world testing scenarios
-- **[Debug & Toggle Scripts](TESTING/DEBUG_SCRIPTS.md)** - Debug and configuration management
+### 🔧 **Development**
+- **[Git Workflow](WORKFLOWS/GIT_WORKFLOW.md)** - Safe development and deployment workflow
+- **[Testing Structure](DEVELOPMENT/TESTING_STRUCTURE.md)** - Testing framework and guidelines
+- **[Workflow Documentation](WORKFLOWS/WORKFLOW_DOCUMENTATION.md)** - Development workflows
 
-### 📋 **Workflows & Processes**
-- **[Workflow Documentation](WORKFLOWS/WORKFLOW_DOCUMENTATION.md)** - Complete workflow processes
-- **[User Flows](WORKFLOWS/USER_FLOWS.md)** - User interaction flows and logic
-- **[Integration Flows](WORKFLOWS/INTEGRATION_FLOWS.md)** - Third-party integration processes
+### 🔌 **Integration**
+- **[Integration Roadmap](INTEGRATION/INTEGRATION_ROADMAP.md)** - Current and planned integrations
+- **[WhatsApp Formatting](INTEGRATION/WHATSAPP_FORMATTING.md)** - WhatsApp message formatting guide
 
-### 🏗️ **Architecture & Development**
-- **[Project Organization](ARCHITECTURE/PROJECT_ORGANIZATION.md)** - Project structure and organization
-- **[API Documentation](ARCHITECTURE/API.md)** - API endpoints and integration
-- **[Configuration Management](ARCHITECTURE/CONFIGURATION.md)** - Configuration files and settings
+### 📡 **API Reference**
+- **[Mocked Functions](API/CURRENT_MOCKED_FUNCTIONS.md)** - Current API mock implementations
 
-### 🚀 **Deployment & Operations**
-- **[Deployment Guide](DEPLOYMENT/README.md)** - Production deployment instructions
-- **[Monitoring & Logs](DEPLOYMENT/MONITORING.md)** - System monitoring and logging
+### 🚀 **Deployment**
 - **[Troubleshooting](DEPLOYMENT/TROUBLESHOOTING.md)** - Common issues and solutions
 
-## 🎯 Quick Navigation
+### 📖 **Reference**
+- **[Documentation Structure](REFERENCE/DOCUMENTATION_STRUCTURE.md)** - How this documentation is organized
 
-### For New Users
-1. Start with **[Quick Start Guide](QUICK_START.md)**
-2. Read **[Main README](../README.md)** for overview
-3. Follow **[Chatwoot Setup](SETUP/CHATWOOT_SETUP.md)**
+## 🎯 **Quick Navigation**
 
-### For Developers
-1. Review **[Project Organization](ARCHITECTURE/PROJECT_ORGANIZATION.md)**
-2. Check **[Test Suite Guide](TESTING/TEST_SUITE.md)**
-3. Explore **[Scripts Documentation](../scripts/README.md)**
+### **For New Users:**
+1. Start with [Quick Start Guide](SETUP/QUICK_START.md)
+2. Set up your [Environment](SETUP/ENVIRONMENT.md)
+3. Configure [Chatwoot](SETUP/CHATWOOT_SETUP.md)
 
-### For System Administrators
-1. Follow **[Deployment Guide](DEPLOYMENT/README.md)**
-2. Configure **[Environment Setup](SETUP/ENVIRONMENT.md)**
-3. Set up **[Monitoring & Logs](DEPLOYMENT/MONITORING.md)**
+### **For Developers:**
+1. Read [Project Organization](ARCHITECTURE/PROJECT_ORGANIZATION.md)
+2. Follow the [Git Workflow](WORKFLOWS/GIT_WORKFLOW.md)
+3. Check [Testing Structure](DEVELOPMENT/TESTING_STRUCTURE.md)
 
-### For Troubleshooting
-1. Check **[Troubleshooting Guide](DEPLOYMENT/TROUBLESHOOTING.md)**
-2. Review **[Debug Scripts](TESTING/DEBUG_SCRIPTS.md)**
-3. Consult **[Test Scenarios](TESTING/TEST_SCENARIOS.md)**
+### **For Deployment:**
+1. Use [Docker Setup](SETUP/DOCKER.md)
+2. Follow [Git Workflow](WORKFLOWS/GIT_WORKFLOW.md)
+3. Check [Troubleshooting](DEPLOYMENT/TROUBLESHOOTING.md) if issues arise
 
-## 🔍 Documentation Categories
+## 🛠️ **Development Workflow**
 
-### 📖 **User Guides**
-- Quick start instructions
-- Setup procedures
-- Configuration guides
-- Usage examples
+### **Safe Development Process:**
+```bash
+# 1. Create feature branch
+gitfeature my-feature
 
-### 🔧 **Technical Documentation**
-- API references
-- Architecture diagrams
-- Code documentation
-- Integration guides
+# 2. Make changes and commit
+git add .
+git commit -m "Add new feature"
 
-### 🧪 **Testing & Quality**
-- Test procedures
-- Quality assurance
-- Debugging tools
-- Validation methods
+# 3. Test on develop
+gitmerge
 
-### 🚀 **Operations**
-- Deployment procedures
-- Monitoring setup
-- Maintenance tasks
-- Troubleshooting
+# 4. Deploy to production
+gitdeploy
+```
 
-## 📋 Documentation Standards
+### **Quick Commands:**
+- `gitstatus` - Check current status
+- `gitfeature <name>` - Create feature branch
+- `gitmerge` - Merge to develop
+- `gitdeploy` - Safe deploy to production
 
-### File Naming Convention
-- **User guides**: `GUIDE_NAME.md`
-- **Technical docs**: `TECHNICAL_NAME.md`
-- **Setup guides**: `SETUP_NAME.md`
-- **API docs**: `API_NAME.md`
+## 🔗 **External Resources**
 
-### Content Structure
-Each documentation file follows this structure:
-1. **Overview** - What this document covers
-2. **Prerequisites** - What you need before starting
-3. **Step-by-step instructions** - Detailed procedures
-4. **Examples** - Practical examples
-5. **Troubleshooting** - Common issues and solutions
-6. **References** - Related documentation
+- **GitHub Repository**: [stephenadei/tutorbot](https://github.com/stephenadei/tutorbot)
+- **Chatwoot Documentation**: [Chatwoot Docs](https://www.chatwoot.com/docs)
+- **WhatsApp Business API**: [WhatsApp Business API](https://developers.facebook.com/docs/whatsapp)
 
-### Code Examples
-- All code examples include syntax highlighting
-- Commands are tested and verified
-- Environment-specific instructions are clearly marked
-- Error handling is included
+## 📝 **Contributing**
 
-## 🔄 Documentation Maintenance
+When contributing to the documentation:
 
-### Update Schedule
-- **User guides**: Updated with each release
-- **Technical docs**: Updated with code changes
-- **API docs**: Updated with API changes
-- **Setup guides**: Updated with configuration changes
+1. Follow the existing structure
+2. Use clear, descriptive headings
+3. Include code examples where helpful
+4. Update this README if adding new sections
+5. Test all commands and examples
 
-### Contributing
-To contribute to documentation:
-1. Follow the established structure
-2. Test all commands and examples
-3. Update related documentation
-4. Submit for review
+## 🆘 **Need Help?**
 
-### Version Control
-- Documentation is versioned with code
-- Changes are tracked in git
-- Major updates are documented in changelog
-
-## 🎯 Getting Help
-
-### Documentation Issues
-If you find issues with documentation:
-1. Check the troubleshooting section
-2. Review related documentation
-3. Create an issue with specific details
-
-### Missing Documentation
-If you need documentation that doesn't exist:
-1. Check if it's covered in another file
-2. Request new documentation
-3. Consider contributing the documentation
-
-### Support Channels
-- **GitHub Issues**: For bugs and feature requests
-- **Documentation Issues**: For documentation problems
-- **Community**: For general questions and discussions
-
-## 📚 Related Resources
-
-### External Documentation
-- **[Chatwoot Documentation](https://www.chatwoot.com/docs)**
-- **[Stripe Documentation](https://stripe.com/docs)**
-- **[Google Calendar API](https://developers.google.com/calendar)**
-- **[WhatsApp Business API](https://developers.facebook.com/docs/whatsapp)**
-
-### Internal Resources
-- **[Project Repository](../README.md)**
-- **[Scripts Directory](../scripts/README.md)**
-- **[Configuration Files](../config/)**
-- **[Test Suite](../tests/README.md)**
+- Check the [Troubleshooting Guide](DEPLOYMENT/TROUBLESHOOTING.md)
+- Review [Common Issues](DEPLOYMENT/TROUBLESHOOTING.md#common-issues)
+- Check [GitHub Issues](https://github.com/stephenadei/tutorbot/issues)
 
 ---
 
-**Last Updated**: August 2025  
-**Version**: 2.0  
-**Maintainer**: Stephen Adei 
+**💡 Tip**: Use the search function in your browser (Ctrl+F) to quickly find specific topics within each document. 
