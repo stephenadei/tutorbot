@@ -75,22 +75,36 @@ def t(key, lang="nl", **kwargs):
             "en": "Hello {name}! 👋"
         },
         
+        # Bot introduction messages
+        "bot_introduction": {
+            "nl": "🤖 *Hoi! Ik ben de TutorBot van Stephen* 👋\n\nIk help je graag met het plannen van bijlessen en het beantwoorden van vragen over onze diensten.\n\nIk heb je bericht geanalyseerd en denk dat je {detected_lang} spreekt. Als je liever {other_lang} wilt gebruiken, typ dan '{other_lang}'.",
+            "en": "🤖 *Hi! I'm Stephen's TutorBot* 👋\n\nI'm happy to help you schedule tutoring sessions and answer questions about our services.\n\nI've analyzed your message and think you speak {detected_lang}. If you'd prefer to use {other_lang}, just type '{other_lang}'."
+        },
+        "bot_introduction_detected_nl": {
+            "nl": "Nederlands",
+            "en": "Dutch"
+        },
+        "bot_introduction_detected_en": {
+            "nl": "Engels", 
+            "en": "English"
+        },
+        
         # Segment-specific menus
         "menu_new": {
-            "nl": "Waarmee kan ik helpen?",
-            "en": "How can I help?"
+            "nl": "*Waarmee kan ik je helpen?* 🤔\n\nHier zijn je opties:",
+            "en": "*How can I help you?* 🤔\n\nHere are your options:"
         },
         "menu_existing": {
-            "nl": "Welkom terug! Zal ik plannen op basis van eerdere voorkeuren?",
-            "en": "Welcome back! Should I schedule based on your previous preferences?"
+            "nl": "*Welkom terug!* 👋\n\nZal ik plannen op basis van je eerdere voorkeuren?",
+            "en": "*Welcome back!* 👋\n\nShould I schedule based on your previous preferences?"
         },
         "menu_returning_broadcast": {
-            "nl": "Hi! Nieuw nummer met assistent om sneller te plannen.",
-            "en": "Hi! New number with assistant for faster scheduling."
+            "nl": "*Hi!* 👋\n\nNieuw nummer met assistent om sneller te plannen.",
+            "en": "*Hi!* 👋\n\nNew number with assistant for faster scheduling."
         },
         "menu_weekend": {
-            "nl": "Beschikbaarheid komend weekend (10:00–18:00):",
-            "en": "Availability this weekend (10:00–18:00):"
+            "nl": "*Weekend Beschikbaarheid* 🌅\n\nKomend weekend (10:00–18:00):",
+            "en": "*Weekend Availability* 🌅\n\nThis weekend (10:00–18:00):"
         },
         
         # Intake questions
@@ -169,32 +183,32 @@ def t(key, lang="nl", **kwargs):
         
         # Info
         "info_rates": {
-            "nl": "Mijn tarieven beginnen bij €50/uur. Interesse in een gratis proefles (30 min)?",
-            "en": "My rates start at €50/hour. Interested in a free trial lesson (30 minutes)?"
+            "nl": "Mijn tarieven beginnen bij €50/uur. Interesse in een gratis proefles van 30 minuten?",
+            "en": "My rates start at €50/hour. Interested in a free trial lesson of 30 minutes?"
         },
         "info_menu_question": {
-            "nl": "📄 Waarover wil je informatie?",
-            "en": "📄 What information would you like?"
+            "nl": "*📄 Informatie*\n\nWaarover wil je meer weten?",
+            "en": "*📄 Information*\n\nWhat would you like to know more about?"
         },
         "info_tariffs": {
-            "nl": "💰 *Uitgebreide Tarieven* (versie 31 juli 2025)\n\n📚 *Hoger onderwijs:*\n• Enkel (1 les): €80\n• Twee (2 lessen): €135\n• Vier (4 lessen): €250\n\n🎓 *Voortgezet onderwijs 20+:*\n• Enkel: €75\n• Twee: €130\n• Vier: €230\n\n🎓 *Voortgezet onderwijs 20-:*\n• Enkel: €60\n• Twee: €100\n• Vier: €200\n\n👥 *Groepslessen:*\n• €45-65 per persoon (afhankelijk van groepsgrootte)\n\n🎯 *MBO Rekentrajecten:*\n• Spoedpakket (1 week, 4 uur): €275\n• Korte cursus (4 weken, 4 uur): €225\n• Volledig Commit (12 weken, 13-14 uur): €550\n• Volledig Flex (12 weken, 13-14 uur): €690 (3 termijnen)\n\n🌅 *Weekend programma's (Zuidoost):*\n• 50% korting: €30/uur i.p.v. €60\n• Gratis proefles van 30 minuten",
-            "en": "💰 *Comprehensive Rates* (version July 31, 2025)\n\n📚 *Higher education:*\n• Single (1 lesson): €80\n• Two (2 lessons): €135\n• Four (4 lessons): €250\n\n🎓 *Secondary education 20+:*\n• Single: €75\n• Two: €130\n• Four: €230\n\n🎓 *Secondary education 20-:*\n• Single: €60\n• Two: €100\n• Four: €200\n\n👥 *Group lessons:*\n• €45-65 per person (depending on group size)\n\n🎯 *MBO Math trajectories:*\n• Emergency package (1 week, 4 hours): €275\n• Short course (4 weeks, 4 hours): €225\n• Full Commit (12 weeks, 13-14 hours): €550\n• Full Flex (12 weeks, 13-14 hours): €690 (3 installments)\n\n🌅 *Weekend programs (Southeast):*\n• 50% discount: €30/hour instead of €60\n• Free trial lesson of 30 minutes"
+            "nl": "💰 *Tarieven*\n\n📚 *Hoger onderwijs:*\n• 1 les: €80\n• 2 lessen: €135\n• 4 lessen: €250\n\n🎓 *Voortgezet onderwijs 20+:*\n• 1 les: €75\n• 2 lessen: €130\n• 4 lessen: €230\n\n🎓 *Voortgezet onderwijs 20-:*\n• 1 les: €60\n• 2 lessen: €100\n• 4 lessen: €200\n\n👥 *Groepslessen:*\n• €45-65 per persoon\n\n🎯 *MBO Rekentrajecten:*\n• Spoedpakket: €275\n• Korte cursus: €225\n• Volledig: €550-690\n\n🌅 *Weekend (Zuidoost):*\n• 50% korting: €30/uur\n• Gratis proefles",
+            "en": "💰 *Rates*\n\n📚 *Higher education:*\n• 1 lesson: €80\n• 2 lessons: €135\n• 4 lessons: €250\n\n🎓 *Secondary education 20+:*\n• 1 lesson: €75\n• 2 lessons: €130\n• 4 lessons: €230\n\n🎓 *Secondary education 20-:*\n• 1 lesson: €60\n• 2 lessons: €100\n• 4 lessons: €200\n\n👥 *Group lessons:*\n• €45-65 per person\n\n🎯 *MBO Math trajectories:*\n• Emergency: €275\n• Short course: €225\n• Full: €550-690\n\n🌅 *Weekend (Southeast):*\n• 50% discount: €30/hour\n• Free trial lesson"
         },
         "info_travel_costs": {
-            "nl": "🚗 *Reiskosten (Amsterdam e.o.):*\n\n• VU/UvA (niet Science Park): €15\n• Bij jou thuis (Amsterdam e.o.): €40\n• Science Park: €0",
-            "en": "🚗 *Travel costs (Amsterdam area):*\n\n• VU/UvA (not Science Park): €15\n• At your home (Amsterdam area): €40\n• Science Park: €0"
+            "nl": "🚗 *Reiskosten:*\n\n• VU/UvA: €15\n• Thuis (Amsterdam): €40\n• Science Park: €0",
+            "en": "🚗 *Travel costs:*\n\n• VU/UvA: €15\n• Home (Amsterdam): €40\n• Science Park: €0"
         },
         "info_last_minute": {
-            "nl": "⏰ *Last-minute toeslagen (op het standaardtarief):*\n\n• Geboekt < 24 uur vooraf: +20%\n• Geboekt < 12 uur vooraf: +50%",
-            "en": "⏰ *Last-minute surcharges (on standard rate):*\n\n• Booked < 24 hours in advance: +20%\n• Booked < 12 hours in advance: +50%"
+            "nl": "⏰ *Last-minute toeslagen:*\n\n• < 24 uur: +20%\n• < 12 uur: +50%",
+            "en": "⏰ *Last-minute surcharges:*\n\n• < 24 hours: +20%\n• < 12 hours: +50%"
         },
         "info_conditions": {
-            "nl": "📋 *Pakketvoorwaarden:*\n\n⏱️ *Geldigheid:*\n• Pakket van 2 lessen: geldig 2 weken na aankoopdatum\n• Pakket van 4 lessen: geldig 1 maand na aankoopdatum\n• Bij directe planning: geldigheid loopt vanaf eerste lesdatum\n\n🎯 *Flex-premium (alleen bij niet-direct plannen):*\n• Pakket van 2 lessen: +€15\n• Pakket van 4 lessen: +€30\n\n💳 *Betaling & factuur:*\n• Factuur na elke les\n• Termijn: 14 dagen\n\n❌ *Annuleren/verzetten:*\n• ≥24u vooraf: kosteloos\n• <24u vooraf: 100% van het tarief",
-            "en": "📋 *Package conditions:*\n\n⏱️ *Validity:*\n• Package of 2 lessons: valid 2 weeks after purchase date\n• Package of 4 lessons: valid 1 month after purchase date\n• With direct scheduling: validity runs from first lesson date\n\n🎯 *Flex-premium (only when not scheduling directly):*\n• Package of 2 lessons: +€15\n• Package of 4 lessons: +€30\n\n💳 *Payment & invoice:*\n• Invoice after each lesson\n• Term: 14 days\n\n❌ *Cancel/reschedule:*\n• ≥24h in advance: free\n• <24h in advance: 100% of the rate"
+            "nl": "📋 *Pakketvoorwaarden:*\n\n⏱️ *Geldigheid:*\n• 2 lessen: 2 weken\n• 4 lessen: 1 maand\n\n🎯 *Flex-premium:*\n• 2 lessen: +€15\n• 4 lessen: +€30\n\n💳 *Betaling:*\n• Factuur na les\n• Termijn: 14 dagen\n\n❌ *Annuleren:*\n• ≥24u: gratis\n• <24u: 100%",
+            "en": "📋 *Package conditions:*\n\n⏱️ *Validity:*\n• 2 lessons: 2 weeks\n• 4 lessons: 1 month\n\n🎯 *Flex-premium:*\n• 2 lessons: +€15\n• 4 lessons: +€30\n\n💳 *Payment:*\n• Invoice after lesson\n• Term: 14 days\n\n❌ *Cancel:*\n• ≥24h: free\n• <24h: 100%"
         },
         "info_work_method": {
-            "nl": "🎯 *Mijn Werkwijze & Aanpak*\n\n👨‍🏫 *Persoonlijke Achtergrond:*\n• Stephen Adei: MSc Data Science (UvA) met 10+ jaar ervaring\n• Persoonlijke reis: Van wiskunde-uitdagingen naar excellente resultaten\n• Expertise: Programmeren, wiskunde, statistiek, data-analyse\n• Visie: Onderwijs moet empoweren, niet alleen kennis overdragen\n\n🎯 *Kernwaarden:*\n• *Persoonlijke Aanpak*: Elke student is uniek - lessen aangepast aan individuele leerstijl\n• *Brede Expertise*: Multidisciplinaire achtergrond voor diverse perspectieven\n• *Flexibel Leren*: Flexibele planning en WhatsApp-ondersteuning\n• *Technologie-integratie*: iPad-aantekeningen, AI-tools, digitale ondersteuning\n• *Zelfredzaamheid*: Streef naar zelfvertrouwen en zelfstandig leren\n\n📚 *Lesaanpak:*\n• *Diagnostisch werken*: Start altijd met intake om niveau en doelen te bepalen\n• *Leerdoelgericht*: Elke les heeft een duidelijk doel\n• *Activerende didactiek*: Samen oefenen, real-life voorbeelden\n• *Formatieve evaluatie*: Regelmatige korte toetsmomenten\n• *Zelfregulatie*: Stimuleer leerlingen om zelf vragen te stellen\n• *Feedbackcultuur*: Geef en vraag actief om feedback\n• *Differentiatie*: Scaffolding voor verschillende leerstijlen\n• *Inclusiviteit*: Ervaring met autisme, dyscalculie, ADHD, NT2\n\n💻 *Technologie:*\n• iPad-aantekeningen gedeeld na elke les\n• AI-tools voor conceptverduidelijking\n• Online whiteboards voor afstandslessen\n• WhatsApp-ondersteuning: 7 dagen, reactie binnen 24 uur\n\n⏰ *Lesorganisatie:*\n• Flexibele planning: Online en fysiek mogelijk\n• Duur: 60-90 minuten (aanpasbaar)\n• Locaties: Science Park 904, Douwe Egberts, aan huis\n• Online boekingssysteem\n\n🏆 *Kwaliteitsborging:*\n• Gratis proefles\n• Regelmatige evaluaties\n• Voortgangsdossier per leerling\n• 98% studenttevredenheid\n• Gemiddelde beoordeling: 4.9/5\n\n📊 *Resultaten:*\n• 500+ studenten geholpen sinds 2012\n• 95% slagingspercentage MBO-rekentoets\n• Succesvolle CCVX-examens\n• Aantoonbare cijferstijging",
-            "en": "🎯 *My Work Method & Approach*\n\n👨‍🏫 *Personal Background:*\n• Stephen Adei: MSc Data Science (UvA) with 10+ years of experience\n• Personal journey: From math challenges to excellent results\n• Expertise: Programming, mathematics, statistics, data analysis\n• Vision: Education should empower, not just transfer knowledge\n\n🎯 *Core Values:*\n• *Personal Approach*: Every student is unique - lessons adapted to individual learning style\n• *Broad Expertise*: Multidisciplinary background for diverse perspectives\n• *Flexible Learning*: Flexible scheduling and WhatsApp support\n• *Technology Integration*: iPad notes, AI tools, digital support\n• *Self-reliance*: Strive for confidence and independent learning\n\n📚 *Teaching Approach:*\n• *Diagnostic work*: Always start with intake to determine level and goals\n• *Goal-oriented*: Each lesson has a clear objective\n• *Activating didactics*: Practice together, real-life examples\n• *Formative evaluation*: Regular short test moments\n• *Self-regulation*: Encourage students to ask questions\n• *Feedback culture*: Give and actively ask for feedback\n• *Differentiation*: Scaffolding for different learning styles\n• *Inclusivity*: Experience with autism, dyscalculia, ADHD, NT2\n\n💻 *Technology:*\n• iPad notes shared after each lesson\n• AI tools for concept clarification\n• Online whiteboards for distance lessons\n• WhatsApp support: 7 days, response within 24 hours\n\n⏰ *Lesson Organization:*\n• Flexible scheduling: Online and in-person possible\n• Duration: 60-90 minutes (adjustable)\n• Locations: Science Park 904, Douwe Egberts, at home\n• Online booking system\n\n🏆 *Quality Assurance:*\n• Free trial lesson\n• Regular evaluations\n• Progress dossier per student\n• 98% student satisfaction\n• Average rating: 4.9/5\n\n📊 *Results:*\n• 500+ students helped since 2012\n• 95% pass rate MBO math test\n• Successful CCVX exams\n• Demonstrable grade improvement"
+            "nl": "🎯 *Mijn Werkwijze*\n\n👨‍🏫 *Achtergrond:*\n• MSc Data Science (UvA)\n• 10+ jaar ervaring\n• Expertise: Wiskunde, programmeren, statistiek\n\n🎯 *Aanpak:*\n• *Persoonlijk*: Elke student uniek\n• *Diagnostisch*: Start met intake\n• *Flexibel*: Online en fysiek\n• *Technologie*: iPad, AI, WhatsApp\n\n📚 *Lesmethode:*\n• Leerdoelgericht\n• Activerende didactiek\n• Formatieve evaluatie\n• Inclusiviteit (autisme, ADHD, NT2)\n\n💻 *Tools:*\n• iPad-aantekeningen\n• AI-ondersteuning\n• WhatsApp 7 dagen\n• Online whiteboards\n\n🏆 *Resultaten:*\n• 500+ studenten\n• 98% tevredenheid\n• 4.9/5 beoordeling\n• 95% slagingspercentage",
+            "en": "🎯 *My Work Method*\n\n👨‍🏫 *Background:*\n• MSc Data Science (UvA)\n• 10+ years experience\n• Expertise: Math, programming, statistics\n\n🎯 *Approach:*\n• *Personal*: Every student unique\n• *Diagnostic*: Start with intake\n• *Flexible*: Online and in-person\n• *Technology*: iPad, AI, WhatsApp\n\n📚 *Teaching Method:*\n• Goal-oriented\n• Activating didactics\n• Formative evaluation\n• Inclusivity (autism, ADHD, NT2)\n\n💻 *Tools:*\n• iPad notes\n• AI support\n• WhatsApp 7 days\n• Online whiteboards\n\n🏆 *Results:*\n• 500+ students\n• 98% satisfaction\n• 4.9/5 rating\n• 95% pass rate"
         },
         "info_personal_background": {
             "nl": "👨‍🏫 *Persoonlijke Achtergrond*\n\n*Stephen Adei - MSc Data Science*\n• 10+ jaar ervaring in onderwijs sinds 2012\n• Persoonlijke reis: Van wiskunde-uitdagingen naar excellente resultaten\n• Multidisciplinaire achtergrond: Wiskunde, programmeren, muziek, fotografie\n• Visie: Onderwijs moet empoweren, niet alleen kennis overdragen\n\n*Expertise:*\n• Wiskunde, statistiek, data-analyse\n• Programmeren (Python, R, SQL)\n• Onderwijskunde en didactiek\n• Ervaring met diverse leerstijlen en uitdagingen\n\n*Motivatie:*\n• Ik weet hoe het voelt om vast te lopen in wiskunde\n• Persoonlijke begeleiding maakte het verschil voor mij\n• Nu help ik anderen om hun potentieel te bereiken",
@@ -401,24 +415,24 @@ def t(key, lang="nl", **kwargs):
             "en": "📅 Plan lesson"
         },
         "menu_option_same_preferences": {
-            "nl": "📅 Zelfde vak/voorkeuren",
-            "en": "📅 Same subject/preferences"
+            "nl": "📅 Zelfde voorkeuren",
+            "en": "📅 Same preferences"
         },
         "menu_option_different": {
             "nl": "🆕 Iets anders",
             "en": "🆕 Something else"
         },
         "menu_option_old_preferences": {
-            "nl": "📅 Plannen met oude voorkeuren",
-            "en": "📅 Plan with old preferences"
+            "nl": "📅 Oude voorkeuren",
+            "en": "📅 Old preferences"
         },
         "menu_option_new_intake": {
-            "nl": "🆕 Intake opnieuw doen",
-            "en": "🆕 Do intake again"
+            "nl": "🆕 Nieuwe intake",
+            "en": "🆕 New intake"
         },
         "menu_option_trial_lesson": {
-            "nl": "🎯 Proefles inplannen",
-            "en": "🎯 Schedule trial lesson"
+            "nl": "🎯 Gratis proefles",
+            "en": "🎯 Free trial lesson"
         },
         
         # Intake options
@@ -455,16 +469,16 @@ def t(key, lang="nl", **kwargs):
             "en": "What are your preferred lesson times? (e.g. 'Monday 19:00, Wednesday 20:00')"
         },
         "planning_trial_lesson": {
-            "nl": "🎯 Proefles inplannen",
-            "en": "🎯 Schedule trial lesson"
+            "nl": "🎯 Gratis proefles inplannen",
+            "en": "🎯 Schedule free trial lesson"
         },
         "planning_regular_lesson": {
             "nl": "📅 Les inplannen",
             "en": "📅 Schedule lesson"
         },
         "trial_lesson_confirmed": {
-            "nl": "✅ Je proefles is gepland! Stephen neemt contact op voor bevestiging.",
-            "en": "✅ Your trial lesson is scheduled! Stephen will contact you for confirmation."
+            "nl": "✅ Je gratis proefles is gepland! Stephen neemt contact op voor bevestiging.",
+            "en": "✅ Your free trial lesson is scheduled! Stephen will contact you for confirmation."
         },
         "regular_lesson_confirmed": {
             "nl": "✅ Je les is gepland! Hier is de betalingslink:",
@@ -499,12 +513,12 @@ def t(key, lang="nl", **kwargs):
             "en": "Type the number of your choice (e.g. '1' or '2')"
         },
         "email_request": {
-            "nl": "📧 Voor de factuur heb ik nog je e-mailadres nodig. Kun je dat delen?",
-            "en": "📧 For the invoice, I still need your email address. Can you share that?"
+            "nl": "📧 Voor de bevestiging heb ik nog je e-mailadres nodig. Kun je dat delen?",
+            "en": "📧 For the confirmation, I still need your email address. Can you share that?"
         },
         "email_confirmation": {
-            "nl": "📧 Bedankt! Ik heb je e-mailadres opgeslagen voor de factuur.\n\n🎯 Je proefles is volledig bevestigd. Tot dan!",
-            "en": "📧 Thank you! I've saved your email address for the invoice.\n\n🎯 Your trial lesson is fully confirmed. See you then!"
+            "nl": "📧 Bedankt! Ik heb je e-mailadres opgeslagen voor de bevestiging.\n\n🎯 Je gratis proefles is volledig bevestigd. Tot dan!",
+            "en": "📧 Thank you! I've saved your email address for the confirmation.\n\n🎯 Your free trial lesson is fully confirmed. See you then!"
         },
         "email_invalid": {
             "nl": "❌ Dat lijkt geen geldig e-mailadres. Kun je het opnieuw proberen? (bijvoorbeeld: naam@email.com)",
@@ -825,11 +839,25 @@ def detect_language_from_message(message: str) -> str:
         "examen", "toets", "tentamen", "cijfer", "voldoende", "onvoldoende"
     ]
     
-    message_lower = message.lower()
+    # Strong Dutch indicators (single words that strongly indicate Dutch)
+    strong_dutch_indicators = ["hallo", "dag", "doei", "dankjewel", "bedankt", "alstublieft", "graag", "nederlands"]
+    
+    message_lower = message.lower().strip()
+    
+    # Check for strong Dutch indicators first
+    if any(word in message_lower for word in strong_dutch_indicators):
+        return "nl"
+    
+    # Count Dutch words
     dutch_word_count = sum(1 for word in dutch_indicators if word in message_lower)
     
+    # Check for strong English indicators
+    strong_english_indicators = ["hello", "hi", "hey", "thanks", "thank you", "please", "engels"]
+    if any(word in message_lower for word in strong_english_indicators):
+        return "en"
+    
     # If we find multiple Dutch words, it's likely Dutch
-    if dutch_word_count >= 3:
+    if dutch_word_count >= 2:  # Reduced from 3 to 2
         return "nl"
     else:
         return "en"  # Default to English
@@ -972,8 +1000,9 @@ def prefill_intake_from_message(message: str, conversation_id: int = None) -> Di
     if analysis.get("program"):
         prefilled["program"] = analysis["program"]
     
-    if analysis.get("referral_source"):
-        prefilled["referral_source"] = analysis["referral_source"]
+    # referral_source wordt handmatig ingevuld, niet automatisch
+    # if analysis.get("referral_source"):
+    #     prefilled["referral_source"] = analysis["referral_source"]
     
     # Additional information
     if analysis.get("location_preference"):
@@ -1857,7 +1886,7 @@ def handle_message_created(data):
         return
     
     # Handle language selection FIRST (including input_select values and numbers)
-    if msg_content.lower() in ["🇳🇱 nederlands", "nl", "nederlands", "dutch", "🇳🇱", "lang_nl", "nederlands", "1", "1.", "🇳🇱 nederlands"] or "🇳🇱" in msg_content:
+    if msg_content.lower() in ["🇳🇱 nederlands", "nl", "nederlands", "dutch", "🇳🇱", "lang_nl", "nederlands", "1", "1.", "🇳🇱 nederlands", "nederlands"] or "🇳🇱" in msg_content:
         print(f"🇳🇱 Language set to Dutch")
         set_contact_attrs(contact_id, {"language": "nl"})
         set_conv_attrs(cid, {"language_just_set": True})
@@ -1869,7 +1898,7 @@ def handle_message_created(data):
         show_segment_menu(cid, contact_id, segment, "nl")
         return
     
-    if msg_content.lower() in ["🇬🇧 english", "en", "english", "engels", "🇬🇧", "lang_en", "english", "2", "2.", "🇬🇧 english"] or "🇬🇧" in msg_content:
+    if msg_content.lower() in ["🇬🇧 english", "en", "english", "engels", "🇬🇧", "lang_en", "english", "2", "2.", "🇬🇧 english", "engels"] or "🇬🇧" in msg_content:
         print(f"🇬🇧 Language set to English")
         set_contact_attrs(contact_id, {"language": "en"})
         set_conv_attrs(cid, {"language_just_set": True})
@@ -2036,26 +2065,31 @@ def handle_message_created(data):
                     detected_info.append(f"👨‍👩‍👧‍👦 *Relatie*: {relationship_text}")
                 
                 if detected_info:
-                    # Truncate detected_info to keep total message length under 1024 characters
+                    # Always show all detected information, don't truncate
+                    # This helps users see what was actually detected
+                    print(f"📋 Showing {len(detected_info)} detected fields: {[info.split(':')[0] for info in detected_info]}")
+                    
                     # Calculate approximate length of confirmation text
                     base_text = "📋 *Wat ik van je bericht begrepen heb:*\n\n"
                     footer_text = "\n\n❓ *Klopt dit allemaal?*"
                     max_info_length = 1024 - len(base_text) - len(footer_text) - 50  # 50 chars buffer
                     
-                    # Truncate detected_info if too long
-                    truncated_info = []
-                    current_length = 0
-                    for info in detected_info:
-                        if current_length + len(info) + 1 <= max_info_length:  # +1 for newline
-                            truncated_info.append(info)
-                            current_length += len(info) + 1
-                        else:
-                            break
-                    
-                    if len(truncated_info) < len(detected_info):
-                        truncated_info.append("...")
-                    
-                    detected_info = truncated_info
+                    # Only truncate if absolutely necessary
+                    if len("\n".join(detected_info)) > max_info_length:
+                        truncated_info = []
+                        current_length = 0
+                        for info in detected_info:
+                            if current_length + len(info) + 1 <= max_info_length:  # +1 for newline
+                                truncated_info.append(info)
+                                current_length += len(info) + 1
+                            else:
+                                break
+                        
+                        if len(truncated_info) < len(detected_info):
+                            truncated_info.append("...")
+                        
+                        detected_info = truncated_info
+                        print(f"⚠️ Truncated to {len(detected_info)} fields due to length limit")
                     
                     # Generate a personalized response based on Simon's message using OpenAI
                     try:
@@ -2157,6 +2191,45 @@ def handle_message_created(data):
     
     # Handle main menu selections
     print(f"🔘 Processing menu selection")
+    
+    # Check if this is a general greeting or unclear message
+    # If no pending intent and message doesn't match any menu options, show the bot introduction
+    if not conv_attrs.get("pending_intent"):
+        # Check if this looks like a general greeting or unclear message
+        greeting_words = ["hallo", "hello", "hi", "hey", "goedemorgen", "goedemiddag", "goedenavond", "good morning", "good afternoon", "good evening"]
+        msg_lower = msg_content.lower().strip()
+        
+        if any(word in msg_lower for word in greeting_words) or len(msg_content.strip()) < 10:
+            print(f"👋 General greeting detected - showing bot introduction")
+            
+            # Detect language from the message
+            detected_lang = detect_language_from_message(msg_content)
+            print(f"🌍 Detected language: {detected_lang}")
+            
+            # Set the detected language as contact attribute
+            set_contact_attrs(contact_id, {"language": detected_lang})
+            
+            # Prepare bot introduction with language detection
+            if detected_lang == "nl":
+                detected_lang_text = t("bot_introduction_detected_nl", "nl")
+                other_lang_text = t("bot_introduction_detected_en", "nl")
+                other_lang_code = "en"
+            else:
+                detected_lang_text = t("bot_introduction_detected_en", "en")
+                other_lang_text = t("bot_introduction_detected_nl", "en")
+                other_lang_code = "nl"
+            
+            # Send bot introduction
+            intro_text = t("bot_introduction", detected_lang).format(
+                detected_lang=detected_lang_text,
+                other_lang=other_lang_text
+            )
+            send_text_with_duplicate_check(cid, intro_text)
+            
+            # Then show the help menu
+            show_segment_menu(cid, contact_id, segment, detected_lang)
+            return
+    
     handle_menu_selection(cid, contact_id, msg_content, lang)
 
 def show_info_menu(cid, lang):
@@ -2215,25 +2288,19 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
         conv_attrs = get_conv_attrs(cid)
         prefilled_info = {}
         
-        # Extract prefilled information
-        if conv_attrs.get("learner_name"):
-            prefilled_info["learner_name"] = conv_attrs["learner_name"]
-        if conv_attrs.get("school_level"):
-            prefilled_info["school_level"] = conv_attrs["school_level"]
-        if conv_attrs.get("topic_primary"):
-            prefilled_info["topic_primary"] = conv_attrs["topic_primary"]
-        if conv_attrs.get("topic_secondary"):
-            prefilled_info["topic_secondary"] = conv_attrs["topic_secondary"]
-        if conv_attrs.get("goals"):
-            prefilled_info["goals"] = conv_attrs["goals"]
-        if conv_attrs.get("referral_source"):
-            prefilled_info["referral_source"] = conv_attrs["referral_source"]
-        if conv_attrs.get("is_adult") is not None:
-            prefilled_info["is_adult"] = conv_attrs["is_adult"]
-        if conv_attrs.get("for_who"):
-            prefilled_info["for_who"] = conv_attrs["for_who"]
-        if conv_attrs.get("contact_name"):
-            prefilled_info["contact_name"] = conv_attrs["contact_name"]
+        # Extract ALL available information from conversation attributes
+        info_fields = [
+            "learner_name", "school_level", "topic_primary", "topic_secondary", 
+            "goals", "referral_source", "is_adult", "for_who", "contact_name",
+            "preferred_times", "location_preference", "toolset", "lesson_mode",
+            "relationship_to_learner", "urgency", "contact_email", "contact_phone"
+        ]
+        
+        for field in info_fields:
+            if conv_attrs.get(field) is not None:
+                prefilled_info[field] = conv_attrs[field]
+        
+        print(f"📋 Available information: {list(prefilled_info.keys())}")
         
         # Apply prefilled information to contact attributes
         if prefilled_info:
@@ -2262,14 +2329,14 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
             
             if contact_name and prefilled_info.get("for_who") == "child":
                 # Parent writing for child - use parent's name
-                confirmation_msg = f"Perfect {contact_name}! Ik zie dat je hulp zoekt met {topic}. Laten we direct een proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
+                confirmation_msg = f"Perfect {contact_name}! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
                 print(f"✅ Using contact_name: {contact_name}")
             elif learner_name:
                 # Student writing for themselves - use their name
-                confirmation_msg = f"Perfect {learner_name}! Ik zie dat je hulp zoekt met {topic}. Laten we direct een proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
+                confirmation_msg = f"Perfect {learner_name}! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
                 print(f"✅ Using learner_name: {learner_name}")
             else:
-                confirmation_msg = f"Perfect! Ik zie dat je hulp zoekt met {topic}. Laten we direct een proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
+                confirmation_msg = f"Perfect! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
                 print(f"✅ Using generic greeting")
             
             send_text_with_duplicate_check(cid, confirmation_msg)
@@ -2279,27 +2346,63 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
             
             # Start planning flow directly
             start_planning_flow(cid, contact_id, lang)
-            
         else:
-            # Information is incomplete, go to main menu
-            contact_name = prefilled_info.get("contact_name", "")
-            learner_name = prefilled_info.get("learner_name", "")
+            # Not enough information for direct trial lesson, but we have some info
+            print(f"📋 Not enough info for direct trial lesson, but we have {len(prefilled_info)} fields")
             
-            if contact_name and prefilled_info.get("for_who") == "child":
-                # Parent writing for child - use parent's name
-                confirmation_msg = f"Bedankt {contact_name}! Ik heb een deel van je informatie kunnen verwerken. Laten we verder gaan met de intake om alles goed in te vullen."
-            elif learner_name:
-                # Student writing for themselves - use their name
-                confirmation_msg = f"Bedankt {learner_name}! Ik heb een deel van je informatie kunnen verwerken. Laten we verder gaan met de intake om alles goed in te vullen."
+            # Build a comprehensive summary of all available information
+            info_summary = []
+            
+            if prefilled_info.get("learner_name"):
+                info_summary.append(f"👤 *Naam*: {prefilled_info['learner_name']}")
+            
+            if prefilled_info.get("school_level"):
+                level_display = {
+                    "po": "Basisschool", "vmbo": "VMBO", "havo": "HAVO", "vwo": "VWO",
+                    "mbo": "MBO", "university_wo": "Universiteit (WO)", "university_hbo": "Universiteit (HBO)", "adult": "Volwassenenonderwijs"
+                }
+                level_text = level_display.get(prefilled_info['school_level'], prefilled_info['school_level'])
+                info_summary.append(f"🎓 *Niveau*: {level_text}")
+            
+            if prefilled_info.get("topic_secondary"):
+                info_summary.append(f"📚 *Vak*: {prefilled_info['topic_secondary']}")
+            elif prefilled_info.get("topic_primary"):
+                topic_display = {
+                    "math": "Wiskunde", "stats": "Statistiek", "english": "Engels",
+                    "programming": "Programmeren", "science": "Natuurkunde", "chemistry": "Scheikunde"
+                }
+                topic_text = topic_display.get(prefilled_info['topic_primary'], prefilled_info['topic_primary'])
+                info_summary.append(f"📚 *Vak*: {topic_text}")
+            
+            if prefilled_info.get("goals"):
+                info_summary.append(f"🎯 *Leerdoelen*: {prefilled_info['goals']}")
+            
+            if prefilled_info.get("preferred_times"):
+                info_summary.append(f"⏰ *Voorkeur tijd*: {prefilled_info['preferred_times']}")
+            
+            if prefilled_info.get("toolset"):
+                info_summary.append(f"🛠️ *Tool*: {prefilled_info['toolset']}")
+            
+            if prefilled_info.get("lesson_mode"):
+                mode_display = {"online": "Online", "offline": "Offline", "hybrid": "Hybride"}
+                mode_text = mode_display.get(prefilled_info['lesson_mode'], prefilled_info['lesson_mode'])
+                info_summary.append(f"💻 *Lesvorm*: {mode_text}")
+            
+            if prefilled_info.get("for_who"):
+                for_who_display = {"self": "Zichzelf", "child": "Kind", "student": "Student", "other": "Iemand anders"}
+                for_who_text = for_who_display.get(prefilled_info['for_who'], prefilled_info['for_who'])
+                info_summary.append(f"👥 *Voor wie*: {for_who_text}")
+            
+            # Create comprehensive confirmation message
+            if info_summary:
+                summary_text = "\n".join(info_summary)
+                confirmation_msg = f"📋 *Wat ik van je bericht begrepen heb:*\n\n{summary_text}\n\n✅ *Bedankt! Ik heb deze informatie kunnen verwerken.*"
             else:
-                confirmation_msg = "Bedankt! Ik heb een deel van je informatie kunnen verwerken. Laten we verder gaan met de intake om alles goed in te vullen."
+                confirmation_msg = "Bedankt! Ik heb een deel van je informatie kunnen verwerken."
             
             send_text_with_duplicate_check(cid, confirmation_msg)
             
-            # Clear pending intent and go to main menu
-            set_conv_attrs(cid, {"pending_intent": ""})
-            
-            # Show main menu
+            # Show info menu to get more information
             show_info_menu(cid, lang)
         
     elif msg_content == "correct_all" or any(word in msg_lower for word in deny_words):
@@ -2393,14 +2496,14 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
                 
                 if contact_name and prefilled_info.get("for_who") == "child":
                     # Parent writing for child - use parent's name
-                    confirmation_msg = f"Perfect {contact_name}! Ik zie dat je hulp zoekt met {topic}. Laten we direct een proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
+                    confirmation_msg = f"Perfect {contact_name}! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
                     print(f"✅ Using contact_name: {contact_name}")
                 elif learner_name:
                     # Student writing for themselves - use their name
-                    confirmation_msg = f"Perfect {learner_name}! Ik zie dat je hulp zoekt met {topic}. Laten we direct een proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
+                    confirmation_msg = f"Perfect {learner_name}! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
                     print(f"✅ Using learner_name: {learner_name}")
                 else:
-                    confirmation_msg = f"Perfect! Ik zie dat je hulp zoekt met {topic}. Laten we direct een proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
+                    confirmation_msg = f"Perfect! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
                     print(f"✅ Using generic greeting")
                 
                 send_text_with_duplicate_check(cid, confirmation_msg)
@@ -2728,7 +2831,7 @@ def handle_menu_selection(cid, contact_id, msg_content, lang):
         return
     
     # If no valid menu option, show the menu again
-    print(f"❓ Unknown menu option: '{msg_content}' - showing menu")
+    print(f"❓ Unknown menu option: '{msg_content}' - showing help menu")
     show_segment_menu(cid, contact_id, segment, lang)
     
 def is_existing_customer(contact_attrs):
@@ -2771,9 +2874,10 @@ def start_planning_flow(cid, contact_id, lang):
         send_text_with_duplicate_check(cid, t("planning_regular_lesson", lang))
         suggest_available_slots(cid, current_segment, lang)
     else:
-        print(f"🎯 New customer - starting intake for trial lesson")
-        # New customer gets intake flow for trial lesson
+        print(f"🎯 New customer - starting intake for free trial lesson")
+        # New customer gets intake flow for free trial lesson
         set_conv_attrs(cid, {"lesson_type": "trial"})
+        send_text_with_duplicate_check(cid, "🎯 Perfect! Laten we een gratis proefles van 30 minuten inplannen. Ik heb een paar vragen om de les goed voor te bereiden.")
         start_intake_flow(cid, contact_id, lang)
 
 def start_intake_flow(cid, contact_id, lang):
@@ -3321,7 +3425,7 @@ def suggest_available_slots(cid, profile_name, lang):
     options.append((t("planning_more_options", lang), "more_options"))
     print(f"📅 More options: '{t('planning_more_options', lang)}' -> 'more_options'")
     
-    lesson_text = "Beschikbare tijden voor proefles:" if lesson_type == "trial" else "Beschikbare tijden voor les:"
+    lesson_text = "Beschikbare tijden voor gratis proefles:" if lesson_type == "trial" else "Beschikbare tijden voor les:"
     print(f"📅 Sending {len(options)} options with text: '{lesson_text}'")
     send_interactive_menu(cid, lesson_text, options)
 
@@ -3410,7 +3514,7 @@ def handle_planning_selection(cid, contact_id, msg_content, lang):
         
         if event:
             # Confirm booking with readable time
-            confirmation_msg = f"✅ Perfect! Ik heb een proefles ingepland op {slot_description}.\n\nJe ontvangt binnenkort een bevestiging per e-mail."
+            confirmation_msg = f"✅ Perfect! Ik heb een proefles ingepland op {slot_description}.\n\n📧 Voor de bevestiging heb ik nog je e-mailadres nodig. Kun je dat delen?"
             send_text_with_duplicate_check(cid, confirmation_msg)
         else:
             send_text_with_duplicate_check(cid, "❌ Er is een fout opgetreden bij het inplannen. Probeer het later opnieuw.")
@@ -3455,7 +3559,7 @@ def handle_email_request(cid, contact_id, msg_content, lang):
         set_contact_attrs(contact_id, {"email": email})
         
         # Send confirmation
-        confirmation_msg = f"📧 Bedankt! Ik heb je e-mailadres ({email}) opgeslagen voor de factuur.\n\n{t('email_confirmation', lang)}"
+        confirmation_msg = f"📧 Bedankt! Ik heb je e-mailadres ({email}) opgeslagen voor de bevestiging.\n\n{t('email_confirmation', lang)}"
         send_text_with_duplicate_check(cid, confirmation_msg)
         
         # Clear pending intent

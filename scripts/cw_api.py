@@ -266,6 +266,13 @@ class ChatwootAPI:
         return ChatwootAPI.set_conv_labels(conversation_id, merged)
     
     @staticmethod
+    def remove_conv_labels(conversation_id: int, labels_to_remove: List[str]) -> bool:
+        """Remove labels from conversation"""
+        current = ChatwootAPI.get_conv_labels(conversation_id)
+        filtered = [label for label in current if label not in labels_to_remove]
+        return ChatwootAPI.set_conv_labels(conversation_id, filtered)
+    
+    @staticmethod
     def send_message(conversation_id: int, content: str, content_type: str = "text", 
                     content_attributes: Dict = None, private: bool = False) -> bool:
         """Send a message to a conversation"""
@@ -307,6 +314,10 @@ def set_conv_attrs(conversation_id: int, attrs: Dict) -> bool:
 def add_conv_labels(conversation_id: int, labels: List[str]) -> bool:
     """Add labels to conversation"""
     return ChatwootAPI.add_conv_labels(conversation_id, labels)
+
+def remove_conv_labels(conversation_id: int, labels_to_remove: List[str]) -> bool:
+    """Remove labels from conversation"""
+    return ChatwootAPI.remove_conv_labels(conversation_id, labels_to_remove)
 
 def send_text(conversation_id: int, text: str) -> bool:
     """Send a text message"""
