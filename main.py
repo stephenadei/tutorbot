@@ -2013,18 +2013,7 @@ def handle_message_created(data):
                     detected_info.append(f"📚 *Vak*: {topic_text}")
                 
                 # Additional information
-                if prefilled.get("referral_source"):
-                    referral_display = {
-                        "google_search": "Google zoekopdracht",
-                        "social_media": "Social media",
-                        "friend_recommendation": "Vriend/kennis aanbeveling",
-                        "school_recommendation": "School/docent aanbeveling",
-                        "advertisement": "Advertentie",
-                        "website": "Website",
-                        "other": "Anders"
-                    }
-                    referral_text = referral_display.get(prefilled['referral_source'], prefilled['referral_source'])
-                    detected_info.append(f"📞 *Hoe ben je bij ons terechtgekomen*: {referral_text}")
+                # referral_source is removed from intake process
                 
 
                 
@@ -3004,8 +2993,7 @@ def start_intake_flow(cid, contact_id, lang):
         prefilled_steps.append("preferred_times")
     if conv_attrs.get("lesson_mode") or contact_attrs.get("lesson_mode"):
         prefilled_steps.append("mode")
-    if conv_attrs.get("referral_source") or contact_attrs.get("referral_source"):
-        prefilled_steps.append("referral_source")
+    # referral_source is removed from intake process
     
     # Toolset is only relevant for programming subjects
     topic_primary = conv_attrs.get("topic_primary") or contact_attrs.get("topic_primary")
@@ -3038,8 +3026,6 @@ def start_intake_flow(cid, contact_id, lang):
         first_step = "preferred_times"
     elif "mode" not in prefilled_steps:
         first_step = "mode"
-    elif "referral_source" not in prefilled_steps:
-        first_step = "referral_source"
     elif "toolset" not in prefilled_steps and (conv_attrs.get("topic_primary") or contact_attrs.get("topic_primary")) in ["programming", "python", "coding"]:
         first_step = "toolset"
     # Note: location_preference is optional and doesn't block intake completion
@@ -3113,16 +3099,6 @@ def start_intake_flow(cid, contact_id, lang):
             ("💻 Online", "online"),
             ("🏠 Fysiek", "in_person"),
             ("🔀 Hybride", "hybrid")
-        ])
-    elif first_step == "referral_source":
-        send_interactive_menu(cid, t("referral_question", lang), [
-            ("🔍 Google zoekopdracht", "google_search"),
-            ("📱 Social media (Instagram/Facebook)", "social_media"),
-            ("👥 Vriend/kennis aanbeveling", "friend_recommendation"),
-            ("🏫 School/docent aanbeveling", "school_recommendation"),
-            ("📰 Advertentie", "advertisement"),
-            ("🌐 Website", "website"),
-            ("📞 Anders", "other")
         ])
 
 def handle_intake_step(cid, contact_id, msg_content, lang):
@@ -3460,30 +3436,13 @@ def handle_intake_step(cid, contact_id, msg_content, lang):
             msg_content = "hybrid"
             
         set_conv_attrs(cid, {
-            "lesson_mode": msg_content,
-            "pending_intent": "intake",
-            "intake_step": "referral_source"
-        })
-        print(f"[DEBUG] Intake: mode ingevuld, door naar referral_source. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
-        send_interactive_menu(cid, t("referral_question", lang), [
-            ("🔍 Google zoekopdracht", "google_search"),
-            ("📱 Social media (Instagram/Facebook)", "social_media"),
-            ("👥 Vriend/kennis aanbeveling", "friend_recommendation"),
-            ("🏫 School/docent aanbeveling", "school_recommendation"),
-            ("📰 Advertentie", "advertisement"),
-            ("🌐 Website", "website"),
-            ("📞 Anders", "other")
-        ])
-    
-    elif step == "referral_source":
-        # Store referral source in contact attributes
-        set_contact_attrs(contact_id, {"referral_source": msg_content})
-        set_conv_attrs(cid, {
             "intake_completed": True,
             "trial_status": "completed",
-            "pending_intent": "planning"
+            "pending_intent": "planning",
+            "lesson_mode": msg_content
         })
-        print(f"[DEBUG] Intake: referral_source ingevuld, intake afgerond. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
+        print(f"[DEBUG] Intake: mode ingevuld, intake afgerond. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
+        
         # Set planning profile based on segment
         contact_attrs = get_contact_attrs(contact_id)
         segment = contact_attrs.get("segment", "new")
