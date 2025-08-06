@@ -47,7 +47,7 @@ PROJECT_ROOT = ensure_project_root()
 
 def get_ssh_key_content():
     """Get the SSH private key content"""
-    ssh_key_path = Path.home() / ".ssh" / "github_actions_new"
+    ssh_key_path = Path.home() / ".ssh" / "github_actions"
     
     if not ssh_key_path.exists():
         print("❌ SSH key not found. Please run the setup first.")
