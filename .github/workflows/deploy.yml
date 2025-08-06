@@ -23,12 +23,19 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         
-    - name: Run tests (if any)
+    - name: Run syntax check
       run: |
         echo "Running basic syntax check..."
         python -m py_compile main.py
-        python -m py_compile bot/*.py
+        python -m py_compile scripts/*.py
+        python -m py_compile tests/*.py
         echo "Syntax check passed!"
+        
+    - name: Run tests
+      run: |
+        echo "Running test suite..."
+        python tests/run_tests.py --category core
+        echo "Tests completed!"
         
     - name: Deploy to server
       uses: appleboy/ssh-action@v1.0.3
@@ -51,27 +58,22 @@ jobs:
           echo "📦 Installing dependencies..."
           pip3 install -r requirements.txt
           
-          # Setup systemd service if not exists
-          if [ ! -f /etc/systemd/system/tutorbot.service ]; then
-              echo "🔧 Setting up systemd service..."
-              sudo cp deploy/tutorbot.service /etc/systemd/system/
-              sudo systemctl daemon-reload
-              sudo systemctl enable tutorbot.service
-          fi
-          
-          # Restart the service
-          echo "🔄 Restarting tutorbot service..."
-          sudo systemctl restart tutorbot.service
+          # Restart Docker container
+          echo "🔄 Restarting Docker container..."
+          docker-compose down
+          docker-compose up -d
           
           # Wait and check status
-          sleep 5
-          if sudo systemctl is-active --quiet tutorbot.service; then
+          sleep 10
+          if docker-compose ps | grep -q "Up"; then
               echo "✅ Tutorbot successfully deployed and running!"
-              echo "📊 Service status:"
-              sudo systemctl status tutorbot.service --no-pager -l
+              echo "📊 Container status:"
+              docker-compose ps
+              echo "📋 Recent logs:"
+              docker-compose logs --tail=20
           else
-              echo "❌ Failed to start tutorbot service"
-              echo "📋 Service logs:"
-              sudo journalctl -u tutorbot.service -n 20 --no-pager
+              echo "❌ Failed to start tutorbot container"
+              echo "📋 Container logs:"
+              docker-compose logs
               exit 1
           fi 
