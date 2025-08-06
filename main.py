@@ -1879,6 +1879,17 @@ def handle_message_created(data):
     print(f"📝 Content: '{msg_content}'")
     print(f"🎯 Pending intent: {conv_attrs.get('pending_intent', 'none')}")
     
+    # Check for admin commands (WIPECONTACTS) - MUST BE FIRST!
+    if msg_content.upper() == "WIPECONTACTS":
+        print(f"🧹 ADMIN COMMAND: WIPECONTACTS detected from contact {contact_id}")
+        
+        # Send confirmation message
+        send_text_with_duplicate_check(cid, "🧹 *ADMIN COMMAND DETECTED*\n\n⚠️ Je staat op het punt om ALLE contacten en gesprekken te verwijderen!\n\nDit is een gevaarlijke actie die niet ongedaan kan worden gemaakt.\n\nType 'JA WIPE' om te bevestigen of 'ANNULEREN' om te stoppen.")
+        
+        # Set pending intent for wipe confirmation
+        set_conv_attrs(cid, {"pending_intent": "wipe_confirmation"})
+        return
+    
     # Handle handoff menu selections
     if conv_attrs.get("pending_intent") == "handoff":
         print(f"👨‍🏫 Processing handoff menu selection")
@@ -2142,17 +2153,6 @@ def handle_message_created(data):
                 # Refresh attributes after prefill
                 contact_attrs = get_contact_attrs(contact_id)
                 conv_attrs = get_conv_attrs(cid)
-    
-    # Check for admin commands (WIPECONTACTS) - MUST BE FIRST!
-    if msg_content.upper() == "WIPECONTACTS":
-        print(f"🧹 ADMIN COMMAND: WIPECONTACTS detected from contact {contact_id}")
-        
-        # Send confirmation message
-        send_text_with_duplicate_check(cid, "🧹 *ADMIN COMMAND DETECTED*\n\n⚠️ Je staat op het punt om ALLE contacten en gesprekken te verwijderen!\n\nDit is een gevaarlijke actie die niet ongedaan kan worden gemaakt.\n\nType 'JA WIPE' om te bevestigen of 'ANNULEREN' om te stoppen.")
-        
-        # Set pending intent for wipe confirmation
-        set_conv_attrs(cid, {"pending_intent": "wipe_confirmation"})
-        return
     
     # Handle wipe confirmation
     if conv_attrs.get("pending_intent") == "wipe_confirmation":
