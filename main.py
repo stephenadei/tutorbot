@@ -2094,7 +2094,7 @@ def handle_message_created(data):
                         4. Geruststellend en behulpzaam is
                         5. Niet te lang is (max 3-4 zinnen)
                         6. Natuurlijk en vriendelijk klinkt
-                        7. Eindigt met "Mocht ik een beetje raar reageren, dan neemt Stephen binnen 3 minuten contact met je op."
+                        7. Eindigt met "Mocht ik een beetje raar reageren, dan neemt Stephen binnen 2 uur contact met je op."
                         
                         Antwoord in het Nederlands.
                         """
@@ -2115,7 +2115,7 @@ def handle_message_created(data):
                     except Exception as e:
                         print(f"❌ Error generating personalized response: {e}")
                         # Fallback to a simple but relevant response
-                        direct_response = f"🤖 [BOT] Hoi! Ik ben de TutorBot van Stephen. Bedankt voor je bericht. Ik zie dat je hulp zoekt met wiskunde B voor je schoolexamen in maart. Mocht ik een beetje raar reageren, dan neemt Stephen binnen 3 minuten contact met je op."
+                        direct_response = f"🤖 [BOT] Hoi! Ik ben de TutorBot van Stephen. Bedankt voor je bericht. Ik zie dat je hulp zoekt met wiskunde B voor je schoolexamen in maart. Mocht ik een beetje raar reageren, dan neemt Stephen binnen 2 uur contact met je op."
                     
                     # Send the personalized response first
                     send_text_with_duplicate_check(cid, direct_response)
