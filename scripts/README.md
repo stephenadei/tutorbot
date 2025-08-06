@@ -1,206 +1,132 @@
-# TutorBot Scripts Directory
+# Scripts Directory - Organized Structure
 
-This directory contains all the shell scripts for managing the TutorBot application.
+This directory contains all utility scripts organized by functionality.
 
-## 📁 Script Categories
+## 📁 Directory Structure
 
-### 🔧 Development Scripts
-- **`dev.sh`** - Development environment setup and management
+```
+scripts/
+├── cw_api.py              # Chatwoot API utilities (core)
+├── help.sh                # This help script
+├── dev/                   # Development scripts
+│   ├── dev.sh             # Development shortcuts
+│   └── export_env.sh      # Environment export script
+├── data/                  # Data management scripts
+│   ├── wipe.sh            # Quick contact wipe script
+│   ├── wipe_all.sh        # Quick data wipe script
+│   ├── wipe_contacts.py   # Manual contact wipe
+│   ├── wipe_all.py        # Manual data wipe
+│   └── cleanup_all.py     # Clean up all data
+├── debug/                 # Debug and confirmation scripts
+│   ├── debug_*.sh         # Debug management scripts
+│   └── confirm_*.sh       # Confirmation management scripts
+├── setup/                 # Setup and configuration scripts
+│   ├── setup_attributes.py    # Setup custom attributes
+│   ├── setup_labels.py        # Setup labels
+│   ├── setup_all.py           # Setup everything
+│   ├── setup_automation_rules.py
+│   ├── setup_chatwoot.py      # Setup Chatwoot configuration
+│   └── setup_custom_attributes.py
+├── analysis/              # Analysis and audit scripts
+│   ├── analyze_logs.py        # Analyze log files
+│   ├── check_inboxes.py       # Check inbox status
+│   ├── list_contact_languages.py
+│   ├── list_automation.py     # List automation rules
+│   ├── audit_attributes.py    # Audit custom attributes
+│   └── validate_structure.py  # Validate project structure
+└── testing/               # Testing scripts
+    ├── show_prefill_overview.py # Show prefill overview
+    ├── test_bot.py            # Test bot functionality
+    ├── test_chatwoot_api.py   # Test Chatwoot API
+    ├── test_input_select.py   # Test input selection
+    ├── test_real_message.py   # Test with real message
+    └── test_real_conversation.py
+```
 
-### 🧹 Data Management Scripts
-- **`wipe.sh`** - Wipe all contacts and conversations
-- **`wipe_all.sh`** - Wipe all labels and attributes
+## 🔧 Script Categories
 
-### 🔍 Debug Management Scripts
-- **`debug_toggle.sh`** - Main debug toggle script with multiple modes
-- **`debug_on.sh`** - Quick enable debug mode
-- **`debug_off.sh`** - Quick disable debug mode
-- **`debug_private.sh`** - Enable private debug mode
-- **`debug_console.sh`** - Enable console debug mode
-- **`debug_status.sh`** - Show debug status
+### **Development (`dev/`)**
+- **`dev.sh`** - Development shortcuts (restart, rebuild, logs, clean)
+- **`export_env.sh`** - Export environment variables from `.env`
 
-### ✅ Confirmation Management Scripts
-- **`confirm_toggle.sh`** - Main confirmation toggle script
-- **`confirm_on.sh`** - Quick enable confirmation mode
-- **`confirm_off.sh`** - Quick disable confirmation mode
-- **`confirm_status.sh`** - Show confirmation status
+### **Data Management (`data/`)**
+- **`wipe.sh`** - Quick contact wipe (automatic)
+- **`wipe_all.sh`** - Quick data wipe (labels + attributes)
+- **`wipe_contacts.py`** - Manual contact wipe with options
+- **`wipe_all.py`** - Manual data wipe with options
+- **`cleanup_all.py`** - Comprehensive cleanup
 
-### 🌍 Environment Management Scripts
-- **`export_env.sh`** - Export environment variables from .env file
+### **Debug & Confirmation (`debug/`)**
+- **`debug_*.sh`** - Debug mode management
+- **`confirm_*.sh`** - Confirmation mode management
+
+### **Setup & Configuration (`setup/`)**
+- **`setup_*.py`** - Chatwoot configuration scripts
+- **`setup_all.py`** - Complete setup (attributes + labels)
+
+### **Analysis & Audit (`analysis/`)**
+- **`analyze_logs.py`** - Log file analysis
+- **`check_inboxes.py`** - Inbox status checking
+- **`list_*.py`** - Data listing utilities
+- **`audit_attributes.py`** - Attribute auditing
+- **`validate_structure.py`** - Project structure validation
+
+### **Testing (`testing/`)**
+- **`test_*.py`** - Individual component testing
+- **`show_prefill_overview.py`** - Prefill functionality testing
 
 ## 🚀 Quick Commands
 
-### Development
 ```bash
-./scripts/dev.sh
+# Development
+./scripts/dev/dev.sh restart              # Quick restart
+./scripts/dev/dev.sh rebuild              # Rebuild and restart
+./scripts/dev/export_env.sh               # Export environment
+
+# Data Management
+./scripts/data/wipe.sh                    # Quick contact wipe
+./scripts/data/wipe_all.sh                # Quick data wipe
+python3 scripts/data/wipe_contacts.py     # Manual contact wipe
+
+# Setup
+python3 scripts/setup/setup_all.py        # Setup everything
+python3 scripts/setup/setup_attributes.py # Setup attributes only
+
+# Analysis
+python3 scripts/analysis/validate_structure.py  # Validate structure
+python3 scripts/analysis/analyze_logs.py        # Analyze logs
+
+# Testing
+python3 scripts/testing/test_bot.py             # Test bot functionality
+python3 scripts/testing/show_prefill_overview.py # Test prefill
 ```
 
-### Data Management
-```bash
-./scripts/wipe.sh          # Wipe contacts
-./scripts/wipe_all.sh      # Wipe all data
-```
+## 📋 Aliases (Updated)
 
-### Debug Management
-```bash
-./scripts/debug_toggle.sh  # Toggle debug mode
-./scripts/debug_on.sh      # Enable debug
-./scripts/debug_off.sh     # Disable debug
-./scripts/debug_status.sh  # Show debug status
-```
+All aliases in `~/.bashrc` have been updated to point to the new locations:
 
-### Confirmation Management
-```bash
-./scripts/confirm_toggle.sh  # Toggle confirmation mode
-./scripts/confirm_on.sh      # Enable confirmation
-./scripts/confirm_off.sh     # Disable confirmation
-./scripts/confirm_status.sh  # Show confirmation status
-```
+- `wipe` → `./scripts/data/wipe.sh`
+- `wipeall` → `./scripts/data/wipe_all.sh`
+- `validate` → `python3 scripts/analysis/validate_structure.py`
+- `help` → `./scripts/help.sh`
+- `debug*` → `./scripts/debug/debug_*.sh`
+- `confirm*` → `./scripts/debug/confirm_*.sh`
 
-### Environment Management
-```bash
-./scripts/export_env.sh     # Export environment variables
-```
+## 🎯 Benefits of Organization
 
-## 🎯 Usage Examples
-
-### Debug Mode Management
-```bash
-# Check current debug status
-./scripts/debug_toggle.sh status
-
-# Enable public debug mode
-./scripts/debug_toggle.sh public
-
-# Enable private debug mode for admin-only debugging
-./scripts/debug_toggle.sh private
-
-# Disable debug mode
-./scripts/debug_toggle.sh off
-
-# Quick toggle
-./scripts/debug_toggle.sh
-```
-
-### Confirmation Mode Management
-```bash
-# Check current confirmation status
-./scripts/confirm_toggle.sh status
-
-# Enable confirmation mode
-./scripts/confirm_toggle.sh on
-
-# Disable confirmation mode
-./scripts/confirm_toggle.sh off
-
-# Quick toggle
-./scripts/confirm_toggle.sh
-```
-
-### Data Management
-```bash
-# Wipe all contacts and conversations
-./scripts/wipe.sh
-
-# Wipe all data (contacts, conversations, labels, attributes)
-./scripts/wipe_all.sh
-```
-
-### Environment Management
-```bash
-# Export environment variables
-./scripts/export_env.sh
-
-# Verify exported variables
-env | grep CW_
-env | grep OPENAI_
-env | grep STRIPE_
-```
-
-## 🔧 Script Permissions
-
-All scripts are executable. If you encounter permission issues, run:
-```bash
-chmod +x scripts/*.sh
-```
-
-## 📋 Script Dependencies
-
-### Required Files
-- `.env` - Environment variables file (for export_env.sh)
-- `docker-compose.yml` - Docker Compose configuration (for restart functionality)
-
-### Required Environment Variables
-- `CW_URL` - Chatwoot URL
-- `CW_ACC_ID` - Chatwoot Account ID
-- `CW_ADMIN_TOKEN` - Chatwoot Admin Token
-
-## 🎉 Benefits of Organization
-
-### ✅ Better Structure
-- All scripts in one place
-- Easy to find and manage
-- Clear categorization
-
-### ✅ Maintainability
-- Centralized script management
-- Easy to add new scripts
-- Consistent naming conventions
-
-### ✅ Documentation
-- Clear README for each category
-- Usage examples for all scripts
-- Dependency information
-
-## 🚀 Integration with Main Application
-
-The scripts are designed to work with the main TutorBot application:
-
-### Debug Configuration
-Scripts create configuration files that the main app can read:
-- `.debug_config` - Debug mode settings
-- `.confirm_config` - Confirmation mode settings
-
-### Docker Integration
-Scripts automatically restart the TutorBot container when settings change:
-```bash
-docker-compose restart tutorbot
-```
-
-### Environment Variables
-The export script makes environment variables available for Python scripts:
-```bash
-source scripts/export_env.sh
-python3 main.py
-```
-
-## 🔍 Troubleshooting
-
-### Permission Denied
-```bash
-chmod +x scripts/*.sh
-```
-
-### Script Not Found
-Make sure you're running from the project root:
-```bash
-cd /home/stephen/tutorbot
-./scripts/script_name.sh
-```
-
-### Docker Compose Not Found
-Scripts will show a warning if Docker Compose is not available, but will still work for configuration changes.
-
-### Environment Variables Not Set
-Use the export script:
-```bash
-./scripts/export_env.sh
-```
+1. **Clear Separation** - Each category has its own folder
+2. **Easy Navigation** - Find scripts by functionality
+3. **Better Maintenance** - Related scripts are grouped together
+4. **Scalability** - Easy to add new scripts to appropriate folders
+5. **Documentation** - Each folder can have its own README
 
 ## 📚 Related Documentation
 
-- **Main Application**: `../main.py`
-- **Configuration**: `../config/`
-- **Docker Setup**: `../docker-compose.yml`, `../Dockerfile`
-- **Environment**: `../.env`, `../env_example.txt`
-- **Help System**: `../help.sh` 
+- `docs/INTEGRATION_ROADMAP.md` - Calendar & payment integration plan
+- `docs/CURRENT_MOCKED_FUNCTIONS.md` - Mocked functions overview
+- `docs/WHATSAPP_FORMATTING.md` - WhatsApp formatting guide
+
+---
+
+*Last Updated: August 7, 2025*
+*Status: Fully Organized* 
