@@ -37,7 +37,7 @@ I've successfully reorganized your TutorBot project structure to improve clarity
 │   ├── confirm_on.sh          # Enable confirmation mode
 │   ├── confirm_off.sh         # Disable confirmation mode
 │   ├── confirm_status.sh      # Show confirmation status
-│   ├── export_env.sh          # Export environment variables
+│   ├── export_env.sh          # Export environment variables (in dev/)
 │   ├── setup_attributes.py    # Setup custom attributes
 │   ├── setup_labels.py        # Setup labels
 │   ├── setup_all.py           # Setup everything
@@ -125,7 +125,7 @@ exportenv
 ./scripts/debug_toggle.sh
 ./scripts/confirm_toggle.sh
 ./scripts/wipe.sh
-./scripts/export_env.sh
+./scripts/dev/export_env.sh
 ```
 
 ### Documentation Access
@@ -210,10 +210,10 @@ cat docker/README.md
 ### Environment Management
 ```bash
 # Export environment variables
-source ./scripts/export_env.sh
+source ./scripts/dev/export_env.sh
 
 # Or use the script directly
-./scripts/export_env.sh
+./scripts/dev/export_env.sh
 ```
 
 ## 🔍 Docker Organization

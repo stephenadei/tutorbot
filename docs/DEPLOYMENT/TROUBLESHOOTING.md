@@ -55,7 +55,7 @@ docker-compose up -p 5001:5000
 **Missing Environment Variables:**
 ```bash
 # Export environment variables
-source scripts/export_env.sh
+source scripts/dev/export_env.sh
 
 # Restart container
 docker-compose restart tutorbot
@@ -98,7 +98,7 @@ curl -X POST https://your-domain.com/cw \
 ```bash
 # Regenerate API token in Chatwoot
 # Update .env file with new token
-source scripts/export_env.sh
+source scripts/dev/export_env.sh
 docker-compose restart tutorbot
 ```
 
@@ -139,7 +139,7 @@ python3 -c "import openai; openai.api_key='$OPENAI_API_KEY'; print(openai.Model.
 ```bash
 # Generate new OpenAI API key
 # Update .env file
-source scripts/export_env.sh
+source scripts/dev/export_env.sh
 docker-compose restart tutorbot
 ```
 
@@ -369,7 +369,7 @@ cp .env.backup.$(date +%Y%m%d) .env
 cp env_example.txt .env
 
 # Reconfigure environment
-source scripts/export_env.sh
+source scripts/dev/export_env.sh
 ```
 
 ### Data Recovery

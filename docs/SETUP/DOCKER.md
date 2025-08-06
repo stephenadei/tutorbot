@@ -119,7 +119,7 @@ docker-compose exec tutorbot cat /app/main.py
 The application uses environment variables from `.env` file:
 ```bash
 # Export environment variables
-source scripts/export_env.sh
+source scripts/dev/export_env.sh
 
 # Or use Docker Compose env_file
 docker-compose --env-file .env up

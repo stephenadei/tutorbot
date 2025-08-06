@@ -147,7 +147,7 @@ FLASK_ENV=production
 ### Test Environment Setup
 ```bash
 # Export environment variables
-source scripts/export_env.sh
+source scripts/dev/export_env.sh
 
 # Validate configuration
 python3 scripts/validate_structure.py
@@ -191,7 +191,7 @@ STRIPE_WEBHOOK_SECRET=whsec_prod_secret
 ### Configuration Updates
 ```bash
 # Update environment variables
-source scripts/export_env.sh
+source scripts/dev/export_env.sh
 
 # Restart application
 docker-compose restart tutorbot
@@ -212,7 +212,7 @@ env | grep STRIPE_
 env | grep OPENAI_
 
 # Export if missing
-source scripts/export_env.sh
+source scripts/dev/export_env.sh
 ```
 
 #### API Connection Issues
