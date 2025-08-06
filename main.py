@@ -8,7 +8,7 @@ import os, hmac, hashlib, requests, json
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import re
-from scripts.cw_api import ChatwootAPI, get_contact_attrs, set_contact_attrs, get_conv_attrs, set_conv_attrs, add_conv_labels, send_text
+from scripts.cw_api import ChatwootAPI, get_contact_attrs, set_contact_attrs, get_conv_attrs, set_conv_attrs, add_conv_labels, remove_conv_labels, send_text
 
 def safe_set_conv_attrs(conversation_id, attrs):
     """Safely set conversation attributes with error handling"""
