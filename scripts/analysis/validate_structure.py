@@ -11,7 +11,7 @@ from typing import List, Dict, Tuple
 def ensure_project_root():
     """Ensure we're running from the project root directory"""
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.dirname(script_dir)
+    project_root = os.path.dirname(os.path.dirname(script_dir))
     
     required_files = [
         "main.py",
@@ -57,14 +57,14 @@ def check_directory_structure() -> Tuple[bool, List[str]]:
             "automations.yaml"
         ],
         "scripts/": [
-            "setup_attributes.py",
-            "setup_labels.py",
-            "setup_all.py",
-            "wipe_contacts.py",
-            "validate_structure.py"
+            "setup/setup_attributes.py",
+            "setup/setup_labels.py", 
+            "setup/setup_all.py",
+            "data/wipe_contacts.py",
+            "analysis/validate_structure.py"
         ],
         "docs/": [
-            "README_chatwoot_setup.md"
+            "README.md"
         ],
         "": [  # Root directory files
             "main.py",
@@ -106,9 +106,9 @@ def check_script_validation() -> Tuple[bool, List[str]]:
     print("\n🔍 Validating script structure...")
     
     script_files = [
-        "scripts/setup_attributes.py",
-        "scripts/setup_labels.py", 
-        "scripts/setup_all.py"
+        "scripts/setup/setup_attributes.py",
+        "scripts/setup/setup_labels.py", 
+        "scripts/setup/setup_all.py"
     ]
     
     issues = []
