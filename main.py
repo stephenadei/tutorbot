@@ -2192,6 +2192,97 @@ def handle_message_created(data):
     # Handle main menu selections
     print(f"🔘 Processing menu selection")
     
+    # Check for admin commands (WIPECONTACTS)
+    if msg_content.upper() == "WIPECONTACTS":
+        print(f"🧹 ADMIN COMMAND: WIPECONTACTS detected from contact {contact_id}")
+        
+        # Send confirmation message
+        send_text_with_duplicate_check(cid, "🧹 *ADMIN COMMAND DETECTED*\n\n⚠️ Je staat op het punt om ALLE contacten en gesprekken te verwijderen!\n\nDit is een gevaarlijke actie die niet ongedaan kan worden gemaakt.\n\nType 'JA WIPE' om te bevestigen of 'ANNULEREN' om te stoppen.")
+        
+        # Set pending intent for wipe confirmation
+        set_conv_attrs(cid, {"pending_intent": "wipe_confirmation"})
+        return
+    
+    # Handle wipe confirmation
+    if conv_attrs.get("pending_intent") == "wipe_confirmation":
+        print(f"🧹 Processing wipe confirmation: '{msg_content}'")
+        
+        if msg_content.upper() in ["JA WIPE", "JA", "YES", "CONFIRM"]:
+            print(f"🧹 User confirmed wipe - starting contact deletion...")
+            
+            # Send status message
+            send_text_with_duplicate_check(cid, "🧹 *WIPE GESTART*\n\nBezig met verwijderen van alle contacten en gesprekken...")
+            
+            try:
+                # Import the wipe functionality
+                import requests
+                
+                # Configuration
+                CW_URL = os.getenv("CW_URL", "https://crm.stephenadei.nl")
+                ACC_ID = os.getenv("CW_ACC_ID", "1")
+                ADMIN_TOKEN = os.getenv("CW_ADMIN_TOKEN")
+                
+                if not ADMIN_TOKEN:
+                    send_text_with_duplicate_check(cid, "❌ *WIPE FAILED*\n\nADMIN_TOKEN niet geconfigureerd.")
+                    set_conv_attrs(cid, {"pending_intent": None})
+                    return
+                
+                headers = {
+                    "api_access_token": ADMIN_TOKEN,
+                    "Content-Type": "application/json"
+                }
+                
+                # Get all contacts
+                url = f"{CW_URL}/api/v1/accounts/{ACC_ID}/contacts"
+                response = requests.get(url, headers=headers)
+                
+                if response.status_code != 200:
+                    send_text_with_duplicate_check(cid, f"❌ *WIPE FAILED*\n\nKon contacten niet ophalen: {response.status_code}")
+                    set_conv_attrs(cid, {"pending_intent": None})
+                    return
+                
+                contacts = response.json().get("payload", [])
+                print(f"📋 Found {len(contacts)} contacts to delete")
+                
+                # Delete each contact
+                deleted_count = 0
+                for contact in contacts:
+                    contact_id_to_delete = contact.get("id")
+                    if contact_id_to_delete:
+                        delete_url = f"{CW_URL}/api/v1/accounts/{ACC_ID}/contacts/{contact_id_to_delete}"
+                        delete_response = requests.delete(delete_url, headers=headers)
+                        
+                        if delete_response.status_code == 200:
+                            print(f"✅ Deleted contact {contact_id_to_delete}")
+                            deleted_count += 1
+                        else:
+                            print(f"❌ Failed to delete contact {contact_id_to_delete}: {delete_response.status_code}")
+                
+                # Send completion message
+                completion_msg = f"🎉 *WIPE VOLTOOID*\n\n✅ {deleted_count} contacten en gesprekken verwijderd\n\n⚠️ Alle data is permanent verwijderd!"
+                send_text_with_duplicate_check(cid, completion_msg)
+                
+                print(f"🎉 WhatsApp wipe completed: {deleted_count} contacts deleted")
+                
+            except Exception as e:
+                error_msg = f"❌ *WIPE ERROR*\n\nEr is een fout opgetreden: {str(e)}"
+                send_text_with_duplicate_check(cid, error_msg)
+                print(f"❌ Error during WhatsApp wipe: {e}")
+            
+            # Clear pending intent
+            set_conv_attrs(cid, {"pending_intent": None})
+            return
+        
+        elif msg_content.upper() in ["ANNULEREN", "CANCEL", "NEE", "NO", "STOP"]:
+            print(f"🧹 User cancelled wipe")
+            send_text_with_duplicate_check(cid, "✅ *WIPE GEANNULEERD*\n\nGeen contacten verwijderd.")
+            set_conv_attrs(cid, {"pending_intent": None})
+            return
+        else:
+            print(f"🧹 Invalid wipe confirmation response: '{msg_content}'")
+            send_text_with_duplicate_check(cid, "❓ *ONBEKEND ANTWOORD*\n\nType 'JA WIPE' om te bevestigen of 'ANNULEREN' om te stoppen.")
+            return
+    
     # Check if this is a general greeting or unclear message
     # If no pending intent and message doesn't match any menu options, show the bot introduction
     if not conv_attrs.get("pending_intent"):
