@@ -10,27 +10,5 @@ services:
       # Exclude node_modules and other build artifacts
       - /app/__pycache__
       - /app/.git
-    environment:
-      # Chatwoot configuration
-      CW_URL: "https://crm.stephenadei.nl"
-      CW_ACC_ID: "1"
-      # Bot token (for bot operations)
-      CW_TOKEN:  "R3vx2s67k7hUpXsLWqDrE6nR"
-      # Admin token (for Stephen's admin operations)
-      CW_ADMIN_TOKEN: "mCNRQJzK4KbVuinP7NszBTug"
-      # HMAC secret for webhook verification
-      CW_HMAC_SECRET: "e6cffc2ec52cedc73e616746e629d346ca55daee82d0c87286eca62aa8d71393"
-      
-      # Stripe configuration
-      STRIPE_WEBHOOK_SECRET: "whsec_your_stripe_webhook_secret_here"
-      STANDARD_PRICE_ID_60: "price_your_standard_60min_price_id"
-      STANDARD_PRICE_ID_90: "price_your_standard_90min_price_id"
-      WEEKEND_PRICE_ID_60: "price_your_weekend_60min_price_id"
-      WEEKEND_PRICE_ID_90: "price_your_weekend_90min_price_id"
-      
-      # Google Calendar configuration
-      GCAL_SERVICE_ACCOUNT_JSON: "/app/config/gcal-service-account.json"
-      GCAL_CALENDAR_ID: "primary"
-      
-      # Timezone
-      TZ: "Europe/Amsterdam"
+    env_file:
+      - .env
