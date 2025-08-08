@@ -572,20 +572,20 @@ def t(key, lang="nl", **kwargs):
             "en": "📅 Plan trial lesson"
         },
         "prefill_action_main_menu": {
-            "nl": "📋 Meer informatie",
-            "en": "📋 More information"
+            "nl": "Meer informatie",
+            "en": "More information"
         },
         "prefill_action_handoff": {
-            "nl": "👨‍🏫 Met Stephen spreken",
-            "en": "👨‍🏫 Speak with Stephen"
+            "nl": "Met Stephen spreken",
+            "en": "Speak with Stephen"
         },
         "prefill_action_all_lessons": {
-            "nl": "📅 Alle lessen inplannen",
-            "en": "📅 Schedule all lessons"
+            "nl": "Alle lessen inplannen",
+            "en": "Schedule all lessons"
         },
         "prefill_action_trial_first": {
-            "nl": "🎯 Eerst proefles",
-            "en": "🎯 Trial lesson first"
+            "nl": "Eerst proefles",
+            "en": "Trial lesson first"
         },
         "prefill_action_menu_text": {
             "nl": "✅ *Perfect!* Ik heb je informatie verwerkt en met Stephen gedeeld zodat hij je zo goed mogelijk kan helpen.",
