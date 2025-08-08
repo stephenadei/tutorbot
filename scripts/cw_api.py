@@ -172,11 +172,16 @@ class ChatwootAPI:
     
     @staticmethod
     def get_conv_attrs(conversation_id: int) -> Dict:
-        """Get conversation custom attributes"""
-        conv = ChatwootAPI.get_conversation(conversation_id)
-        if conv:
-            return conv.get("custom_attributes", {})
-        return {}
+        """Get conversation custom attributes with SSL error handling"""
+        try:
+            conv = ChatwootAPI.get_conversation(conversation_id)
+            if conv:
+                return conv.get("custom_attributes", {})
+            return {}
+        except Exception as e:
+            print(f"⚠️ SSL/Connection error in get_conv_attrs: {e}")
+            # Return empty dict to prevent blocking the flow
+            return {}
     
     @staticmethod
     def set_conv_attrs(conversation_id: int, attrs: Dict) -> bool:

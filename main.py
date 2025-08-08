@@ -18,8 +18,9 @@ def safe_set_conv_attrs(conversation_id, attrs):
             print(f"⚠️ Failed to set conversation attributes for conv {conversation_id}")
         return success
     except Exception as e:
-        print(f"❌ Exception in set_conv_attrs: {e}")
-        return False
+        print(f"⚠️ SSL/Connection error in set_conv_attrs: {e}")
+        # Return True to prevent blocking the flow - attributes are not critical
+        return True
 
 # =============================================================================
 # CONFIGURATION CONSTANTS
@@ -74,11 +75,15 @@ def t(key, lang="nl", **kwargs):
             "nl": "Hallo {name}! 👋",
             "en": "Hello {name}! 👋"
         },
+        "greeting_response": {
+            "nl": "Hallo! 👋 Hoe kan ik je vandaag helpen?",
+            "en": "Hello! 👋 How can I help you today?"
+        },
         
         # Bot introduction messages
         "bot_introduction": {
-            "nl": "🤖 *Hoi! Ik ben de TutorBot van Stephen* 👋\n\nIk help je graag met het plannen van bijlessen en het beantwoorden van vragen over onze diensten.\n\nIk heb je bericht geanalyseerd en denk dat je {detected_lang} spreekt. Als je liever {other_lang} wilt gebruiken, typ dan '{other_lang}'.",
-            "en": "🤖 *Hi! I'm Stephen's TutorBot* 👋\n\nI'm happy to help you schedule tutoring sessions and answer questions about our services.\n\nI've analyzed your message and think you speak {detected_lang}. If you'd prefer to use {other_lang}, just type '{other_lang}'."
+            "nl": "🤖 *Hoi! Ik ben de TutorBot van Stephen* 👋\n\nIk help je graag met het plannen van bijlessen en het beantwoorden van vragen over onze diensten.\n\n💡 *Tip:* Je kunt ook gewoon je verhaal uittypen en dan help ik je verder. Of je kunt deze informatie direct met Stephen delen:\n\n• Naam en niveau van de leerling\n• Vak of onderwerp\n• Deadlines of doelen\n• Voorkeursdagen/-tijden\n• Online of fysiek\n\nIk heb je bericht geanalyseerd en denk dat je {detected_lang} spreekt. Als je liever {other_lang} wilt gebruiken, typ dan '{other_lang}'.",
+            "en": "🤖 *Hi! I'm Stephen's TutorBot* 👋\n\nI'm happy to help you schedule tutoring sessions and answer questions about our services.\n\n💡 *Tip:* You can also just type out your story and I'll help you further. Or you can share this information directly with Stephen:\n\n• Name and level of the student\n• Subject or topic\n• Deadlines or goals\n• Preferred days/times\n• Online or in-person\n\nI've analyzed your message and think you speak {detected_lang}. If you'd prefer to use {other_lang}, just type '{other_lang}'."
         },
         "bot_introduction_detected_nl": {
             "nl": "Nederlands",
@@ -87,6 +92,14 @@ def t(key, lang="nl", **kwargs):
         "bot_introduction_detected_en": {
             "nl": "Engels", 
             "en": "English"
+        },
+        "bot_introduction_enhanced": {
+            "nl": "🤖 *Hoi! Ik ben de TutorBot van Stephen* 👋\n\nIk help je graag met het plannen van bijlessen en het beantwoorden van vragen over onze diensten.\n\n💡 *Tip:* Je kunt ook gewoon je verhaal uittypen en dan help ik je verder. Of je kunt deze informatie direct met Stephen delen:\n\n• Naam en niveau van de leerling\n• Vak of onderwerp\n• Deadlines of doelen\n• Voorkeursdagen/-tijden\n• Online of fysiek\n\nIk heb je bericht geanalyseerd en denk dat je {detected_lang} spreekt. Als je liever {other_lang} wilt gebruiken, typ dan '{other_lang}'.",
+            "en": "🤖 *Hi! I'm Stephen's TutorBot* 👋\n\nI'm happy to help you schedule tutoring sessions and answer questions about our services.\n\n💡 *Tip:* You can also just type out your story and I'll help you further. Or you can share this information directly with Stephen:\n\n• Name and level of the student\n• Subject or topic\n• Deadlines or goals\n• Preferred days/times\n• Online or in-person\n\nI've analyzed your message and think you speak {detected_lang}. If you'd prefer to use {other_lang}, just type '{other_lang}'."
+        },
+        "bot_introduction_detailed": {
+            "nl": "🤖 *Hoi! Ik ben de TutorBot van Stephen* 👋\n\nIk help je graag met het plannen van bijlessen en het beantwoorden van vragen over onze diensten.\n\nIk heb je bericht geanalyseerd en denk dat je {detected_lang} spreekt. Als je liever {other_lang} wilt gebruiken, typ dan '{other_lang}'.",
+            "en": "🤖 *Hi! I'm Stephen's TutorBot* 👋\n\nI'm happy to help you schedule tutoring sessions and answer questions about our services.\n\nI've analyzed your message and think you speak {detected_lang}. If you'd prefer to use {other_lang}, just type '{other_lang}'."
         },
         
         # Segment-specific menus
@@ -187,12 +200,20 @@ def t(key, lang="nl", **kwargs):
             "en": "My rates start at €50/hour. Interested in a free trial lesson of 30 minutes?"
         },
         "info_menu_question": {
-            "nl": "*📄 Informatie*\n\nWaarover wil je meer weten?",
-            "en": "*📄 Information*\n\nWhat would you like to know more about?"
+            "nl": "*📄 Informatie*\n\nWaarover wil je meer weten?\n\n💡 *Tip:* Je kunt ook gewoon je verhaal uittypen en dan help ik je verder.",
+            "en": "*📄 Information*\n\nWhat would you like to know more about?\n\n💡 *Tip:* You can also just type out your story and I'll help you further."
         },
         "info_tariffs": {
-            "nl": "💰 *Tarieven*\n\n📚 *Hoger onderwijs:*\n• 1 les: €80\n• 2 lessen: €135\n• 4 lessen: €250\n\n🎓 *Voortgezet onderwijs 20+:*\n• 1 les: €75\n• 2 lessen: €130\n• 4 lessen: €230\n\n🎓 *Voortgezet onderwijs 20-:*\n• 1 les: €60\n• 2 lessen: €100\n• 4 lessen: €200\n\n👥 *Groepslessen:*\n• €45-65 per persoon\n\n🎯 *MBO Rekentrajecten:*\n• Spoedpakket: €275\n• Korte cursus: €225\n• Volledig: €550-690\n\n🌅 *Weekend (Zuidoost):*\n• 50% korting: €30/uur\n• Gratis proefles",
-            "en": "💰 *Rates*\n\n📚 *Higher education:*\n• 1 lesson: €80\n• 2 lessons: €135\n• 4 lessons: €250\n\n🎓 *Secondary education 20+:*\n• 1 lesson: €75\n• 2 lessons: €130\n• 4 lessons: €230\n\n🎓 *Secondary education 20-:*\n• 1 lesson: €60\n• 2 lessons: €100\n• 4 lessons: €200\n\n👥 *Group lessons:*\n• €45-65 per person\n\n🎯 *MBO Math trajectories:*\n• Emergency: €275\n• Short course: €225\n• Full: €550-690\n\n🌅 *Weekend (Southeast):*\n• 50% discount: €30/hour\n• Free trial lesson"
+            "nl": "💰 *Tarieven*\n\n📚 *Hoger onderwijs:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €250\n\n🎓 *Voortgezet onderwijs 20+:*\n• 1 les (1 uur): €75\n• 2 lessen (2 uur): €130\n• 4 lessen (4 uur): €230\n\n🎓 *Voortgezet onderwijs 20-:*\n• 1 les (1 uur): €60\n• 2 lessen (2 uur): €100\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €60 (1u) • €120 (2u) • €180 (4u)\n• 3-4 personen: €50 (1u) • €90 (2u) • €150 (4u)\n\n🎯 *MBO Rekentrajecten (alleen online, 18+):*\n• Spoedpakket: 1 week, 4 uur (€275)\n• Korte cursus: 4 weken, 4 uur (€225)\n• Volledig Commit: 12 weken, 13-14 uur (€550)\n• Volledig Flex: 12 weken, 13-14 uur (€690 in 3 termijnen)\n\n📊 *Scriptiebegeleiding:*\n• Statistiek & onderzoek: €90/uur\n• Data science & AI: €100/uur",
+            "en": "💰 *Rates*\n\n📚 *Higher education:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €250\n\n🎓 *Secondary education 20+:*\n• 1 lesson (1 hour): €75\n• 2 lessons (2 hours): €130\n• 4 lessons (4 hours): €230\n\n🎓 *Secondary education 20-:*\n• 1 lesson (1 hour): €60\n• 2 lessons (2 hours): €100\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €60 (1h) • €120 (2h) • €180 (4h)\n• 3-4 persons: €50 (1h) • €90 (2h) • €150 (4h)\n\n🎯 *MBO Math trajectories (online only, 18+):*\n• Emergency: 1 week, 4 hours (€275)\n• Short course: 4 weeks, 4 hours (€225)\n• Full Commit: 12 weeks, 13-14 hours (€550)\n• Full Flex: 12 weeks, 13-14 hours (€690 in 3 installments)\n\n📊 *Thesis guidance:*\n• Statistics & research: €90/hour\n• Data science & AI: €100/hour"
+        },
+        "info_tariffs_under_20": {
+            "nl": "💰 *Tarieven (Onder 20 jaar)*\n\n🎓 *Voortgezet onderwijs:*\n• 1 les (1 uur): €60\n• 2 lessen (2 uur): €100\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €45 (1u) • €90 (2u) • €135 (4u)\n• 3-4 personen: €40 (1u) • €70 (2u) • €120 (4u)",
+            "en": "💰 *Rates (Under 20 years)*\n\n🎓 *Secondary education:*\n• 1 lesson (1 hour): €60\n• 2 lessons (2 hours): €100\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €45 (1h) • €90 (2h) • €135 (4h)\n• 3-4 persons: €40 (1h) • €70 (2h) • €120 (4h)"
+        },
+        "info_tariffs_over_20": {
+            "nl": "💰 *Tarieven (20 jaar en ouder)*\n\n📚 *Hoger onderwijs:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €250\n\n🎓 *Voortgezet onderwijs:*\n• 1 les (1 uur): €75\n• 2 lessen (2 uur): €130\n• 4 lessen (4 uur): €230\n\n👥 *Groepslessen:*\n• 2 personen: €55 (1u) • €110 (2u) • €165 (4u)\n• 3-4 personen: €45 (1u) • €80 (2u) • €125 (4u)\n\n🎯 *MBO Rekentrajecten:*\n• Spoedpakket: 1 week, 4 uur (€275)\n• Korte cursus: 4 weken, 4 uur (€225)\n• Volledig Commit: 12 weken, 13-14 uur (€550)\n• Volledig Flex: 12 weken, 13-14 uur (€690 in 3 termijnen)\n\n📊 *Scriptiebegeleiding:*\n• Statistiek & onderzoek: €90/uur\n• Data science & AI: €100/uur",
+            "en": "💰 *Rates (20 years and older)*\n\n📚 *Higher education:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €250\n\n🎓 *Secondary education:*\n• 1 lesson (1 hour): €75\n• 2 lessons (2 hours): €130\n• 4 lessons (4 hours): €230\n\n👥 *Group lessons:*\n• 2 persons: €55 (1h) • €110 (2h) • €165 (4h)\n• 3-4 persons: €45 (1h) • €80 (2h) • €125 (4h)\n\n🎯 *MBO Math trajectories:*\n• Emergency: 1 week, 4 hours (€275)\n• Short course: 4 weeks, 4 hours (€225)\n• Full Commit: 12 weeks, 13-14 hours (€550)\n• Full Flex: 12 weeks, 13-14 hours (€690 in 3 installments)\n\n📊 *Thesis guidance:*\n• Statistics & research: €90/hour\n• Data science & AI: €100/hour"
         },
         "info_travel_costs": {
             "nl": "🚗 *Reiskosten:*\n\n• VU/UvA: €15\n• Thuis (Amsterdam): €40\n• Science Park: €0",
@@ -239,16 +260,16 @@ def t(key, lang="nl", **kwargs):
             "en": "💼 *Consultancy & Advice*\n\n*Educational Advice:*\n• Analysis of learning processes and methods\n• Advice on didactic approach\n• Development of learning materials\n\n*Data Analysis & Statistics:*\n• Statistical analysis of research data\n• Interpretation and reporting of results\n• Support for scientific publications\n\n*Technology Implementation:*\n• Advice on educational technology\n• Implementation of digital tools\n• Training and support\n\n*Target Group:*\n• Educational institutions and teachers\n• Researchers and students\n• Companies and organizations\n\n*Working Method:*\n• Intake and analysis of needs\n• Custom solutions and advice\n• Implementation and follow-up\n• Continuous support and evaluation"
         },
         "info_services": {
-            "nl": "📚 *Mijn Diensten & Aanbod*\n\n🎓 *1. Privélessen & Bijles*\n*Vakken:*\n• *Basisonderwijs*: Rekenen, Taal\n• *Voortgezet Onderwijs*: Wiskunde A/B/C/D, Natuurkunde, Scheikunde, Engels\n• *Hoger Onderwijs*: Bedrijfsstatistiek, Calculus, Economie, Statistiek, Kansberekening, Lineaire Algebra, Verzamelingenleer\n• *Programmeren*: Python, Java, C#, C++, HTML, CSS, JavaScript, React, SQL, MATLAB, SPSS, R\n\n🎯 *2. MBO Rekenondersteuning*\n• *95% slagingspercentage* MBO-rekentoets\n• *500+ studenten* geholpen\n• *Gemiddelde beoordeling: 8.9/10*\n• Bewezen methoden en effectieve lesmaterialen\n\n📝 *3. Scriptiebegeleiding*\n• Methodologie en onderzoeksopzet\n• Statistische analyse (SPSS, R, Python)\n• Data-analyse en interpretatie\n• Structuur en planning\n• Eindredactie\n\n🎨 *4. Creatieve Workshops*\n• Muziekproductie & DJ (3 uur)\n• Analoge fotografie & bewerking (4 uur)\n• Visuele storytelling & design (3 uur)\n• Creatief coderen: Kunst & animatie (2 uur, 4 sessies)\n• AI & creativiteit (3 uur)\n• Escape room design (4 uur, 2 sessies)\n• Wiskundige kunst & patronen (3 uur)\n• Wiskundig verhalen vertellen (2.5 uur)\n• Wiskundige podcasting (3 uur, 2 sessies)\n• Educatieve wiskundevideo's (4 uur, 3 sessies)\n\n🎓 *5. Academische Workshops*\n• Statistiek project cursus (90 min, 6 sessies)\n• Wiskunde docenten innovatie (3 uur, 4 sessies)\n• AI & wiskunde (2 uur, 3 sessies)\n• Data visualisatie met Python (3 uur, 3 sessies)\n• Wiskundige spelontwikkeling (3 uur)\n• 3D wiskundig modelleren (3 uur, 4 sessies)\n• Innovatieve wiskundetoetsing (3 uur, 2 sessies)\n• Differentiatie in wiskundeonderwijs (3 uur, 3 sessies)\n• Mindfulness in wiskunde (2 uur)\n\n🧘 *6. Wellness Workshops*\n• Mindfulness (2 uur)\n• Tijdmanagement (2.5 uur)\n• Examenvoorbereiding (3 uur, 3 sessies)\n\n💼 *7. Consultancy & Advies*\n• Data-analyse en statistische modellering\n• Onderzoeksmethodologie\n• Machine learning en AI\n• Software ontwikkeling",
-            "en": "📚 *My Services & Offerings*\n\n🎓 *1. Private Lessons & Tutoring*\n*Subjects:*\n• *Primary Education*: Math, Language\n• *Secondary Education*: Math A/B/C/D, Physics, Chemistry, English\n• *Higher Education*: Business Statistics, Calculus, Economics, Statistics, Probability, Linear Algebra, Set Theory\n• *Programming*: Python, Java, C#, C++, HTML, CSS, JavaScript, React, SQL, MATLAB, SPSS, R\n\n🎯 *2. MBO Math Support*\n• *95% pass rate* MBO math test\n• *500+ students* helped\n• *Average rating: 8.9/10*\n• Proven methods and effective teaching materials\n\n📝 *3. Thesis Guidance*\n• Methodology and research design\n• Statistical analysis (SPSS, R, Python)\n• Data analysis and interpretation\n• Structure and planning\n• Final editing\n\n🎨 *4. Creative Workshops*\n• Music production & DJ (3 hours)\n• Analog photography & editing (4 hours)\n• Visual storytelling & design (3 hours)\n• Creative coding: Art & animation (2 hours, 4 sessions)\n• AI & creativity (3 hours)\n• Escape room design (4 hours, 2 sessions)\n• Mathematical art & patterns (3 hours)\n• Mathematical storytelling (2.5 hours)\n• Mathematical podcasting (3 hours, 2 sessions)\n• Educational math videos (4 hours, 3 sessions)\n\n🎓 *5. Academic Workshops*\n• Statistics project course (90 min, 6 sessions)\n• Math teacher innovation (3 hours, 4 sessions)\n• AI & mathematics (2 hours, 3 sessions)\n• Data visualization with Python (3 hours, 3 sessions)\n• Mathematical game development (3 hours)\n• 3D mathematical modeling (3 hours, 4 sessions)\n• Innovative math testing (3 hours, 2 sessions)\n• Differentiation in math education (3 hours, 3 sessions)\n• Mindfulness in mathematics (2 hours)\n\n🧘 *6. Wellness Workshops*\n• Mindfulness (2 hours)\n• Time management (2.5 hours)\n• Exam preparation (3 hours, 3 sessions)\n\n💼 *7. Consultancy & Advice*\n• Data analysis and statistical modeling\n• Research methodology\n• Machine learning and AI\n• Software development"
+            "nl": "📚 *Mijn Diensten & Aanbod*\n\n🎓 *1. Privélessen & Bijles*\n*Vakken:*\n• *Basisonderwijs*: Rekenen, Taal\n• *Voortgezet Onderwijs*: Wiskunde A/B/C/D, Natuurkunde, Scheikunde, Engels\n• *Hoger Onderwijs*: Bedrijfsstatistiek, Calculus, Economie, Statistiek, Kansberekening, Lineaire Algebra, Verzamelingenleer\n• *Programmeren*: Python, Java, C#, C++, HTML, CSS, JavaScript, React, SQL, MATLAB, SPSS, R\n\n🎯 *2. MBO Rekenondersteuning (alleen online, 18+)*\n• *95% slagingspercentage* MBO-rekentoets\n• *500+ studenten* geholpen\n• *Gemiddelde beoordeling: 8.9/10*\n• Bewezen methoden en effectieve lesmaterialen\n• *Online trajecten* voor volwassen MBO-studenten\n\n*Rekentrajecten:*\n• **Spoedpakket**: 1 week, 4 uur (€275)\n• **Korte cursus**: 4 weken, 4 uur (€225)\n• **Volledig Commit**: 12 weken, 13-14 uur (€550)\n• **Volledig Flex**: 12 weken, 13-14 uur (€690 in 3 termijnen)\n\n📝 *3. Scriptiebegeleiding*\n• Methodologie en onderzoeksopzet\n• Statistische analyse (SPSS, R, Python)\n• Data-analyse en interpretatie\n• Structuur en planning\n• Eindredactie\n\n🎨 *4. Creatieve Workshops*\n• Muziekproductie & DJ (3 uur)\n• Analoge fotografie & bewerking (4 uur)\n• Visuele storytelling & design (3 uur)\n• Creatief coderen: Kunst & animatie (2 uur, 4 sessies)\n• AI & creativiteit (3 uur)\n• Escape room design (4 uur, 2 sessies)\n• Wiskundige kunst & patronen (3 uur)\n• Wiskundig verhalen vertellen (2.5 uur)\n• Wiskundige podcasting (3 uur, 2 sessies)\n• Educatieve wiskundevideo's (4 uur, 3 sessies)\n\n🎓 *5. Academische Workshops*\n• Statistiek project cursus (90 min, 6 sessies)\n• Wiskunde docenten innovatie (3 uur, 4 sessies)\n• AI & wiskunde (2 uur, 3 sessies)\n• Data visualisatie met Python (3 uur, 3 sessies)\n• Wiskundige spelontwikkeling (3 uur)\n• 3D wiskundig modelleren (3 uur, 4 sessies)\n• Innovatieve wiskundetoetsing (3 uur, 2 sessies)\n• Differentiatie in wiskundeonderwijs (3 uur, 3 sessies)\n• Mindfulness in wiskunde (2 uur)\n\n🧘 *6. Wellness Workshops*\n• Mindfulness (2 uur)\n• Tijdmanagement (2.5 uur)\n• Examenvoorbereiding (3 uur, 3 sessies)\n\n💼 *7. Consultancy & Advies*\n• Data-analyse en statistische modellering\n• Onderzoeksmethodologie\n• Machine learning en AI\n• Software ontwikkeling",
+            "en": "📚 *My Services & Offerings*\n\n🎓 *1. Private Lessons & Tutoring*\n*Subjects:*\n• *Primary Education*: Math, Language\n• *Secondary Education*: Math A/B/C/D, Physics, Chemistry, English\n• *Higher Education*: Business Statistics, Calculus, Economics, Statistics, Probability, Linear Algebra, Set Theory\n• *Programming*: Python, Java, C#, C++, HTML, CSS, JavaScript, React, SQL, MATLAB, SPSS, R\n\n🎯 *2. MBO Math Support (online only, 18+)*\n• *95% pass rate* MBO math test\n• *500+ students* helped\n• *Average rating: 8.9/10*\n• Proven methods and effective teaching materials\n• *Online trajectories* for adult MBO students\n\n*Math trajectories:*\n• **Emergency**: 1 week, 4 hours (€275)\n• **Short course**: 4 weeks, 4 hours (€225)\n• **Full Commit**: 12 weeks, 13-14 hours (€550)\n• **Full Flex**: 12 weeks, 13-14 hours (€690 in 3 installments)\n\n📝 *3. Thesis Guidance*\n• Methodology and research design\n• Statistical analysis (SPSS, R, Python)\n• Data analysis and interpretation\n• Structure and planning\n• Final editing\n\n🎨 *4. Creative Workshops*\n• Music production & DJ (3 hours)\n• Analog photography & editing (4 hours)\n• Visual storytelling & design (3 hours)\n• Creative coding: Art & animation (2 hours, 4 sessions)\n• AI & creativity (3 hours)\n• Escape room design (4 hours, 2 sessions)\n• Mathematical art & patterns (3 hours)\n• Mathematical storytelling (2.5 hours)\n• Mathematical podcasting (3 hours, 2 sessions)\n• Educational math videos (4 hours, 3 sessions)\n\n🎓 *5. Academic Workshops*\n• Statistics project course (90 min, 6 sessions)\n• Math teacher innovation (3 hours, 4 sessions)\n• AI & mathematics (2 hours, 3 sessions)\n• Data visualization with Python (3 hours, 3 sessions)\n• Mathematical game development (3 hours)\n• 3D mathematical modeling (3 hours, 4 sessions)\n• Innovative math testing (3 hours, 2 sessions)\n• Differentiation in math education (3 hours, 3 sessions)\n• Mindfulness in mathematics (2 hours)\n\n🧘 *6. Wellness Workshops*\n• Mindfulness (2 hours)\n• Time management (2.5 hours)\n• Exam preparation (3 hours, 3 sessions)\n\n💼 *7. Consultancy & Advice*\n• Data analysis and statistical modeling\n• Research methodology\n• Machine learning and AI\n• Software development"
         },
         "info_weekend_programs": {
             "nl": "🌅 **Weekend Programma's (Amsterdam Zuidoost)**\n\n🇬🇭 **Boa me na menboa mo (Ghanese gemeenschap):**\n• **50% korting** voor Ghanese jongeren: €30/uur i.p.v. €60\n• **Locatie**: Douwe Egberts (Dubbelink 2) of aan huis in Gein\n• **Tijden**: Zaterdag en zondag, flexibele tijden\n• **Gratis proefles** van 30 minuten\n\n🌅 **Weekend Bijles Zuidoost:**\n• **50% korting**: €30/uur i.p.v. €60\n• **Zelfde locaties** en tijden\n• **Voor alle bewoners** van Zuidoost\n\n📍 **Locaties:**\n• Douwe Egberts (Dubbelink 2, Amsterdam Zuidoost)\n• Aan huis in Gein en omgeving\n• Bijlmerplein 888, 1102 MG Amsterdam\n\n⏰ **Beschikbaarheid:**\n• Zaterdag: 10:00–18:00\n• Zondag: 10:00–18:00\n• Flexibele tijden mogelijk\n\n🎯 **Speciale Kenmerken:**\n• **Community focus**: Toegankelijke tarieven voor verschillende doelgroepen\n• **Ervaring met speciale behoeften**: Ervaring met leerlingen met lichte autisme\n• **Gestructureerde en geduldige leeromgeving**\n• **Aanpassing aan specifieke behoeften**\n\n📞 **Contact:**\n• Telefoon: +31 6 47357426\n• Email: info@stephenadei.nl\n• Website: stephensprivelessen.nl",
             "en": "🌅 **Weekend Programs (Amsterdam Southeast)**\n\n🇬🇭 **Boa me na menboa mo (Ghanaian community):**\n• **50% discount** for Ghanaian youth: €30/hour instead of €60\n• **Location**: Douwe Egberts (Dubbelink 2) or at home in Gein\n• **Times**: Saturday and Sunday, flexible times\n• **Free trial lesson** of 30 minutes\n\n🌅 **Weekend Tutoring Southeast:**\n• **50% discount**: €30/hour instead of €60\n• **Same locations** and times\n• **For all residents** of Southeast\n\n📍 **Locations:**\n• Douwe Egberts (Dubbelink 2, Amsterdam Southeast)\n• At home in Gein and surrounding area\n• Bijlmerplein 888, 1102 MG Amsterdam\n\n⏰ **Availability:**\n• Saturday: 10:00–18:00\n• Sunday: 10:00–18:00\n• Flexible times possible\n\n🎯 **Special Features:**\n• **Community focus**: Accessible rates for different target groups\n• **Experience with special needs**: Experience with students with mild autism\n• **Structured and patient learning environment**\n• **Adaptation to specific needs**\n\n📞 **Contact:**\n• Phone: +31 6 47357426\n• Email: info@stephenadei.nl\n• Website: stephensprivelessen.nl"
         },
         "info_short_version": {
-            "nl": "📝 **Korte versie:**\n\nHO: 1× €80 • 2× €135 • 4× €250\nVO 20+: 1× €75 • 2× €130 • 4× €230\nVO 20-: 1× €60 • 2× €100 • 4× €200\n\nReiskosten: VU/UvA (niet SP) €15 • Thuis (AMS e.o.) €40 • Science Park €0\n\nLast-minute: <24u +20% • <12u +50%\n\nPakketten: 2× geldig 2 weken • 4× geldig 1 maand; bij directe planning loopt geldigheid vanaf 1e les. Flex-premium (alleen bij niet-direct plannen): +€15 (2×) / +€30 (4×).\n\n🌅 Weekend programma's: 50% korting (€30/uur) in Zuidoost",
-            "en": "📝 **Short version:**\n\nHE: 1× €80 • 2× €135 • 4× €250\nSE 20+: 1× €75 • 2× €130 • 4× €230\nSE 20-: 1× €60 • 2× €100 • 4× €200\n\nTravel: VU/UvA (not SP) €15 • Home (AMS area) €40 • Science Park €0\n\nLast-minute: <24h +20% • <12h +50%\n\nPackages: 2× valid 2 weeks • 4× valid 1 month; with direct scheduling validity runs from 1st lesson. Flex-premium (only when not scheduling directly): +€15 (2×) / +€30 (4×).\n\n🌅 Weekend programs: 50% discount (€30/hour) in Southeast"
+            "nl": "📝 **Korte versie:**\n\nHO: 1× €80 • 2× €135 • 4× €250\nVO 20+: 1× €75 • 2× €130 • 4× €230\nVO 20-: 1× €60 • 2× €100 • 4× €200\n\nReiskosten: VU/UvA (niet SP) €15 • Thuis (AMS e.o.) €40 • Science Park €0\n\nLast-minute: <24u +20% • <12u +50%\n\nPakketten: 2× geldig 2 weken • 4× geldig 1 maand; bij directe planning loopt geldigheid vanaf 1e les. Flex-premium (alleen bij niet-direct plannen): +€15 (2×) / +€30 (4×).",
+            "en": "📝 **Short version:**\n\nHE: 1× €80 • 2× €135 • 4× €250\nSE 20+: 1× €75 • 2× €130 • 4× €230\nSE 20-: 1× €60 • 2× €100 • 4× €200\n\nTravel: VU/UvA (not SP) €15 • Home (AMS area) €40 • Science Park €0\n\nLast-minute: <24h +20% • <12h +50%\n\nPackages: 2× valid 2 weeks • 4× valid 1 month; with direct scheduling validity runs from 1st lesson. Flex-premium (only when not scheduling directly): +€15 (2×) / +€30 (4×)."
         },
         "info_personal_background": {
             "nl": "👨‍🏫 **Persoonlijke Achtergrond & Motivatie**\n\n**Stephen Adei** - MSc Data Science (UvA)\n• **10+ jaar ervaring** sinds 2012 in onderwijs en begeleiding\n• **Persoonlijke reis**: Van wiskunde-uitdagingen (gemiddelde 5 in 3e jaar) naar excellente resultaten (gemiddelde 10 in 4e/5e jaar)\n• **Expertise**: Programmeren, wiskunde, statistiek, data-analyse, multidisciplinaire achtergrond\n• **Passie**: Deze ervaring inspireerde tot het helpen van anderen met vergelijkbare uitdagingen\n\n**Visie & Filosofie:**\n• **Onderwijs moet empoweren**, niet alleen kennis overdragen\n• **Elke student kan leren**, mits de juiste begeleiding en motivatie\n• **Persoonlijke groei** staat centraal in mijn aanpak\n• **Zelfvertrouwen** is de basis voor succesvol leren\n\n**Multidisciplinaire Achtergrond:**\n• **Wiskunde & Statistiek**: Academische achtergrond en praktische toepassingen\n• **Programmeren**: Python, Java, C#, C++, web development\n• **Muziek & Creativiteit**: Muziekproductie, DJ, creatieve workshops\n• **Fotografie & Design**: Analoge fotografie, visuele storytelling\n• **AI & Innovatie**: Integratie van moderne technologie in onderwijs\n\n**Community Focus:**\n• **Ghanese gemeenschap**: Speciale programma's en ondersteuning\n• **Amsterdam Zuidoost**: Weekend programma's met toegankelijke tarieven\n• **Inclusiviteit**: Ervaring met diverse leerstijlen en speciale behoeften",
@@ -278,6 +299,10 @@ def t(key, lang="nl", **kwargs):
             "nl": "💼 **Consultancy & Advies**\n\n**Data-analyse & Statistische Modellering:**\n• **Statistische analyses**: Uitgebreide data-analyse en interpretatie\n• **Predictive modeling**: Voorspellende modellen en trends\n• **Data visualisatie**: Interactieve dashboards en rapporten\n• **Kwaliteitscontrole**: Statistische kwaliteitsborging\n• **Onderzoeksdesign**: Experimentele opzet en methodologie\n\n**Onderzoeksmethodologie:**\n• **Onderzoeksopzet**: Design van wetenschappelijke studies\n• **Steekproefmethoden**: Representatieve dataverzameling\n• **Validatie**: Betrouwbaarheid en validiteit van onderzoek\n• **Ethiek**: Onderzoeksethiek en privacybescherming\n• **Rapportage**: Wetenschappelijke rapportage en presentatie\n\n**Machine Learning & AI:**\n• **Algoritme ontwikkeling**: Custom machine learning modellen\n• **Data preprocessing**: Data cleaning en feature engineering\n• **Model evaluatie**: Performance assessment en validatie\n• **AI implementatie**: Praktische toepassingen van AI\n• **Ethische AI**: Verantwoorde AI ontwikkeling\n\n**Software Ontwikkeling:**\n• **Web development**: Frontend en backend ontwikkeling\n• **Database design**: Data architectuur en optimalisatie\n• **API ontwikkeling**: Integratie en systeemkoppeling\n• **Testing & QA**: Kwaliteitsborging en debugging\n• **Deployment**: Implementatie en onderhoud\n\n**Consultancy Aanpak:**\n\n**1. Eerste Gesprek & Behoefteanalyse**\n• Intake gesprek om doelen en uitdagingen te begrijpen\n• Analyse van huidige situatie en wensen\n• Bepaling van scope en verwachtingen\n• Opstellen van projectplan en tijdlijn\n\n**2. Data-evaluatie & Assessment**\n• Analyse van beschikbare data en systemen\n• Identificatie van verbeterpunten en kansen\n• Assessment van technische infrastructuur\n• Benchmarking tegen best practices\n\n**3. Oplossing Ontwerp**\n• Ontwikkeling van maatwerk oplossingen\n• Technische specificaties en architectuur\n• Implementatie strategie en planning\n• Risico analyse en mitigatie\n\n**4. Implementatie & Begeleiding**\n• Stapsgewijze implementatie van oplossingen\n• Training en kennisoverdracht\n• Monitoring en evaluatie van resultaten\n• Continue ondersteuning en optimalisatie\n\n**5. Kennisoverdracht & Ondersteuning**\n• Documentatie en handleidingen\n• Training van medewerkers\n• Best practices en procedures\n• Langdurige ondersteuning en onderhoud\n\n**Sectoren & Toepassingen:**\n• **Onderwijs**: Onderwijstechnologie en data-analyse\n• **Healthcare**: Medische data-analyse en statistiek\n• **Finance**: Financiële modellering en risico-analyse\n• **Marketing**: Customer analytics en targeting\n• **Research**: Wetenschappelijk onderzoek en publicaties\n\n**Deliverables:**\n• **Rapporten**: Uitgebreide analyses en aanbevelingen\n• **Dashboards**: Interactieve data visualisaties\n• **Modellen**: Machine learning en statistische modellen\n• **Software**: Custom applicaties en tools\n• **Training**: Workshops en kennisoverdracht\n• **Ondersteuning**: Continue begeleiding en optimalisatie",
             "en": "💼 **Consultancy & Advice**\n\n**Data Analysis & Statistical Modeling:**\n• **Statistical analyses**: Comprehensive data analysis and interpretation\n• **Predictive modeling**: Predictive models and trends\n• **Data visualization**: Interactive dashboards and reports\n• **Quality control**: Statistical quality assurance\n• **Research design**: Experimental design and methodology\n\n**Research Methodology:**\n• **Research design**: Design of scientific studies\n• **Sampling methods**: Representative data collection\n• **Validation**: Reliability and validity of research\n• **Ethics**: Research ethics and privacy protection\n• **Reporting**: Scientific reporting and presentation\n\n**Machine Learning & AI:**\n• **Algorithm development**: Custom machine learning models\n• **Data preprocessing**: Data cleaning and feature engineering\n• **Model evaluation**: Performance assessment and validation\n• **AI implementation**: Practical applications of AI\n• **Ethical AI**: Responsible AI development\n\n**Software Development:**\n• **Web development**: Frontend and backend development\n• **Database design**: Data architecture and optimization\n• **API development**: Integration and system coupling\n• **Testing & QA**: Quality assurance and debugging\n• **Deployment**: Implementation and maintenance\n\n**Consultancy Approach:**\n\n**1. Initial Conversation & Needs Analysis**\n• Intake conversation to understand goals and challenges\n• Analysis of current situation and wishes\n• Determination of scope and expectations\n• Development of project plan and timeline\n\n**2. Data Evaluation & Assessment**\n• Analysis of available data and systems\n• Identification of improvement points and opportunities\n• Assessment of technical infrastructure\n• Benchmarking against best practices\n\n**3. Solution Design**\n• Development of custom solutions\n• Technical specifications and architecture\n• Implementation strategy and planning\n• Risk analysis and mitigation\n\n**4. Implementation & Guidance**\n• Step-by-step implementation of solutions\n• Training and knowledge transfer\n• Monitoring and evaluation of results\n• Continuous support and optimization\n\n**5. Knowledge Transfer & Support**\n• Documentation and manuals\n• Staff training\n• Best practices and procedures\n• Long-term support and maintenance\n\n**Sectors & Applications:**\n• **Education**: Educational technology and data analysis\n• **Healthcare**: Medical data analysis and statistics\n• **Finance**: Financial modeling and risk analysis\n• **Marketing**: Customer analytics and targeting\n• **Research**: Scientific research and publications\n\n**Deliverables:**\n• **Reports**: Comprehensive analyses and recommendations\n• **Dashboards**: Interactive data visualizations\n• **Models**: Machine learning and statistical models\n• **Software**: Custom applications and tools\n• **Training**: Workshops and knowledge transfer\n• **Support**: Continuous guidance and optimization"
         },
+        "info_how_lessons_work": {
+            "nl": "📚 **Hoe Lessen Werken**\n\n**🎯 Lesopzet & Structuur:**\n• **Intake gesprek**: Eerste les start altijd met een uitgebreide intake\n• **Diagnostische toets**: Bepaling van huidig niveau en leerdoelen\n• **Persoonlijk plan**: Op maat gemaakt leertraject op basis van intake\n• **Flexibele duur**: 60-90 minuten afhankelijk van behoefte\n\n**💻 Lesvormen & Locaties:**\n• **Online lessen**: Via Zoom/Google Meet met interactieve whiteboards\n• **Fysieke lessen**: Thuis, op school, of op locatie (Amsterdam)\n• **Hybride optie**: Combinatie van online en fysiek mogelijk\n• **Locaties**: Science Park (gratis), VU/UvA (€15), thuis (€40)\n• **MBO trajecten**: Alleen online beschikbaar\n\n**📱 Technologie & Tools:**\n• **iPad aantekeningen**: Digitale notities gedeeld na elke les\n• **Online whiteboards**: Interactieve uitleg en samenwerking\n• **AI ondersteuning**: ChatGPT voor conceptverduidelijking\n• **WhatsApp support**: 7 dagen na elke les beschikbaar\n\n**📋 Lesverloop:**\n• **Voorbereiding**: Student bereidt vragen/voorbereiding voor\n• **Uitleg**: Stapsgewijze uitleg van concepten\n• **Samen oefenen**: Interactieve oefeningen en samenwerking\n• **Feedback**: Directe feedback en tips\n• **Huiswerk**: Gepersonaliseerde opdrachten en oefeningen\n• **Evaluatie**: Korte evaluatie van voortgang en doelen\n\n**🎓 Specifieke Vakken:**\n• **Wiskunde**: Alle niveaus (basisonderwijs t/m universiteit)\n• **Programmeren**: Python, Java, C#, web development\n• **Statistiek**: SPSS, R, data-analyse, onderzoek\n• **Scriptiebegeleiding**: Methodologie, analyse, structuur\n• **MBO trajecten**: Alleen voor volwassenen (18+), online trajecten\n\n**⏰ Planning & Beschikbaarheid:**\n• **Flexibele tijden**: Maandag t/m zondag, 9:00-22:00\n• **Last-minute**: Mogelijk met toeslag (<24u +20%, <12u +50%)\n• **Pakketten**: 2 of 4 lessen met verschillende geldigheid\n• **Proefles**: Gratis 30 minuten intake en kennismaking\n\n**📞 Ondersteuning:**\n• **WhatsApp**: 7 dagen na elke les voor vragen\n• **Reactietijd**: Binnen 24 uur op alle vragen\n• **Check-ins**: Korte motivatie- en planningsgesprekken\n• **Ouder communicatie**: Regelmatige updates en feedback",
+            "en": "📚 **How Lessons Work**\n\n**🎯 Lesson Structure & Setup:**\n• **Intake conversation**: First lesson always starts with comprehensive intake\n• **Diagnostic test**: Assessment of current level and learning goals\n• **Personal plan**: Custom learning trajectory based on intake\n• **Flexible duration**: 60-90 minutes depending on needs\n\n**💻 Lesson Formats & Locations:**\n• **Online lessons**: Via Zoom/Google Meet with interactive whiteboards\n• **In-person lessons**: At home, at school, or on location (Amsterdam)\n• **Hybrid option**: Combination of online and in-person possible\n• **Locations**: Science Park (free), VU/UvA (€15), home (€40)\n• **MBO trajectories**: Online only\n\n**📱 Technology & Tools:**\n• **iPad notes**: Digital notes shared after each lesson\n• **Online whiteboards**: Interactive explanation and collaboration\n• **AI support**: ChatGPT for concept clarification\n• **WhatsApp support**: Available 7 days after each lesson\n\n**📋 Lesson Flow:**\n• **Preparation**: Student prepares questions/preparation\n• **Explanation**: Step-by-step explanation of concepts\n• **Practice together**: Interactive exercises and collaboration\n• **Feedback**: Direct feedback and tips\n• **Homework**: Personalized assignments and exercises\n• **Evaluation**: Brief evaluation of progress and goals\n\n**🎓 Specific Subjects:**\n• **Mathematics**: All levels (primary education to university)\n• **Programming**: Python, Java, C#, web development\n• **Statistics**: SPSS, R, data analysis, research\n• **Thesis guidance**: Methodology, analysis, structure\n• **MBO trajectories**: Adults only (18+), online trajectories\n\n**⏰ Scheduling & Availability:**\n• **Flexible times**: Monday to Sunday, 9:00-22:00\n• **Last-minute**: Possible with surcharge (<24h +20%, <12h +50%)\n• **Packages**: 2 or 4 lessons with different validity\n• **Trial lesson**: Free 30 minutes intake and introduction\n\n**📞 Support:**\n• **WhatsApp**: 7 days after each lesson for questions\n• **Response time**: Within 24 hours on all questions\n• **Check-ins**: Short motivation and planning conversations\n• **Parent communication**: Regular updates and feedback"
+        },
         "menu_tariffs": {
             "nl": "💰 Tarieven",
             "en": "💰 Rates"
@@ -285,6 +310,10 @@ def t(key, lang="nl", **kwargs):
         "menu_work_method": {
             "nl": "🎯 Werkwijze",
             "en": "🎯 Work Method"
+        },
+        "menu_how_lessons_work": {
+            "nl": "📚 Hoe lessen werken",
+            "en": "📚 How lessons work"
         },
         "menu_services": {
             "nl": "📚 Diensten",
@@ -396,6 +425,10 @@ def t(key, lang="nl", **kwargs):
             "nl": "👨‍🏫 Perfect! Stephen neemt het gesprek over. Je kunt hem direct vragen stellen.",
             "en": "👨‍🏫 Perfect! Stephen will take over the conversation. You can ask him questions directly."
         },
+        "handoff_return_to_bot": {
+            "nl": "🤖 *Terug naar de bot!* Ik help je verder.",
+            "en": "🤖 *Back to the bot!* I'll help you further."
+        },
         
         # Menu options
         "menu_option_info": {
@@ -433,6 +466,14 @@ def t(key, lang="nl", **kwargs):
         "menu_option_trial_lesson": {
             "nl": "🎯 Gratis proefles",
             "en": "🎯 Free trial lesson"
+        },
+        "info_follow_up_new": {
+            "nl": "📄 Wat wil je nu doen?",
+            "en": "📄 What would you like to do now?"
+        },
+        "info_follow_up_existing": {
+            "nl": "📄 Wat wil je nu doen?",
+            "en": "📄 What would you like to do now?"
         },
         
         # Intake options
@@ -523,6 +564,348 @@ def t(key, lang="nl", **kwargs):
         "email_invalid": {
             "nl": "❌ Dat lijkt geen geldig e-mailadres. Kun je het opnieuw proberen? (bijvoorbeeld: naam@email.com)",
             "en": "❌ That doesn't look like a valid email address. Can you try again? (for example: name@email.com)"
+        },
+        
+        # Prefill action menu
+        "prefill_action_trial_lesson": {
+            "nl": "📅 Proefles plannen",
+            "en": "📅 Plan trial lesson"
+        },
+        "prefill_action_main_menu": {
+            "nl": "📋 Meer informatie",
+            "en": "📋 More information"
+        },
+        "prefill_action_handoff": {
+            "nl": "👨‍🏫 Met Stephen spreken",
+            "en": "👨‍🏫 Speak with Stephen"
+        },
+        "prefill_action_all_lessons": {
+            "nl": "📅 Alle lessen inplannen",
+            "en": "📅 Schedule all lessons"
+        },
+        "prefill_action_trial_first": {
+            "nl": "🎯 Eerst proefles",
+            "en": "🎯 Trial lesson first"
+        },
+        "prefill_action_menu_text": {
+            "nl": "✅ *Perfect!* Ik heb je informatie verwerkt en met Stephen gedeeld zodat hij je zo goed mogelijk kan helpen.",
+            "en": "✅ *Perfect!* I've processed your information and shared it with Stephen so he can help you as best as possible."
+        },
+        "prefill_action_menu_title": {
+            "nl": "Wat wil je nu doen?",
+            "en": "What would you like to do now?"
+        },
+        "prefill_confirmation_header": {
+            "nl": "📋 *Wat ik van je bericht begrepen heb:*",
+            "en": "📋 *What I understood from your message:*"
+        },
+        "prefill_confirmation_footer": {
+            "nl": "❓ *Klopt dit allemaal?*",
+            "en": "❓ *Is this all correct?*"
+        },
+        
+        # Prefill confirmation field labels
+        "level_label": {
+            "nl": "Niveau",
+            "en": "Level"
+        },
+                "level_po": {
+                    "nl": "Basisschool",
+                    "en": "Primary School"
+                },
+                "level_university_wo": {
+                    "nl": "Universiteit (WO)",
+                    "en": "University (WO)"
+                },
+                "level_university_hbo": {
+                    "nl": "Universiteit (HBO)",
+                    "en": "University (HBO)"
+                },
+                "level_adult": {
+                    "nl": "Volwassenenonderwijs",
+                    "en": "Adult Education"
+                },
+                "subject_label": {
+                    "nl": "Vak",
+                    "en": "Subject"
+                },
+                "subject_math": {
+                    "nl": "Wiskunde",
+                    "en": "Mathematics"
+                },
+                "subject_stats": {
+                    "nl": "Statistiek",
+                    "en": "Statistics"
+                },
+                "subject_english": {
+                    "nl": "Engels",
+                    "en": "English"
+                },
+                "subject_programming": {
+                    "nl": "Programmeren",
+                    "en": "Programming"
+                },
+                "subject_science": {
+                    "nl": "Natuurkunde",
+                    "en": "Physics"
+                },
+                "subject_chemistry": {
+                    "nl": "Scheikunde",
+                    "en": "Chemistry"
+                },
+                "goals_label": {
+                    "nl": "Leerdoelen",
+                    "en": "Learning Goals"
+                },
+                "preferred_times_label": {
+                    "nl": "Voorkeur tijd",
+                    "en": "Preferred Time"
+                },
+                "location_preference_label": {
+                    "nl": "Locatie voorkeur",
+                    "en": "Location Preference"
+                },
+                "contact_person_label": {
+                    "nl": "Contactpersoon",
+                    "en": "Contact Person"
+                },
+                "for_who_label": {
+                    "nl": "Voor wie",
+                    "en": "For whom"
+                },
+                "for_who_self": {
+                    "nl": "Voor mij",
+                    "en": "For me"
+                },
+                "for_who_child": {
+                    "nl": "Voor iemand anders",
+                    "en": "For someone else"
+                },
+                "for_who_student": {
+                    "nl": "Voor iemand anders",
+                    "en": "For someone else"
+                },
+                "for_who_other": {
+                    "nl": "Voor iemand anders",
+                    "en": "For someone else"
+                },
+                "relationship_label": {
+                    "nl": "Relatie",
+                    "en": "Relationship"
+                },
+                "relationship_self": {
+                    "nl": "Zichzelf",
+                    "en": "Self"
+                },
+                "relationship_parent": {
+                    "nl": "Ouder",
+                    "en": "Parent"
+                },
+                "relationship_teacher": {
+                    "nl": "Docent",
+                    "en": "Teacher"
+                },
+                "relationship_other": {
+                    "nl": "Anders",
+                    "en": "Other"
+                },
+                "name_label": {
+                    "nl": "Naam",
+                    "en": "Name"
+                },
+        
+        # Prefill confirmation options
+        "prefill_confirmation_question": {
+            "nl": "Klopt deze informatie?",
+            "en": "Is this information correct?"
+        },
+        "prefill_confirmation_menu_title": {
+            "nl": "Bevestig de informatie:",
+            "en": "Confirm the information:"
+        },
+        "prefill_confirm_all": {
+            "nl": "✅ Ja, klopt!",
+            "en": "✅ Yes, correct!"
+        },
+        "prefill_correct_all": {
+            "nl": "❌ Nee, aanpassen",
+            "en": "❌ No, change"
+        },
+        "prefill_correct_partial": {
+            "nl": "🤔 Deels correct",
+            "en": "🤔 Partly correct"
+        },
+        "prefill_confirmed_message": {
+            "nl": "✅ Perfect! Ik heb je informatie verwerkt. Wat wil je nu doen?",
+            "en": "✅ Perfect! I've processed your information. What would you like to do now?"
+        },
+        
+        # General greeting tip
+        "general_greeting_tip": {
+            "nl": "💡 *Tip:* Je kunt ook gewoon je verhaal uittypen en dan help ik je verder.",
+            "en": "💡 *Tip:* You can also just type out your story and I'll help you further."
+        },
+        
+        # FAQ Translations
+        "faq_1_question": {
+            "nl": "Wat inspireerde ons om bijles en onderwijs aan te bieden?",
+            "en": "What inspired us to offer tutoring and education?"
+        },
+        "faq_1_answer": {
+            "nl": "Onze passie voor bijles en onderwijs komt voort uit de persoonlijke ervaringen van Stephen. Zijn reis door uitdagingen in wiskunde op de middelbare school leidde tot een diep begrip van het vak en een sterke motivatie om anderen te helpen. Als team delen wij deze passie en zien wij het als een kans om een positieve impact te maken op het leven van onze studenten.",
+            "en": "Our passion for tutoring and education stems from Stephen's personal experiences. His journey through challenges in high school mathematics led to a deep understanding of the subject and a strong motivation to help others. As a team, we share this passion and see it as an opportunity to make a positive impact on our students' lives."
+        },
+        "faq_2_question": {
+            "nl": "Hoe omschrijven wij onze onderwijsaanpak en -methoden?",
+            "en": "How do we describe our teaching approach and methods?"
+        },
+        "faq_2_answer": {
+            "nl": "Onze onderwijsaanpak is sterk gericht op persoonlijke begeleiding en maatwerk. We gebruiken technologie zoals iPad-aantekeningen en bieden tot zeven dagen na de les ondersteuning via WhatsApp. Ons doel is om een leeromgeving te creëren waarin studenten op hun eigen tempo kunnen groeien en bloeien.",
+            "en": "Our teaching approach is strongly focused on personal guidance and customization. We use technology such as iPad notes and offer support via WhatsApp for up to seven days after the lesson. Our goal is to create a learning environment where students can grow and flourish at their own pace."
+        },
+        "faq_3_question": {
+            "nl": "Wat maakt onze bijlessen uniek in vergelijking met andere aanbieders?",
+            "en": "What makes our tutoring unique compared to other providers?"
+        },
+        "faq_3_answer": {
+            "nl": "Onze bijlessen onderscheiden zich door de veelzijdigheid en brede achtergrond van ons team. We hebben een multidisciplinaire aanpak die ons helpt complexe onderwerpen op een begrijpelijke manier te benaderen. We focussen ook sterk op de persoonlijke groei van onze studenten.",
+            "en": "Our tutoring stands out due to the versatility and broad background of our team. We have a multidisciplinary approach that helps us tackle complex topics in an understandable way. We also have a strong focus on the personal growth of our students."
+        },
+        "faq_4_question": {
+            "nl": "Hoe gaan wij om met verschillende leerstijlen en -niveaus van studenten?",
+            "en": "How do we handle different learning styles and levels of students?"
+        },
+        "faq_4_answer": {
+            "nl": "Wij passen onze lessen aan op de specifieke leerstijl van elke student. Onze lessen zijn interactief en dynamisch, met een combinatie van theoretische uitleg, praktische oefeningen en toepassingen in de echte wereld. We gebruiken differentiatie technieken zoals scaffolding om effectief in te spelen op verschillende leerstijlen.",
+            "en": "We adapt our lessons to each student's specific learning style. Our lessons are interactive and dynamic, combining theoretical explanation, practical exercises, and real-world applications. We use differentiation techniques such as scaffolding to effectively cater to different learning styles."
+        },
+        "faq_5_question": {
+            "nl": "Welke resultaten en successen hebben wij gezien bij onze studenten?",
+            "en": "What results and successes have we seen with our students?"
+        },
+        "faq_5_answer": {
+            "nl": "Onze bijlessen hebben veel studenten geholpen om hun academische prestaties te verbeteren en hun zelfvertrouwen te vergroten. We hebben talloze succesverhalen, waaronder een volwassen student die het CCVX-examen succesvol aflegde en zijn universitaire studie hervatte.",
+            "en": "Our tutoring has helped many students improve their academic performance and increase their confidence. We have numerous success stories, including an adult student who successfully passed the CCVX exam and resumed his university studies."
+        },
+        "faq_6_question": {
+            "nl": "Hoe worden de bijlessen georganiseerd?",
+            "en": "How are the tutoring sessions organized?"
+        },
+        "faq_6_answer": {
+            "nl": "Onze bijlessen kunnen zowel online als fysiek plaatsvinden. Voor online lessen gebruiken we tools zoals Zoom en Google Meet. De lessen worden gepland op basis van de beschikbaarheid van de student en de bijlesgever, met flexibele tijden om aan verschillende schema's te voldoen.",
+            "en": "Our tutoring sessions can take place both online and in person. For online lessons, we use tools like Zoom and Google Meet. The lessons are scheduled based on the availability of the student and the tutor, with flexible times to accommodate different schedules."
+        },
+        "faq_7_question": {
+            "nl": "Wat zijn de kosten van de bijlessen?",
+            "en": "What are the costs of the tutoring sessions?"
+        },
+        "faq_7_answer": {
+            "nl": "De kosten variëren afhankelijk van het vak en het onderwijsniveau. We bieden concurrerende tarieven en verschillende pakketten. Neem contact met ons op voor een op maat gemaakte offerte die past bij jouw specifieke behoeften.",
+            "en": "The costs vary depending on the subject and educational level. We offer competitive rates and various packages. Contact us for a customized quote that fits your specific needs."
+        },
+        "faq_8_question": {
+            "nl": "Hoe kan ik me aanmelden voor bijles?",
+            "en": "How can I sign up for tutoring?"
+        },
+        "faq_8_answer": {
+            "nl": "Je kunt je aanmelden door ons online formulier op de website in te vullen of door contact met ons op te nemen via telefoon of e-mail. We bespreken graag jouw specifieke behoeften en hoe we je het beste kunnen helpen.",
+            "en": "You can sign up by filling out our online form on the website or by contacting us via phone or email. We'd be happy to discuss your specific needs and how we can best help you."
+        },
+        "faq_9_question": {
+            "nl": "Hoe verloopt de betalingsprocedure?",
+            "en": "How does the payment procedure work?"
+        },
+        "faq_9_answer": {
+            "nl": "Betalingen kunnen worden gedaan per les of per pakket, via bankoverschrijving of online betalingen zoals iDEAL. Facturen worden doorgaans aan het einde van de maand verzonden, afhankelijk van de gemaakte afspraken.",
+            "en": "Payments can be made per lesson or per package, via bank transfer or online payments such as iDEAL. Invoices are typically sent at the end of the month, depending on the arrangements made."
+        },
+        "faq_10_question": {
+            "nl": "Is er een mogelijkheid tot een proefles?",
+            "en": "Is there an option for a trial lesson?"
+        },
+        "faq_10_answer": {
+            "nl": "Ja, we bieden een gratis proefles aan zodat je kunt kennismaken met onze werkwijze en de bijlesgever. Dit is een goede gelegenheid om te ervaren hoe de lessen worden gegeven en om te bepalen of onze aanpak bij je past.",
+            "en": "Yes, we offer a free trial lesson so you can get acquainted with our methods and the tutor. This is a good opportunity to experience how the lessons are given and to determine if our approach suits you."
+        },
+        "faq_general_help": {
+            "nl": "Ik kan je helpen met veelgestelde vragen! Hier zijn enkele onderwerpen waar je naar kunt vragen:\n\n• Inspiratie en achtergrond\n• Onze onderwijsaanpak\n• Wat ons uniek maakt\n• Leerstijlen en niveaus\n• Resultaten en successen\n• Organisatie van lessen\n• Kosten en tarieven\n• Aanmelden en proefles\n• Betalingen\n• Beroepsspecifieke vakken\n• AI en technologie\n• Soft skills\n• Leerproblemen\n• Motivatie\n• Feedback\n• Bedrijven en instellingen\n• Contact\n• Materialen en tools\n• Frequentie en duur\n\nStel gewoon je vraag en ik help je verder!",
+            "en": "I can help you with frequently asked questions! Here are some topics you can ask about:\n\n• Inspiration and background\n• Our teaching approach\n• What makes us unique\n• Learning styles and levels\n• Results and successes\n• Lesson organization\n• Costs and rates\n• Signing up and trial lessons\n• Payments\n• Profession-specific subjects\n• AI and technology\n• Soft skills\n• Learning difficulties\n• Motivation\n• Feedback\n• Companies and institutions\n• Contact\n• Materials and tools\n• Frequency and duration\n\nJust ask your question and I'll help you further!"
+        },
+        "intake_student_name": {
+            "nl": "Wat is de volledige naam van de leerling?",
+            "en": "What is the student's full name?"
+        },
+        "prefill_step_by_step": {
+            "nl": "Geen probleem! Laten we het stap voor stap doorlopen. Ik stel je een paar vragen om je zo goed mogelijk te kunnen helpen.",
+            "en": "No problem! Let's go through it step by step. I'll ask you a few questions to help you as best as possible."
+        },
+        "prefill_check_info": {
+            "nl": "Begrijpelijk! Laten we de informatie stap voor stap controleren. Ik stel je een paar vragen om alles goed in te vullen.",
+            "en": "Understandable! Let's check the information step by step. I'll ask you a few questions to fill everything in properly."
+        },
+        "prefill_assume_correct": {
+            "nl": "Ik ga ervan uit dat de informatie klopt en ga verder met de intake. Je kunt later altijd nog dingen aanpassen.",
+            "en": "I'll assume the information is correct and continue with the intake. You can always adjust things later."
+        },
+        "planning_trial_lesson_intro": {
+            "nl": "🎯 Perfect! Laten we een gratis proefles van 30 minuten inplannen. Ik heb een paar vragen om de les goed voor te bereiden.",
+            "en": "🎯 Perfect! Let's schedule a free 30-minute trial lesson. I have a few questions to prepare the lesson well."
+        },
+        "planning_premium_service": {
+            "nl": "📅 Perfect! Laten we alle lessen inplannen. Ik ga je helpen met het plannen van een volledig pakket.",
+            "en": "📅 Perfect! Let's schedule all lessons. I'll help you plan a complete package."
+        },
+        "planning_premium_slots": {
+            "nl": "Beschikbare tijden voor volledig pakket:",
+            "en": "Available times for complete package:"
+        },
+        "planning_trial_slots": {
+            "nl": "Beschikbare tijden voor gratis proefles:",
+            "en": "Available times for free trial lesson:"
+        },
+        "planning_regular_slots": {
+            "nl": "Beschikbare tijden voor les:",
+            "en": "Available times for lesson:"
+        },
+        "post_trial_message": {
+            "nl": "🎉 Geweldig! Je proefles is ingepland. Na de proefles kun je kiezen wat je wilt doen.",
+            "en": "🎉 Great! Your trial lesson is scheduled. After the trial lesson, you can choose what you'd like to do."
+        },
+        "post_trial_menu_title": {
+            "nl": "Wat wil je na de proefles doen?",
+            "en": "What would you like to do after the trial lesson?"
+        },
+        "post_trial_plan_all_lessons": {
+            "nl": "📅 Alle lessen inplannen",
+            "en": "📅 Schedule all lessons"
+        },
+        "post_trial_plan_single_lesson": {
+            "nl": "📅 Eén les inplannen",
+            "en": "📅 Schedule one lesson"
+        },
+        "post_trial_main_menu": {
+            "nl": "📋 Meer informatie",
+            "en": "📋 More information"
+        },
+        "post_trial_handoff": {
+            "nl": "👨‍🏫 Met Stephen spreken",
+            "en": "👨‍🏫 Speak with Stephen"
+        },
+        "error_unclear_question": {
+            "nl": "❓ Ik begrijp je vraag niet helemaal. Kun je een van de opties hieronder kiezen?",
+            "en": "❓ I don't quite understand your question. Can you choose one of the options below?"
+        },
+        "error_invalid_time": {
+            "nl": "❌ Ik begrijp de tijd niet. Kies een van de beschikbare tijden.",
+            "en": "❌ I don't understand the time. Please choose one of the available times."
+        },
+        "error_time_processing": {
+            "nl": "❌ Er is een fout opgetreden bij het verwerken van de tijd. Probeer het opnieuw.",
+            "en": "❌ An error occurred while processing the time. Please try again."
+        },
+        "error_planning_failed": {
+            "nl": "❌ Er is een fout opgetreden bij het inplannen. Probeer het later opnieuw.",
+            "en": "❌ An error occurred while scheduling. Please try again later."
         }
     }
     
@@ -539,26 +922,25 @@ def send_text_with_duplicate_check(conversation_id, text):
     conv_attrs = get_conv_attrs(conversation_id)
     last_message = conv_attrs.get("last_bot_message", "")
     
+    print(f"🔍 Duplicate check - Current: '{text[:50]}{'...' if len(text) > 50 else ''}'")
+    print(f"🔍 Duplicate check - Last: '{last_message[:50]}{'...' if len(last_message) > 50 else ''}'")
+    
     if text == last_message:
         print(f"🔄 Duplicate message detected: '{text[:50]}{'...' if len(text) > 50 else ''}'")
-        print(f"🚨 Auto-handoff triggered due to duplicate message")
-        
-        # Send handoff message
-        handoff_text = t("handoff_duplicate_error", "nl")  # Default to Dutch for error messages
-        send_handoff_message(conversation_id, handoff_text)
-        return False
-    
-    # Store this message as the last sent message (preserve pending_intent)
-    current_attrs = get_conv_attrs(conversation_id)
-    current_attrs["last_bot_message"] = text
-    attrs_success = safe_set_conv_attrs(conversation_id, current_attrs)
-    if not attrs_success:
-        print(f"⚠️ Failed to update conversation attributes, but continuing with message send")
+        print(f"🚨 Skipping duplicate message to prevent spam")
+        return False  # Don't send handoff, just skip the duplicate
     
     # Use the new API client
     success = send_text(conversation_id, text)
     if success:
         print(f"✅ Text message sent: '{text[:50]}{'...' if len(text) > 50 else ''}'")
+        
+        # Store this message as the last sent message AFTER successful send
+        current_attrs = get_conv_attrs(conversation_id)
+        current_attrs["last_bot_message"] = text
+        attrs_success = safe_set_conv_attrs(conversation_id, current_attrs)
+        if not attrs_success:
+            print(f"⚠️ Failed to update conversation attributes after message send")
     else:
         print(f"❌ Text message failed")
     return success
@@ -698,6 +1080,15 @@ def analyze_first_message_with_openai(message: str, conversation_id: int = None)
     system_prompt = """
     Je bent een AI assistent die het eerste bericht van een potentiële student analyseert om intake informatie te extraheren.
     
+    Over Stephen (de tutor):
+    - Master Wiskunde met specialisatie in quantuminformatica en dynamische systemen
+    - Bevoegd docent wiskunde (ILO)
+    - Expert in statistiek, data science, programmeren (Python/R/JavaScript)
+    - Ervaring van vmbo tot universiteit, inclusief speciaal onderwijs
+    - Tweetalig (Nederlands/Engels) + internationale curricula (IB/Cambridge)
+    - Scriptiebegeleider voor psychologie, cybersecurity, statistiek
+    - Ervaring met MBO-rekenen, alle wiskunde profielen (A/B/C/D)
+    
     Analyseer het bericht en extraheer de volgende informatie:
     
     - **is_adult**: Boolean - Is de persoon 18+ jaar oud?
@@ -816,11 +1207,30 @@ def analyze_first_message_with_openai(message: str, conversation_id: int = None)
 def map_school_level(level_text: str) -> str:
     """Map school level text to standardized values"""
     level_mapping = {
-        "basisschool": "po", "primary school": "po", "po": "po",
-        "vmbo": "vmbo", "havo": "havo", "vwo": "vwo", "mbo": "mbo",
+        # Primary Education
+        "basisschool": "po", "primary school": "po", "po": "po", "primary": "po",
+        "speciaal onderwijs": "po", "special education": "po", "so": "po",
+        
+        # Secondary Education (Dutch)
+        "vmbo": "vmbo", "vmbo-tl": "vmbo", "vmbo-gl": "vmbo", "vmbo-bl": "vmbo", "vmbo-kl": "vmbo",
+        "havo": "havo", "vwo": "vwo", "gymnasium": "vwo", "atheneum": "vwo",
+        
+        # International Curricula
+        "ib": "vwo", "international baccalaureate": "vwo", "ib diploma": "vwo",
+        "cambridge": "vwo", "cambridge international": "vwo", "igcse": "vwo",
+        "international school": "vwo", "internationale school": "vwo",
+        
+        # Vocational Education
+        "mbo": "mbo", "mbo niveau 1": "mbo", "mbo niveau 2": "mbo", "mbo niveau 3": "mbo", "mbo niveau 4": "mbo",
+        
+        # Higher Education
         "hbo": "university_hbo", "wo": "university_wo", "universiteit": "university_wo",
         "universiteit hbo": "university_hbo", "universiteit wo": "university_wo",
-        "volwassenenonderwijs": "adult", "adult": "adult"
+        "hogeschool": "university_hbo", "university": "university_wo",
+        
+        # Adult Education
+        "volwassenenonderwijs": "adult", "adult": "adult", "volwassenen": "adult",
+        "werkende": "adult", "professional": "adult"
     }
     return level_mapping.get(level_text.lower(), "adult")
 
@@ -862,15 +1272,137 @@ def detect_language_from_message(message: str) -> str:
     else:
         return "en"  # Default to English
 
+def analyze_info_request_with_openai(message: str, conversation_id: int = None) -> Dict[str, Any]:
+    """Analyze information request using OpenAI to determine what info the user wants"""
+    if not OPENAI_API_KEY:
+        print("⚠️ OpenAI API key not available, skipping info analysis")
+        return {}
+    
+    system_prompt = """
+    Je bent een AI assistent die informatie vragen analyseert om te bepalen welke informatie de gebruiker zoekt.
+    
+    Over Stephen's diensten:
+    - **Tarieven**: Verschillende prijzen voor verschillende niveaus (hoger onderwijs, voortgezet onderwijs, MBO, etc.)
+    - **Werkwijze**: Hoe Stephen lesgeeft, methoden, aanpak
+    - **Diensten**: Verschillende vakken en diensten (wiskunde, statistiek, programmeren, etc.)
+    - **Reiskosten**: Kosten voor reizen naar de leerling
+    - **Last-minute**: Extra kosten voor spoedlessen
+    - **Voorwaarden**: Algemene voorwaarden en regels
+    - **Weekend programma's**: Speciale weekend diensten
+    - **Korte versie**: Samenvatting van alle informatie
+    - **Persoonlijke achtergrond**: Stephen's ervaring en kwalificaties
+    - **Didactische methoden**: Specifieke lesmethoden
+    - **Technologie tools**: Tools die gebruikt worden
+    - **Resultaten en succes**: Voorbeelden van succesverhalen
+    - **Creatieve workshops**: Workshop diensten
+    - **Academische workshops**: Academische workshop diensten
+    - **Consultancy**: Adviesdiensten
+    
+    Analyseer de vraag en bepaal welke informatie categorie(ën) het beste passen:
+    
+    - **tariffs**: Vragen over prijzen, kosten, tarieven, betalingen
+    - **work_method**: Vragen over hoe Stephen werkt, methoden, aanpak
+    - **services**: Vragen over welke vakken/diensten beschikbaar zijn
+    - **travel_costs**: Vragen over reiskosten, locatie, afstand
+    - **last_minute**: Vragen over spoedlessen, urgentie, snelheid
+    - **conditions**: Vragen over voorwaarden, regels, afspraken
+    - **weekend_programs**: Vragen over weekend diensten
+    - **short_version**: Vragen om samenvatting, overzicht
+    - **personal_background**: Vragen over Stephen's ervaring, kwalificaties
+    - **didactic_methods**: Vragen over lesmethoden, didactiek
+    - **technology_tools**: Vragen over tools, technologie
+    - **results_success**: Vragen over resultaten, succesverhalen
+    - **workshops_creative**: Vragen over creatieve workshops
+    - **workshops_academic**: Vragen over academische workshops
+    - **consultancy**: Vragen over adviesdiensten
+    
+    Geef een JSON response met:
+    {
+        "primary_category": "string", // Hoofdcategorie (meest relevant)
+        "secondary_categories": ["string"], // Extra categorieën die ook relevant zijn
+        "confidence": "float", // Zekerheid (0.0-1.0)
+        "is_general_question": "boolean", // Is het een algemene vraag die meerdere categorieën raakt?
+        "suggested_response": "string" // Korte suggestie voor antwoord
+    }
+    
+    Voorbeelden:
+    - "Wat kosten de lessen?" → primary_category: "tariffs"
+    - "Hoe werkt Stephen?" → primary_category: "work_method"
+    - "Welke vakken geeft Stephen?" → primary_category: "services"
+    - "Wat zijn de reiskosten?" → primary_category: "travel_costs"
+    - "Kan ik morgen al een les hebben?" → primary_category: "last_minute"
+    - "Wat zijn de voorwaarden?" → primary_category: "conditions"
+    - "Geeft Stephen ook weekend lessen?" → primary_category: "weekend_programs"
+    - "Kun je een samenvatting geven?" → primary_category: "short_version"
+    - "Wat is Stephen's achtergrond?" → primary_category: "personal_background"
+    - "Hoe geeft Stephen les?" → primary_category: "didactic_methods"
+    - "Welke tools gebruikt Stephen?" → primary_category: "technology_tools"
+    - "Wat zijn de resultaten?" → primary_category: "results_success"
+    - "Geeft Stephen workshops?" → primary_category: "workshops_creative"
+    - "Kan Stephen advies geven?" → primary_category: "consultancy"
+    
+    Geef alleen de JSON response, geen extra tekst.
+    """
+    
+    try:
+        client = openai.OpenAI(api_key=OPENAI_API_KEY)
+        
+        response = client.chat.completions.create(
+            model=OPENAI_MODEL,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Analyseer deze informatie vraag: {message}"}
+            ],
+            max_tokens=200,
+            temperature=0.3
+        )
+        
+        result = response.choices[0].message.content.strip()
+        print(f"🤖 Info analysis result: {result}")
+        
+        # Parse JSON response
+        import json
+        analysis = json.loads(result)
+        
+        return analysis
+        
+    except Exception as e:
+        print(f"❌ Error analyzing info request: {e}")
+        if conversation_id:
+            send_admin_warning(conversation_id, f"Info analysis failed: {str(e)[:100]}")
+        
+        return {}
+
 def map_topic(topic_text: str) -> str:
     """Map topic text to standardized values"""
     topic_mapping = {
+        # Mathematics
         "wiskunde": "math", "mathematics": "math", "math": "math",
+        "wiskunde a": "math", "wiskunde b": "math", "wiskunde c": "math", "wiskunde d": "math",
+        "calculus": "math", "algebra": "math", "geometry": "math",
+        "mbo rekenen": "math", "rekenen 2f": "math", "rekenen 3f": "math",
+        
+        # Statistics & Data Science
         "statistiek": "stats", "statistics": "stats", "stats": "stats",
-        "engels": "english", "english": "english",
+        "data science": "stats", "data science": "stats", "spss": "stats", "r": "stats",
+        "regression": "stats", "hypothesis testing": "stats", "mixed models": "stats",
+        
+        # Programming
         "programmeren": "programming", "programming": "programming",
-        "natuurkunde": "science", "physics": "science",
-        "scheikunde": "chemistry", "chemistry": "chemistry"
+        "python": "programming", "javascript": "programming", "java": "programming",
+        "coding": "programming", "software development": "programming",
+        
+        # Languages
+        "engels": "english", "english": "english", "ib english": "english",
+        "cambridge english": "english", "ielts": "english", "toefl": "english",
+        
+        # Sciences
+        "natuurkunde": "science", "physics": "science", "fysica": "science",
+        "scheikunde": "chemistry", "chemistry": "chemistry", "chemie": "chemistry",
+        
+        # Thesis & Research
+        "scriptie": "other", "thesis": "other", "research": "other",
+        "onderzoek": "other", "paper": "other", "dissertation": "other"
     }
     return topic_mapping.get(topic_text.lower(), "other")
 
@@ -894,11 +1426,35 @@ def is_prefill_sufficient_for_trial_lesson(prefilled_info: Dict[str, Any]) -> bo
         return False
     
     # Topic should be a valid subject
-    valid_subjects = ["wiskunde", "math", "statistiek", "statistics", "engels", "english", "natuurkunde", "physics", "scheikunde", "chemistry"]
+    valid_subjects = [
+        "wiskunde", "math", "mathematics", "calculus", "algebra", "geometry",
+        "statistiek", "statistics", "data science", "spss", "regression",
+        "engels", "english", "ib", "cambridge", "ielts", "toefl",
+        "programmeren", "programming", "python", "javascript", "coding",
+        "natuurkunde", "physics", "fysica", "scheikunde", "chemistry", "chemie",
+        "mbo rekenen", "rekenen 2f", "rekenen 3f", "scriptie", "thesis", "research"
+    ]
     topic_lower = topic_secondary.lower()
     has_valid_subject = any(subject in topic_lower for subject in valid_subjects)
     
     return has_valid_subject
+
+def smart_extraction_check(prefilled_info: Dict[str, Any]) -> str:
+    """Smart check for extraction - skip confirmation for obvious cases"""
+    # If lesson is for the learner themselves
+    if prefilled_info.get("for_who") == "self":
+        # Automatically assume relationship = "self"
+        # No need to confirm relationship
+        # Go directly to prefill action menu
+        print(f"🎯 Smart check: Lesson for self, skipping relationship confirmation")
+        return "direct_to_action_menu"
+    
+    # If lesson is for someone else
+    else:
+        # Need to confirm relationship
+        # Normal confirmation flow
+        print(f"🎯 Smart check: Lesson for someone else, normal confirmation flow")
+        return "normal_confirmation_flow"
 
 def create_child_contact(analysis: Dict[str, Any], conversation_id: int) -> int:
     """Create a separate contact for the child when a parent is writing"""
@@ -1014,12 +1570,10 @@ def prefill_intake_from_message(message: str, conversation_id: int = None) -> Di
     if analysis.get("urgency"):
         prefilled["urgency"] = analysis["urgency"]
     
-    # If this is a parent writing for their child, create a separate contact for the child
+    # Note: Child contact creation is postponed until after prefill confirmation
+    # This prevents the "Could not get parent contact ID" error for new contacts
     if analysis.get("for_who") == "child" and analysis.get("learner_name"):
-        child_contact_id = create_child_contact(analysis, conversation_id)
-        if child_contact_id:
-            prefilled["child_contact_id"] = child_contact_id
-            print(f"👶 Created child contact: {child_contact_id} for {analysis['learner_name']}")
+        print(f"👶 Child contact creation postponed until after prefill confirmation for {analysis['learner_name']}")
     
     print(f"📋 Prefilled information: {prefilled}")
     return prefilled
@@ -1044,83 +1598,9 @@ def get_contact_id_from_conversation(conversation_id):
         print(f"❌ Error getting conversation details: {e}")
         return None
 
-def send_quick_replies(conversation_id, text, options):
-    """Send Chatwoot quick replies using input_select format"""
-    url = f"{CW}/api/v1/accounts/{ACC}/conversations/{conversation_id}/messages"
-    headers = {
-        "api_access_token": ADMIN_TOK,
-        "Content-Type": "application/json"
-    }
-    
-    # Use Chatwoot's input_select format for quick replies
-    items = []
-    for label, value in options:
-        items.append({
-            "title": label,
-            "value": value
-        })
-    
-    data = {
-        "content": text,
-        "content_type": "input_select",
-        "content_attributes": {
-            "items": items
-        },
-        "message_type": "outgoing",
-        "private": False
-    }
-    
-    try:
-        response = requests.post(url, headers=headers, json=data)
-        if response.status_code == 200:
-            print(f"✅ Quick replies sent successfully ({len(options)} options)")
-            return True
-        else:
-            print(f"❌ Quick replies failed: {response.status_code} - {response.text[:100]}")
-            return False
-    except Exception as e:
-        print(f"❌ Quick replies error: {e}")
-        return False
 
-def send_interactive_menu(conversation_id, text, options):
-    """Send interactive menu using Chatwoot input_select format with duplicate detection"""
-    # Check for duplicate messages (but allow first message in new conversation)
-    conv_attrs = get_conv_attrs(conversation_id)
-    last_message = conv_attrs.get("last_bot_message", "")
-    pending_intent = conv_attrs.get("pending_intent", "")
-    
-    # Don't check for duplicates if conversation is in handoff state
-    if pending_intent == "handoff":
-        print(f"👨‍🏫 Conversation is in handoff state - not sending duplicate message")
-        return False
 
-    # For new conversations, disable duplicate detection completely
-    if not last_message or last_message.strip() == "":
-        print(f"🆕 New conversation detected - disabling duplicate detection")
-        # Don't store last_bot_message for new conversations to prevent false duplicates
-        return send_input_select_only(conversation_id, text, options)
-    
-    # Only check for duplicates if we've already sent a message AND it's the exact same text
-    if last_message and text.strip() == last_message.strip():
-        print(f"🔄 Duplicate interactive message detected: '{text[:50]}{'...' if len(text) > 50 else ''}'")
-        print(f"🚨 Auto-handoff triggered due to duplicate interactive message")
-        
-        # Send handoff message
-        handoff_text = t("handoff_duplicate_error", "nl")  # Default to Dutch for error messages
-        send_handoff_message(conversation_id, handoff_text)
-        return False
 
-    # Store this message as the last sent message (preserve pending_intent)
-    try:
-        current_attrs = get_conv_attrs(conversation_id)
-        current_attrs["last_bot_message"] = text
-        set_conv_attrs(conversation_id, current_attrs)
-    except Exception as e:
-        print(f"⚠️ Could not update conversation attributes: {e}")
-        # Continue anyway to test the menu functionality
-    
-    # Use input_select format only (no fallbacks)
-    return send_input_select_only(conversation_id, text, options)
 
 def send_input_select_only(conversation_id, text, options):
     """Send input_select format only - no fallbacks with strict WhatsApp formatting rules"""
@@ -1146,15 +1626,15 @@ def send_input_select_only(conversation_id, text, options):
     # Process items with strict formatting
     items = []
     for i, (label, value) in enumerate(options):
-        # Clean title: remove markdown, newlines, tabs
-        clean_title = label.replace("*", "").replace("_", "").replace("~", "").replace("\n", " ").replace("\t", " ")
+        # Keep markdown formatting but clean newlines and tabs
+        clean_title = label.replace("\n", " ").replace("\t", " ")
         
         # Truncate title to 24 characters (emoji count as 2+ code points)
         if len(clean_title) > 24:
             clean_title = clean_title[:21] + "..."
         
         # Clean and truncate value to 200 characters
-        clean_value = str(value).replace("\n", " ").replace("\t", " ").replace("*", "").replace("_", "").replace("~", "")
+        clean_value = str(value).replace("\n", " ").replace("\t", " ")
         if len(clean_value) > 200:
             clean_value = clean_value[:197] + "..."
         
@@ -1183,313 +1663,30 @@ def send_input_select_only(conversation_id, text, options):
     try:
         print(f"📤 Sending input_select menu with {len(items)} items...")
         print(f"📤 First few items: {items[:3] if items else 'None'}")
+        print(f"📤 Menu title: '{text}'")
+        print(f"📤 Full data: {data}")
         response = requests.post(url, headers=headers, json=data)
         if response.status_code == 200:
             print(f"✅ Chatwoot input_select sent successfully ({len(options)} options)")
             return True
         else:
-            print(f"❌ Chatwoot input_select failed: {response.status_code} - {response.text[:100]}")
+            print(f"❌ Chatwoot input_select failed: {response.status_code}")
+            print(f"❌ Response text: {response.text}")
+            print(f"❌ Response headers: {response.headers}")
             return False
     except Exception as e:
         print(f"❌ Chatwoot input_select error: {e}")
-        return False
-
-def send_input_select_fallback_no_duplicate_check(conversation_id, text, options):
-    """Fallback to input_select format without duplicate detection (for use by send_interactive_menu)"""
-    url = f"{CW}/api/v1/accounts/{ACC}/conversations/{conversation_id}/messages"
-    headers = {
-        "api_access_token": ADMIN_TOK,
-        "Content-Type": "application/json"
-    }
-    
-    # Use Chatwoot's official input_select format
-    items = []
-    for label, value in options:
-        items.append({
-            "title": label,
-            "value": value
-        })
-    
-    data = {
-        "content": text,
-        "content_type": "input_select",
-        "content_attributes": {
-            "items": items
-        },
-        "message_type": "outgoing",
-        "private": False
-    }
-    
-    try:
-        print(f"🔄 Trying input_select fallback...")
-        response = requests.post(url, headers=headers, json=data)
-        if response.status_code == 200:
-            print(f"✅ Chatwoot input_select fallback sent successfully ({len(options)} options)")
-            return True
-        else:
-            print(f"❌ Chatwoot input_select fallback failed: {response.status_code} - {response.text[:100]}")
-            return False
-    except Exception as e:
-        print(f"❌ Chatwoot input_select fallback error: {e}")
-        return False
-
-def send_input_select_fallback(conversation_id, text, options):
-    """Fallback to input_select format if WhatsApp buttons fail"""
-    # Check for duplicate messages (but allow first message in new conversation)
-    conv_attrs = get_conv_attrs(conversation_id)
-    last_message = conv_attrs.get("last_bot_message", "")
-    pending_intent = conv_attrs.get("pending_intent", "")
-    
-    # Don't check for duplicates if conversation is in handoff state
-    if pending_intent == "handoff":
-        print(f"👨‍🏫 Conversation is in handoff state - not sending duplicate message")
-        return False
-
-    # For new conversations, clear any old last_bot_message to prevent false duplicates
-    if not last_message or last_message.strip() == "":
-        print(f"🆕 New conversation detected - clearing old message history")
-        set_conv_attrs(conversation_id, {"last_bot_message": ""})
-        last_message = ""
-    
-    # Only check for duplicates if we've already sent a message AND it's the exact same text
-    if last_message and text.strip() == last_message.strip():
-        print(f"🔄 Duplicate input_select fallback message detected: '{text[:50]}{'...' if len(text) > 50 else ''}'")
-        print(f"🚨 Auto-handoff triggered due to duplicate input_select fallback message")
-        
-        # Send handoff message
-        handoff_text = t("handoff_duplicate_error", "nl")  # Default to Dutch for error messages
-        send_handoff_message(conversation_id, handoff_text)
-        return False
-
-    # Store this message as the last sent message (preserve pending_intent)
-    current_attrs = get_conv_attrs(conversation_id)
-    current_attrs["last_bot_message"] = text
-    set_conv_attrs(conversation_id, current_attrs)
-    
-    url = f"{CW}/api/v1/accounts/{ACC}/conversations/{conversation_id}/messages"
-    headers = {
-        "api_access_token": ADMIN_TOK,
-        "Content-Type": "application/json"
-    }
-    
-    # Use Chatwoot's official input_select format
-    items = []
-    for label, value in options:
-        items.append({
-            "title": label,
-            "value": value
-        })
-    
-    data = {
-        "content": text,
-        "content_type": "input_select",
-        "content_attributes": {
-            "items": items
-        },
-        "message_type": "outgoing",
-        "private": False
-    }
-    
-    try:
-        print(f"🔄 Trying input_select fallback...")
-        response = requests.post(url, headers=headers, json=data)
-        if response.status_code == 200:
-            print(f"✅ Chatwoot input_select fallback sent successfully ({len(options)} options)")
-            return True
-        else:
-            print(f"❌ Chatwoot input_select fallback failed: {response.status_code} - {response.text[:100]}")
-            return False
-    except Exception as e:
-        print(f"❌ Chatwoot input_select fallback error: {e}")
+        print(f"❌ Error type: {type(e)}")
+        import traceback
+        print(f"❌ Traceback: {traceback.format_exc()}")
         return False
 
 
 
-def send_intake_form(conversation_id, lang):
-    """Send comprehensive intake form using Chatwoot form content_type with fallback"""
-    url = f"{CW}/api/v1/accounts/{ACC}/conversations/{conversation_id}/messages"
-    headers = {
-        "api_access_token": ADMIN_TOK,
-        "Content-Type": "application/json"
-    }
-    
-    # Create form items based on language
-    if lang == "en":
-        form_items = [
-            {
-                "name": "learner_name",
-                "placeholder": "Enter student's full name",
-                    "type": "text",
-                "label": "Student Name",
-                "required": True
-            },
-            {
-                "name": "school_level",
-                "label": "Education Level",
-                    "type": "select",
-                "required": True,
-                    "options": [
-                    {"label": "Basisschool", "value": "po"},
-                        {"label": "VMBO", "value": "vmbo"},
-                        {"label": "HAVO", "value": "havo"},
-                        {"label": "VWO", "value": "vwo"},
-                        {"label": "MBO", "value": "mbo"},
-                    {"label": "University (WO)", "value": "university_wo"},
-                    {"label": "University (HBO)", "value": "university_hbo"},
-                    {"label": "Volwassenenonderwijs", "value": "adult"}
-                    ]
-                },
-                {
-                    "name": "subject",
-                "label": "Subject/Topic",
-                    "type": "select",
-                "required": True,
-                    "options": [
-                    {"label": "Mathematics", "value": "subject:math"},
-                    {"label": "Statistics", "value": "subject:stats"},
-                    {"label": "English", "value": "subject:english"},
-                    {"label": "Programming", "value": "subject:programming"},
-                    {"label": "Physics", "value": "subject:science"},
-                    {"label": "Chemistry", "value": "subject:science"},
-                    {"label": "Other", "value": "other"}
-                ]
-            },
-            {
-                "name": "goals",
-                "placeholder": "Describe learning goals, deadlines, or specific topics",
-                "type": "text_area",
-                "label": "Learning Goals (Optional)",
-                "required": False
-            },
-            {
-                "name": "preferred_times",
-                "placeholder": "e.g., Monday 19:00, Wednesday 20:00",
-                "type": "text_area",
-                "label": "Preferred Lesson Times",
-                "required": True
-            },
-            {
-                "name": "lesson_mode",
-                "label": "Lesson Format",
-                    "type": "select",
-                "required": True,
-                    "options": [
-                    {"label": "💻 Online", "value": "online"},
-                    {"label": "🏠 In-person", "value": "in_person"},
-                    {"label": "🔀 Hybrid", "value": "hybrid"}
-                ]
-            }
-        ]
-        form_content = "Please fill in the student information:"
-    else:
-        # Dutch version
-        form_items = [
-            {
-                "name": "learner_name",
-                "placeholder": "Vul de volledige naam van de leerling in",
-                "type": "text",
-                "label": "Naam Leerling",
-                "required": True
-            },
-            {
-                "name": "school_level",
-                "label": "Onderwijsniveau",
-                "type": "select",
-                "required": True,
-                "options": [
-                    {"label": "Basisschool", "value": "po"},
-                    {"label": "VMBO", "value": "vmbo"},
-                    {"label": "HAVO", "value": "havo"},
-                    {"label": "VWO", "value": "vwo"},
-                    {"label": "MBO", "value": "mbo"},
-                    {"label": "Universiteit (WO)", "value": "university_wo"},
-                    {"label": "Universiteit (HBO)", "value": "university_hbo"},
-                    {"label": "Volwassenenonderwijs", "value": "adult"}
-                ]
-            },
-            {
-                "name": "subject",
-                "label": "Vak/Onderwerp",
-                "type": "select",
-                "required": True,
-                "options": [
-                    {"label": "Wiskunde", "value": "subject:math"},
-                    {"label": "Statistiek", "value": "subject:stats"},
-                    {"label": "Engels", "value": "subject:english"},
-                    {"label": "Programmeren", "value": "subject:programming"},
-                    {"label": "Natuurkunde", "value": "subject:science"},
-                    {"label": "Scheikunde", "value": "subject:science"},
-                    {"label": "Anders", "value": "other"}
-                ]
-            },
-            {
-                "name": "goals",
-                "placeholder": "Beschrijf leerdoelen, deadlines of specifieke onderwerpen",
-                    "type": "text_area",
-                "label": "Leerdoelen (Optioneel)",
-                "required": False
-            },
-            {
-                "name": "preferred_times",
-                "placeholder": "bijv. maandag 19:00, woensdag 20:00",
-                "type": "text_area",
-                "label": "Voorkeurslesmomenten",
-                "required": True
-            },
-            {
-                "name": "lesson_mode",
-                "label": "Lesvorm",
-                "type": "select",
-                "required": True,
-                "options": [
-                    {"label": "💻 Online", "value": "online"},
-                    {"label": "🏠 Fysiek", "value": "in_person"},
-                    {"label": "🔀 Hybride", "value": "hybrid"}
-                ]
-            }
-        ]
-        form_content = "Vul de gegevens van de leerling in:"
-    
-    # Try form first
-    data = {
-        "content": form_content,
-        "content_type": "form",
-        "content_attributes": {
-            "items": form_items
-        },
-        "message_type": "outgoing",
-        "private": False
-    }
-    
-    try:
-        response = requests.post(url, headers=headers, json=data)
-        if response.status_code == 200:
-            print(f"✅ Intake form sent successfully")
-            return True
-        else:
-            print(f"❌ Intake form failed: {response.status_code} - {response.text[:100]}")
-            return False
-    except Exception as e:
-        print(f"❌ Intake form error: {e}")
-        return False
 
-def send_intake_fallback(conversation_id, lang):
-    """Fallback: send intake as interactive menu instead of form"""
-    print(f"📋 Starting interactive intake flow")
-    
-    # Set the intake step to start with learner_name
-    set_conv_attrs(conversation_id, {
-        "pending_intent": "intake",
-        "intake_step": "learner_name"
-    })
-    
-    # Send the first question
-    if lang == "en":
-        send_text_with_duplicate_check(conversation_id, "What is the student's full name?")
-    else:
-        send_text_with_duplicate_check(conversation_id, "Wat is de volledige naam van de leerling?")
-    
-    return True
+
+
+
 
 # Note: All API functions are now imported from cw_api module
 # The old functions have been replaced with the new ChatwootAPI class
@@ -1571,6 +1768,17 @@ PLANNING_PROFILES = {
         "slot_step_minutes": 30,
         "exclude_weekends": False,
         "allowed_weekdays": [5, 6]  # Saturday, Sunday
+    },
+    "premium": {
+        "duration_minutes": 90,  # Longer lessons for premium
+        "earliest_hour": 8,
+        "latest_hour": 22,
+        "min_lead_minutes": 240,  # 4 hours notice
+        "buffer_before_min": 20,
+        "buffer_after_min": 20,
+        "days_ahead": 21,  # 3 weeks ahead
+        "slot_step_minutes": 30,
+        "exclude_weekends": False  # Premium includes weekends
     }
 }
 
@@ -1587,8 +1795,9 @@ def suggest_slots(conversation_id, profile_name):
     now = datetime.now(TZ)
     slots = []
     
-    # Generate slots for the next 14 days
-    for i in range(14):
+    # Generate slots for more days for premium service
+    days_to_generate = profile.get("days_ahead", 14)
+    for i in range(days_to_generate):
         date = now + timedelta(days=i)
         
         # Skip weekends if exclude_weekends is True
@@ -1643,8 +1852,11 @@ def suggest_slots(conversation_id, profile_name):
                         "label": slot_label
                     })
     
-    # Return first 8 slots, prioritizing preferred times
-    return slots[:8]
+    # Return more slots for premium service, fewer for others
+    if profile_name == "premium":
+        return slots[:12]  # More options for premium
+    else:
+        return slots[:8]  # Standard number for others
 
 def book_slot(conversation_id, start_time, end_time, title, description):
     """Book a slot in Google Calendar"""
@@ -1749,6 +1961,30 @@ def cw():
     contact_id = data.get("contact", {}).get("id") or data.get("sender", {}).get("id", "unknown")
     message_content = data.get("content", "")[:50] + "..." if len(data.get("content", "")) > 50 else data.get("content", "")
     event_str = event.upper() if event else "UNKNOWN"
+    
+    # Create a unique webhook ID for idempotency
+    message_id = data.get("id") or data.get("message", {}).get("id")
+    webhook_id = f"{conversation_id}_{message_id}_{event}"
+    
+    # Check if we've already processed this exact webhook
+    import hashlib
+    webhook_hash = hashlib.md5(webhook_id.encode()).hexdigest()
+    
+    # Use a simple in-memory cache for webhook deduplication
+    if not hasattr(cw, 'processed_webhooks'):
+        cw.processed_webhooks = set()
+    
+    if webhook_hash in cw.processed_webhooks:
+        print(f"🔄 Duplicate webhook detected: {webhook_id} - skipping")
+        return "OK", 200
+    
+    # Add to processed set (keep last 1000 webhooks)
+    cw.processed_webhooks.add(webhook_hash)
+    if len(cw.processed_webhooks) > 1000:
+        cw.processed_webhooks.clear()  # Reset to prevent memory leaks
+
+    # Log all webhook events for debugging
+    print(f"📨 Webhook received: {event_str} | Type: {msg_type} | Conv:{conversation_id} | Contact:{contact_id} | ID:{message_id}")
 
     # Only process incoming user messages
     if event != "message_created" or msg_type != "incoming":
@@ -1811,7 +2047,7 @@ def handle_message_created(data):
     sender = data.get("sender", {})
     
     cid = conversation.get("id")
-    contact_id = sender.get("id")
+    contact_id = sender.get("id") or data.get("contact", {}).get("id")
     msg_content = data.get("content", "").strip()
     
     # Check for interactive button payloads
@@ -1830,9 +2066,10 @@ def handle_message_created(data):
     # Check for duplicate message processing (but allow responses to bot prompts)
     conv_attrs = get_conv_attrs(cid)
     last_processed_message = conv_attrs.get("last_processed_message", "")
+    last_bot_message = conv_attrs.get("last_bot_message", "")
     pending_intent = conv_attrs.get("pending_intent", "")
     
-    # Only check for duplicates if we're not waiting for a user response
+    # Check for duplicate user message (but allow responses to bot prompts)
     if msg_content == last_processed_message and not pending_intent:
         print(f"🔄 Duplicate message detected: '{msg_content[:50]}{'...' if len(msg_content) > 50 else ''}' - skipping")
         return
@@ -1896,8 +2133,8 @@ def handle_message_created(data):
         handle_handoff_menu_selection(cid, contact_id, msg_content, lang)
         return
     
-    # Handle language selection FIRST (including input_select values and numbers)
-    if msg_content.lower() in ["🇳🇱 nederlands", "nl", "nederlands", "dutch", "🇳🇱", "lang_nl", "nederlands", "1", "1.", "🇳🇱 nederlands", "nederlands"] or "🇳🇱" in msg_content:
+    # Handle language selection (removed numbers to avoid conflicts with menu options)
+    if msg_content.lower() in ["🇳🇱 nederlands", "nl", "nederlands", "dutch", "🇳🇱", "lang_nl", "nederlands"] or "🇳🇱" in msg_content:
         print(f"🇳🇱 Language set to Dutch")
         set_contact_attrs(contact_id, {"language": "nl"})
         set_conv_attrs(cid, {"language_just_set": True})
@@ -1909,7 +2146,7 @@ def handle_message_created(data):
         show_segment_menu(cid, contact_id, segment, "nl")
         return
     
-    if msg_content.lower() in ["🇬🇧 english", "en", "english", "engels", "🇬🇧", "lang_en", "english", "2", "2.", "🇬🇧 english", "engels"] or "🇬🇧" in msg_content:
+    if msg_content.lower() in ["🇬🇧 english", "english", "engels", "🇬🇧", "lang_en"] or "🇬🇧" in msg_content:
         print(f"🇬🇧 Language set to English")
         set_contact_attrs(contact_id, {"language": "en"})
         set_conv_attrs(cid, {"language_just_set": True})
@@ -1921,33 +2158,23 @@ def handle_message_created(data):
         show_segment_menu(cid, contact_id, segment, "en")
         return
     
-    # Check if language needs to be prompted (for existing conversations)
+    # Check if language needs to be prompted (ONLY ONCE per conversation)
     if not contact_attrs.get("language") and not conv_attrs.get("language_prompted"):
-        # Auto-detect language from message for existing conversations too
+        # Auto-detect language from message (ONLY ONCE)
         detected_lang = detect_language_from_message(msg_content)
-        print(f"🌍 Auto-detected language (existing conversation): {detected_lang}")
+        print(f"🌍 Auto-detected language (first time): {detected_lang}")
         
         # Set the detected language
         set_contact_attrs(contact_id, {"language": detected_lang})
-        set_conv_attrs(cid, {"language_prompted": True})
+        set_conv_attrs(cid, {"language_prompted": True, "language_detection_disabled": True})
         
         # Update lang variable for rest of processing
         lang = detected_lang
-        print(f"✅ Language set to: {lang}")
+        print(f"✅ Language set to: {lang} (detection disabled)")
     
-    # Check if language needs to be prompted (after prefill attempt)
-    if not contact_attrs.get("language") and not conv_attrs.get("language_prompted"):
-        # Auto-detect language from message
-        detected_lang = detect_language_from_message(msg_content)
-        print(f"🌍 Auto-detected language: {detected_lang}")
-        
-        # Set the detected language
-        set_contact_attrs(contact_id, {"language": detected_lang})
-        set_conv_attrs(cid, {"language_prompted": True})
-        
-        # Update lang variable for rest of processing
-        lang = detected_lang
-        print(f"✅ Language set to: {lang}")
+    # If language detection is disabled, don't auto-detect anymore
+    if conv_attrs.get("language_detection_disabled"):
+        print(f"🚫 Language detection disabled - only manual language switching allowed")
     
     # If language is already set, don't ask again
     if contact_attrs.get("language"):
@@ -1963,9 +2190,31 @@ def handle_message_created(data):
         not conv_attrs.get("prefill_processed_for_message") == msg_content and
         not conv_attrs.get("prefill_confirmation_sent") and
         OPENAI_API_KEY):
-        # Skip if it's just a greeting or very short message
-        if len(msg_content) > 20:
-            print(f"🤖 Attempting to prefill intake from first message...")
+        # Check if this is a detailed message (not just a greeting)
+        # Look for common greeting words and check if there's substantial content beyond that
+        greeting_words = ["hallo", "hello", "hi", "hey", "goedemorgen", "goedemiddag", "goedenavond", "good morning", "good afternoon", "good evening"]
+        msg_lower = msg_content.lower().strip()
+        
+        # Check if message contains greeting words
+        has_greeting = any(word in msg_lower for word in greeting_words)
+        
+        # If it's just a greeting (short message with only greeting words), skip prefill
+        if has_greeting and len(msg_content.strip()) < 30:
+            print(f"👋 Short greeting detected - skipping prefill, will show bot introduction")
+        elif len(msg_content.strip()) >= 30:
+            # For longer messages, always do prefill regardless of greeting words
+            print(f"📝 Long message detected - proceeding with prefill analysis")
+            
+            # For detailed messages, detect language first if not already set
+            if not contact_attrs.get("language"):
+                detected_lang = detect_language_from_message(msg_content)
+                print(f"🌍 Auto-detected language for prefill: {detected_lang}")
+                set_contact_attrs(contact_id, {"language": detected_lang})
+                lang = detected_lang
+            else:
+                lang = contact_attrs.get("language")
+            
+            print(f"🤖 Attempting to prefill intake from first message in {lang}...")
             prefilled = prefill_intake_from_message(msg_content, cid)
             
             if prefilled:
@@ -1992,86 +2241,196 @@ def handle_message_created(data):
                 
                 # Basic information
                 if prefilled.get("learner_name"):
-                    detected_info.append(f"👤 *Naam*: {prefilled['learner_name']}")
+                    detected_info.append(f"👤 *{t('name_label', lang)}*: {prefilled['learner_name']}")
                 
                 if prefilled.get("school_level"):
                     level_display = {
-                        "po": "Basisschool",
+                        "po": t("level_po", lang),
                         "vmbo": "VMBO", 
                         "havo": "HAVO",
                         "vwo": "VWO",
                         "mbo": "MBO",
-                        "university_wo": "Universiteit (WO)",
-                        "university_hbo": "Universiteit (HBO)",
-                        "adult": "Volwassenenonderwijs"
+                        "university_wo": t("level_university_wo", lang),
+                        "university_hbo": t("level_university_hbo", lang),
+                        "adult": t("level_adult", lang)
                     }
                     level_text = level_display.get(prefilled['school_level'], prefilled['school_level'])
-                    detected_info.append(f"🎓 *Niveau*: {level_text}")
+                    detected_info.append(f"🎓 *{t('level_label', lang)}*: {level_text}")
                 
                 # Subject information - show only the specific variant if available
                 if prefilled.get("topic_secondary"):
-                    detected_info.append(f"📚 *Vak*: {prefilled['topic_secondary']}")
+                    detected_info.append(f"📚 *{t('subject_label', lang)}*: {prefilled['topic_secondary']}")
                 elif prefilled.get("topic_primary"):
                     topic_display = {
-                        "math": "Wiskunde",
-                        "stats": "Statistiek", 
-                        "english": "Engels",
-                        "programming": "Programmeren",
-                        "science": "Natuurkunde",
-                        "chemistry": "Scheikunde"
+                        "math": t("subject_math", lang),
+                        "stats": t("subject_stats", lang), 
+                        "english": t("subject_english", lang),
+                        "programming": t("subject_programming", lang),
+                        "science": t("subject_science", lang),
+                        "chemistry": t("subject_chemistry", lang)
                     }
                     topic_text = topic_display.get(prefilled['topic_primary'], prefilled['topic_primary'])
-                    detected_info.append(f"📚 *Vak*: {topic_text}")
+                    detected_info.append(f"📚 *{t('subject_label', lang)}*: {topic_text}")
                 
                 # Additional information
-                # referral_source is removed from intake process
-                
-
-                
                 if prefilled.get("goals"):
-                    detected_info.append(f"🎯 *Leerdoelen*: {prefilled['goals']}")
+                    detected_info.append(f"🎯 *{t('goals_label', lang)}*: {prefilled['goals']}")
                 
                 if prefilled.get("preferred_times"):
-                    detected_info.append(f"⏰ *Voorkeur tijd*: {prefilled['preferred_times']}")
+                    detected_info.append(f"⏰ *{t('preferred_times_label', lang)}*: {prefilled['preferred_times']}")
                 
                 if prefilled.get("location_preference"):
-                    detected_info.append(f"📍 *Locatie voorkeur*: {prefilled['location_preference']}")
+                    detected_info.append(f"📍 *{t('location_preference_label', lang)}*: {prefilled['location_preference']}")
                 
                 if prefilled.get("contact_name") and prefilled.get("for_who") != "self":
-                    detected_info.append(f"👤 *Contactpersoon*: {prefilled['contact_name']}")
-                
-                # Urgency is analyzed but not displayed in confirmation (for future use)
-                # if prefilled.get("urgency"):
-                #     detected_info.append(f"💥 *Urgentie*: {prefilled['urgency']}")
+                    detected_info.append(f"👤 *{t('contact_person_label', lang)}*: {prefilled['contact_name']}")
                 
                 if prefilled.get("for_who"):
                     for_who_display = {
-                        "self": "Zichzelf",
-                        "child": "Kind",
-                        "student": "Student",
-                        "other": "Iemand anders"
+                        "self": t("for_who_self", lang),
+                        "child": t("for_who_child", lang),
+                        "student": t("for_who_student", lang),
+                        "other": t("for_who_other", lang)
                     }
                     for_who_text = for_who_display.get(prefilled['for_who'], prefilled['for_who'])
-                    detected_info.append(f"👥 *Voor wie*: {for_who_text}")
+                    detected_info.append(f"👥 *{t('for_who_label', lang)}*: {for_who_text}")
                 
-                if prefilled.get("relationship_to_learner"):
-                    relationship_display = {
-                        "self": "Zichzelf",
-                        "parent": "Ouder",
-                        "teacher": "Docent",
-                        "other": "Anders"
+                # Show detected information and ask for confirmation
+                if detected_info:
+                    # Always show all detected information, don't truncate
+                    # This helps users see what was actually detected
+                    print(f"📋 Showing {len(detected_info)} detected fields: {[info.split(':')[0] for info in detected_info]}")
+                    
+                    # Create the summary message
+                    summary_msg = f"📋 *Wat ik van je bericht begrepen heb:*\n\n" + "\n".join(detected_info)
+                    
+                    # Send welcome message first
+                    if len(msg_content.strip()) > 30:
+                        # Detailed message - use shorter introduction
+                        welcome_msg = t("bot_introduction_detailed", lang, detected_lang=lang, other_lang="English" if lang == "nl" else "Nederlands")
+                    else:
+                        # Short greeting - use full introduction with tip
+                        welcome_msg = t("bot_introduction_enhanced", lang, detected_lang=lang, other_lang="English" if lang == "nl" else "Nederlands")
+                    
+                    send_text_with_duplicate_check(cid, welcome_msg)
+                    
+                    # Send the prefill summary
+                    send_text_with_duplicate_check(cid, summary_msg)
+                    
+                    # Show prefill confirmation menu
+                    show_prefill_action_menu(cid, contact_id, lang)
+                    
+                    # Set pending intent for prefill confirmation
+                    set_conv_attrs(cid, {
+                        "pending_intent": "prefill_confirmation",
+                        "prefill_confirmation_sent": True,
+                        "original_message_processed": msg_content
+                    })
+                    return
+                else:
+                    print(f"⚠️ No information detected from prefill - falling back to normal flow")
+            else:
+                print(f"⚠️ Prefill failed - falling back to normal flow")
+        else:
+            # For detailed messages, detect language first if not already set
+            if not contact_attrs.get("language"):
+                detected_lang = detect_language_from_message(msg_content)
+                print(f"🌍 Auto-detected language for prefill: {detected_lang}")
+                set_contact_attrs(contact_id, {"language": detected_lang})
+                lang = detected_lang
+            else:
+                lang = contact_attrs.get("language")
+            
+            print(f"🤖 Attempting to prefill intake from first message in {lang}...")
+            prefilled = prefill_intake_from_message(msg_content, cid)
+            
+            if prefilled:
+                # Apply prefilled information to conversation attributes
+                current_attrs = get_conv_attrs(cid)
+                current_attrs.update(prefilled)
+                current_attrs["has_been_prefilled"] = True
+                current_attrs["prefill_processed_for_message"] = msg_content  # Mark this message as processed
+                
+                # If we created a child contact, also store the child contact ID
+                if prefilled.get("child_contact_id"):
+                    current_attrs["child_contact_id"] = prefilled["child_contact_id"]
+                    print(f"📝 Stored child contact ID {prefilled['child_contact_id']} in conversation attributes")
+                
+                set_conv_attrs(cid, current_attrs)
+                
+                # Also set contact attributes if we have a contact
+                contact_attrs = get_contact_attrs(contact_id)
+                contact_attrs.update(prefilled)
+                set_contact_attrs(contact_id, contact_attrs)
+                
+                # Show user what was detected with comprehensive confirmation
+                detected_info = []
+                
+                # Basic information
+                if prefilled.get("learner_name"):
+                    detected_info.append(f"👤 *{t('name_label', lang)}*: {prefilled['learner_name']}")
+                
+                if prefilled.get("school_level"):
+                    level_display = {
+                        "po": t("level_po", lang),
+                        "vmbo": "VMBO", 
+                        "havo": "HAVO",
+                        "vwo": "VWO",
+                        "mbo": "MBO",
+                        "university_wo": t("level_university_wo", lang),
+                        "university_hbo": t("level_university_hbo", lang),
+                        "adult": t("level_adult", lang)
                     }
-                    relationship_text = relationship_display.get(prefilled['relationship_to_learner'], prefilled['relationship_to_learner'])
-                    detected_info.append(f"👨‍👩‍👧‍👦 *Relatie*: {relationship_text}")
+                    level_text = level_display.get(prefilled['school_level'], prefilled['school_level'])
+                    detected_info.append(f"🎓 *{t('level_label', lang)}*: {level_text}")
                 
+                # Subject information - show only the specific variant if available
+                if prefilled.get("topic_secondary"):
+                    detected_info.append(f"📚 *{t('subject_label', lang)}*: {prefilled['topic_secondary']}")
+                elif prefilled.get("topic_primary"):
+                    topic_display = {
+                        "math": t("subject_math", lang),
+                        "stats": t("subject_stats", lang), 
+                        "english": t("subject_english", lang),
+                        "programming": t("subject_programming", lang),
+                        "science": t("subject_science", lang),
+                        "chemistry": t("subject_chemistry", lang)
+                    }
+                    topic_text = topic_display.get(prefilled['topic_primary'], prefilled['topic_primary'])
+                    detected_info.append(f"📚 *{t('subject_label', lang)}*: {topic_text}")
+                
+                # Additional information
+                if prefilled.get("goals"):
+                    detected_info.append(f"🎯 *{t('goals_label', lang)}*: {prefilled['goals']}")
+                
+                if prefilled.get("preferred_times"):
+                    detected_info.append(f"⏰ *{t('preferred_times_label', lang)}*: {prefilled['preferred_times']}")
+                
+                if prefilled.get("location_preference"):
+                    detected_info.append(f"📍 *{t('location_preference_label', lang)}*: {prefilled['location_preference']}")
+                
+                if prefilled.get("contact_name") and prefilled.get("for_who") != "self":
+                    detected_info.append(f"👤 *{t('contact_person_label', lang)}*: {prefilled['contact_name']}")
+                
+                if prefilled.get("for_who"):
+                    for_who_display = {
+                        "self": t("for_who_self", lang),
+                        "child": t("for_who_child", lang),
+                        "student": t("for_who_student", lang),
+                        "other": t("for_who_other", lang)
+                    }
+                    for_who_text = for_who_display.get(prefilled['for_who'], prefilled['for_who'])
+                    detected_info.append(f"👥 *{t('for_who_label', lang)}*: {for_who_text}")
+                
+                # Show detected information and ask for confirmation
                 if detected_info:
                     # Always show all detected information, don't truncate
                     # This helps users see what was actually detected
                     print(f"📋 Showing {len(detected_info)} detected fields: {[info.split(':')[0] for info in detected_info]}")
                     
                     # Calculate approximate length of confirmation text
-                    base_text = "📋 *Wat ik van je bericht begrepen heb:*\n\n"
-                    footer_text = "\n\n❓ *Klopt dit allemaal?*"
+                    base_text = t("prefill_confirmation_header", lang) + "\n\n"
+                    footer_text = "\n\n" + t("prefill_confirmation_footer", lang)
                     max_info_length = 1024 - len(base_text) - len(footer_text) - 50  # 50 chars buffer
                     
                     # Only truncate if absolutely necessary
@@ -2091,49 +2450,21 @@ def handle_message_created(data):
                         detected_info = truncated_info
                         print(f"⚠️ Truncated to {len(detected_info)} fields due to length limit")
                     
-                    # Generate a personalized response based on Simon's message using OpenAI
-                    try:
-                        response_prompt = f"""
-                        Je bent een vriendelijke, professionele wiskunde tutor bot. Een student heeft je dit bericht gestuurd:
-                        
-                        "{msg_content}"
-                        
-                        Geef een warm, persoonlijk antwoord dat:
-                        1. Begint met "🤖 [BOT] Hoi! Ik ben de TutorBot van Stephen..."
-                        2. Reageert op wat ze specifiek hebben geschreven
-                        3. Toont dat je hun situatie begrijpt
-                        4. Geruststellend en behulpzaam is
-                        5. Niet te lang is (max 3-4 zinnen)
-                        6. Natuurlijk en vriendelijk klinkt
-                        7. Eindigt met "Mocht ik een beetje raar reageren, dan neemt Stephen binnen 2 uur contact met je op."
-                        
-                        Antwoord in het Nederlands.
-                        """
-                        
-                        response = openai.chat.completions.create(
-                            model="gpt-3.5-turbo",
-                            messages=[
-                                {"role": "system", "content": "Je bent een vriendelijke, professionele wiskunde tutor die studenten helpt."},
-                                {"role": "user", "content": response_prompt}
-                            ],
-                            max_tokens=150,
-                            temperature=0.7
-                        )
-                        
-                        direct_response = response.choices[0].message.content.strip()
-                        print(f"🤖 Generated personalized response: {direct_response}")
-                        
-                    except Exception as e:
-                        print(f"❌ Error generating personalized response: {e}")
-                        # Fallback to a simple but relevant response
-                        direct_response = f"🤖 [BOT] Hoi! Ik ben de TutorBot van Stephen. Bedankt voor je bericht. Ik zie dat je hulp zoekt met wiskunde B voor je schoolexamen in maart. Mocht ik een beetje raar reageren, dan neemt Stephen binnen 2 uur contact met je op."
+                    # First send a welcome message - choose based on message type
+                    # For detailed messages (prefill), use shorter introduction without tip
+                    # For short greetings, use full introduction with tip
+                    if len(msg_content.strip()) > 30:
+                        # Detailed message - use shorter introduction
+                        welcome_msg = t("bot_introduction_detailed", lang, detected_lang=lang, other_lang="English" if lang == "nl" else "Nederlands")
+                    else:
+                        # Short greeting - use full introduction with tip
+                        welcome_msg = t("bot_introduction_enhanced", lang, detected_lang=lang, other_lang="English" if lang == "nl" else "Nederlands")
                     
-                    # Send the personalized response first
-                    send_text_with_duplicate_check(cid, direct_response)
+                    send_text_with_duplicate_check(cid, welcome_msg)
                     
                     # Then send the prefill confirmation with proper WhatsApp formatting
-                    confirmation_text = f"📋 *Wat ik van je bericht begrepen heb:*\n\n" + "\n".join(detected_info)
-                    confirmation_text += f"\n\n❓ *Klopt dit allemaal?*"
+                    confirmation_text = t("prefill_confirmation_header", lang) + "\n\n" + "\n".join(detected_info)
+                    confirmation_text += "\n\n" + t("prefill_confirmation_footer", lang)
                     
                     # Set pending intent for confirmation and mark that confirmation was sent
                     # Also mark this original message as processed to prevent re-processing
@@ -2142,11 +2473,14 @@ def handle_message_created(data):
                         "prefill_confirmation_sent": True,
                         "original_message_processed": msg_content  # Mark this message as processed
                     })
-                    send_interactive_menu(cid, confirmation_text, [
-                        ("✅ Ja, dat klopt", "confirm_all"),
-                        ("❌ Nee, aanpassen", "correct_all"),
-                        ("🤔 Deels correct", "correct_partial")
+                    
+                    # Use send_input_select_only to ensure the menu appears correctly
+                    send_input_select_only(cid, confirmation_text, [
+                        (t("prefill_confirm_all", lang), "confirm_all"),
+                        (t("prefill_correct_all", lang), "correct_all"),
+                        (t("prefill_correct_partial", lang), "correct_partial")
                     ])
+                    return
                 
                 print(f"✅ Applied prefill: {list(prefilled.keys())}")
                 
@@ -2268,6 +2602,42 @@ def handle_message_created(data):
         print(f"📄 Processing info menu selection")
         handle_info_menu_selection(cid, contact_id, msg_content, lang)
         return
+    
+    # Handle prefill action selections (after confirmation)
+    if conv_attrs.get("pending_intent") == "prefill_action":
+        print(f"🎯 Processing prefill action menu selection")
+        
+        # Handle trial lesson planning
+        if msg_content.lower() in ["plan_trial_lesson", "proefles plannen", "plan trial lesson", "1"] or "📅" in msg_content:
+            print(f"📅 User wants to plan trial lesson")
+            set_conv_attrs(cid, {"pending_intent": ""})
+            start_planning_flow(cid, contact_id, lang)
+            return
+        
+        # Handle go to main menu
+        if msg_content.lower() in ["go_to_main_menu", "meer informatie", "more information", "2"] or "📋" in msg_content:
+            print(f"📋 User wants to go to main menu")
+            set_conv_attrs(cid, {"pending_intent": ""})
+            show_info_menu(cid, lang)
+            return
+        
+        # Handle handoff
+        if msg_content.lower() in ["handoff", "met stephen spreken", "3"] or "👨‍🏫" in msg_content:
+            print(f"👨‍🏫 User wants to speak with Stephen")
+            set_conv_attrs(cid, {"pending_intent": ""})
+            send_handoff_message(cid, t("handoff_teacher", lang))
+            return
+        
+        # If no valid option, show the action menu again
+        print(f"❓ Unknown prefill action option: '{msg_content}' - showing action menu again")
+        action_menu_title = t("prefill_action_menu_title", lang)
+        action_menu_options = [
+            (t("prefill_action_trial_lesson", lang), "plan_trial_lesson"),
+            (t("prefill_action_main_menu", lang), "go_to_main_menu"),
+            (t("prefill_action_handoff", lang), "handoff")
+        ]
+        send_input_select_only(cid, action_menu_title, action_menu_options)
+        return
         print(f"🧹 Processing wipe confirmation: '{msg_content}'")
         
         if msg_content.upper() in ["JA WIPE", "JA", "YES", "CONFIRM"]:
@@ -2348,13 +2718,18 @@ def handle_message_created(data):
     
     # Check if this is a general greeting or unclear message
     # If no pending intent and message doesn't match any menu options, show the bot introduction
-    if not conv_attrs.get("pending_intent"):
+    # Only do this if we haven't already processed prefill and no language is set
+    if not conv_attrs.get("pending_intent") and not conv_attrs.get("has_been_prefilled") and not contact_attrs.get("language"):
         # Check if this looks like a general greeting or unclear message
         greeting_words = ["hallo", "hello", "hi", "hey", "goedemorgen", "goedemiddag", "goedenavond", "good morning", "good afternoon", "good evening"]
         msg_lower = msg_content.lower().strip()
         
-        if any(word in msg_lower for word in greeting_words) or len(msg_content.strip()) < 10:
-            print(f"👋 General greeting detected - showing bot introduction")
+        # Check if this is just a greeting (short message with only greeting words)
+        has_greeting = any(word in msg_lower for word in greeting_words)
+        is_short_message = len(msg_content.strip()) < 30
+        
+        if has_greeting and is_short_message:
+            print(f"👋 Short greeting detected - showing segment menu")
             
             # Detect language from the message
             detected_lang = detect_language_from_message(msg_content)
@@ -2363,28 +2738,20 @@ def handle_message_created(data):
             # Set the detected language as contact attribute
             set_contact_attrs(contact_id, {"language": detected_lang})
             
-            # Prepare bot introduction with language detection
-            if detected_lang == "nl":
-                detected_lang_text = t("bot_introduction_detected_nl", "nl")
-                other_lang_text = t("bot_introduction_detected_en", "nl")
-                other_lang_code = "en"
-            else:
-                detected_lang_text = t("bot_introduction_detected_en", "en")
-                other_lang_text = t("bot_introduction_detected_nl", "en")
-                other_lang_code = "nl"
-            
             # Send bot introduction
-            intro_text = t("bot_introduction", detected_lang).format(
-                detected_lang=detected_lang_text,
-                other_lang=other_lang_text
-            )
-            send_text_with_duplicate_check(cid, intro_text)
+            welcome_msg = t("bot_introduction_enhanced", detected_lang, detected_lang=detected_lang, other_lang="English" if detected_lang == "nl" else "Nederlands")
+            send_text_with_duplicate_check(cid, welcome_msg)
             
-            # Then show the help menu
+            # Show segment menu for short greetings (like normal flow)
+            segment = detect_segment(contact_id)
             show_segment_menu(cid, contact_id, segment, detected_lang)
             return
     
-    handle_menu_selection(cid, contact_id, msg_content, lang)
+    # Only handle menu selection if we've already shown a menu to the user
+    # This prevents treating the first message as a menu selection
+    if conv_attrs.get("menu_shown") or conv_attrs.get("pending_intent"):
+        print(f"🔘 Handling menu selection for existing conversation")
+        handle_menu_selection(cid, contact_id, msg_content, lang)
 
 def show_info_menu(cid, lang):
     """Show information menu with detailed options"""
@@ -2392,10 +2759,12 @@ def show_info_menu(cid, lang):
     print(f"🔧 Setting pending_intent to 'info_menu' for conversation {cid}")
     set_conv_attrs(cid, {"pending_intent": "info_menu"})
     print(f"🔧 Pending intent set, now sending interactive menu")
-    send_interactive_menu(cid, t("info_menu_question", lang), [
+    send_input_select_only(cid, t("info_menu_question", lang), [
+        (t("menu_option_trial_lesson", lang), "trial_lesson"),
         (t("menu_option_plan_lesson", lang), "plan_lesson"),
         (t("menu_tariffs", lang), "tariffs"),
         (t("menu_work_method", lang), "work_method"),
+        (t("menu_how_lessons_work", lang), "how_lessons_work"),
         (t("menu_services", lang), "services"),
         (t("menu_travel_costs", lang), "travel_costs"),
         (t("menu_conditions", lang), "conditions"),
@@ -2472,93 +2841,33 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
             set_contact_attrs(contact_id, current_contact_attrs)
             print(f"✅ Applied prefilled info to contact: {list(prefilled_info.keys())}")
         
-        # Check if we have sufficient information for a trial lesson
-        if is_prefill_sufficient_for_trial_lesson(prefilled_info):
-            # We have good information, proceed to trial lesson planning
-            contact_name = prefilled_info.get("contact_name", "")
-            learner_name = prefilled_info.get("learner_name", "")
-            topic = prefilled_info.get("topic_secondary", "")
-            
-            print(f"🔍 Debug greeting: contact_name='{contact_name}', for_who='{prefilled_info.get('for_who')}', learner_name='{learner_name}'")
-            
-            if contact_name and prefilled_info.get("for_who") == "child":
-                # Parent writing for child - use parent's name
-                confirmation_msg = f"Perfect {contact_name}! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
-                print(f"✅ Using contact_name: {contact_name}")
-            elif learner_name:
-                # Student writing for themselves - use their name
-                confirmation_msg = f"Perfect {learner_name}! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
-                print(f"✅ Using learner_name: {learner_name}")
-            else:
-                confirmation_msg = f"Perfect! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
-                print(f"✅ Using generic greeting")
-            
-            send_text_with_duplicate_check(cid, confirmation_msg)
-            
-            # Clear pending intent and go to planning flow
-            set_conv_attrs(cid, {"pending_intent": ""})
-            
-            # Start planning flow directly
-            start_planning_flow(cid, contact_id, lang)
-        else:
-            # Not enough information for direct trial lesson, but we have some info
-            print(f"📋 Not enough info for direct trial lesson, but we have {len(prefilled_info)} fields")
-            
-            # Build a comprehensive summary of all available information
-            info_summary = []
-            
-            if prefilled_info.get("learner_name"):
-                info_summary.append(f"👤 *Naam*: {prefilled_info['learner_name']}")
-            
-            if prefilled_info.get("school_level"):
-                level_display = {
-                    "po": "Basisschool", "vmbo": "VMBO", "havo": "HAVO", "vwo": "VWO",
-                    "mbo": "MBO", "university_wo": "Universiteit (WO)", "university_hbo": "Universiteit (HBO)", "adult": "Volwassenenonderwijs"
-                }
-                level_text = level_display.get(prefilled_info['school_level'], prefilled_info['school_level'])
-                info_summary.append(f"🎓 *Niveau*: {level_text}")
-            
-            if prefilled_info.get("topic_secondary"):
-                info_summary.append(f"📚 *Vak*: {prefilled_info['topic_secondary']}")
-            elif prefilled_info.get("topic_primary"):
-                topic_display = {
-                    "math": "Wiskunde", "stats": "Statistiek", "english": "Engels",
-                    "programming": "Programmeren", "science": "Natuurkunde", "chemistry": "Scheikunde"
-                }
-                topic_text = topic_display.get(prefilled_info['topic_primary'], prefilled_info['topic_primary'])
-                info_summary.append(f"📚 *Vak*: {topic_text}")
-            
-            if prefilled_info.get("goals"):
-                info_summary.append(f"🎯 *Leerdoelen*: {prefilled_info['goals']}")
-            
-            if prefilled_info.get("preferred_times"):
-                info_summary.append(f"⏰ *Voorkeur tijd*: {prefilled_info['preferred_times']}")
-            
-            if prefilled_info.get("toolset"):
-                info_summary.append(f"🛠️ *Tool*: {prefilled_info['toolset']}")
-            
-            if prefilled_info.get("lesson_mode"):
-                mode_display = {"online": "Online", "offline": "Offline", "hybrid": "Hybride"}
-                mode_text = mode_display.get(prefilled_info['lesson_mode'], prefilled_info['lesson_mode'])
-                info_summary.append(f"💻 *Lesvorm*: {mode_text}")
-            
-            if prefilled_info.get("for_who"):
-                for_who_display = {"self": "Zichzelf", "child": "Kind", "student": "Student", "other": "Iemand anders"}
-                for_who_text = for_who_display.get(prefilled_info['for_who'], prefilled_info['for_who'])
-                info_summary.append(f"👥 *Voor wie*: {for_who_text}")
-            
-            # Create comprehensive confirmation message
-            if info_summary:
-                summary_text = "\n".join(info_summary)
-                confirmation_msg = f"📋 *Wat ik van je bericht begrepen heb:*\n\n{summary_text}\n\n✅ *Bedankt! Ik heb deze informatie kunnen verwerken.*"
-            else:
-                confirmation_msg = "Bedankt! Ik heb een deel van je informatie kunnen verwerken."
-            
-            send_text_with_duplicate_check(cid, confirmation_msg)
-            
-            # Show info menu to get more information
-            show_info_menu(cid, lang)
+        # Create child contact if this is a parent writing for their child
+        if prefilled_info.get("for_who") == "child" and prefilled_info.get("learner_name"):
+            child_contact_id = create_child_contact(prefilled_info, cid)
+            if child_contact_id:
+                prefilled_info["child_contact_id"] = child_contact_id
+                print(f"👶 Created child contact: {child_contact_id} for {prefilled_info['learner_name']}")
+                # Update contact attributes with child contact ID
+                current_contact_attrs["child_contact_id"] = child_contact_id
+                set_contact_attrs(contact_id, current_contact_attrs)
         
+        # Use smart extraction check to determine flow
+        smart_check_result = smart_extraction_check(prefilled_info)
+        
+        # Mark that prefill has been confirmed
+        set_conv_attrs(cid, {
+            "prefill_confirmation_sent": True,
+            "use_prefill": True  # Flag to use prefill in planning flow
+        })
+        
+        # Always show prefill action menu after confirmation
+        # This gives user choice between planning trial lesson or going to main menu
+        print(f"🎯 Showing prefill action menu after confirmation")
+        
+        # Show prefill action menu to ask if they want to plan trial lesson or go to main menu
+        show_prefill_action_menu_after_confirmation(cid, contact_id, lang)
+
+    
     elif msg_content == "correct_all" or any(word in msg_lower for word in deny_words):
         print(f"❌ User wants to correct prefill information")
         # Clear prefill and start fresh intake
@@ -2575,7 +2884,7 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
             "referral_source": ""
         })
         
-        send_text_with_duplicate_check(cid, "Geen probleem! Laten we het stap voor stap doorlopen. Ik stel je een paar vragen om je zo goed mogelijk te kunnen helpen.")
+        send_text_with_duplicate_check(cid, t("prefill_step_by_step", lang))
         start_intake_flow(cid, contact_id, lang)
         
     elif msg_content == "correct_partial" or any(word in msg_lower for word in partial_words):
@@ -2587,7 +2896,7 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
             "has_been_prefilled": False
         })
         
-        send_text_with_duplicate_check(cid, "Begrijpelijk! Laten we de informatie stap voor stap controleren. Ik stel je een paar vragen om alles goed in te vullen.")
+        send_text_with_duplicate_check(cid, t("prefill_check_info", lang))
         start_intake_flow(cid, contact_id, lang)
         
     else:
@@ -2598,7 +2907,7 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
         if unclear_count >= 2:
             # After 2 unclear responses, proceed with prefill anyway
             print(f"⚠️ Multiple unclear responses ({unclear_count}), proceeding with prefill")
-            send_text_with_duplicate_check(cid, "Ik ga ervan uit dat de informatie klopt en ga verder met de intake. Je kunt later altijd nog dingen aanpassen.")
+            send_text_with_duplicate_check(cid, t("prefill_assume_correct", lang))
             
             # Clear the unclear count and proceed with confirmation
             set_conv_attrs(cid, {"prefill_unclear_count": 0})
@@ -2672,9 +2981,9 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
                 # Information is incomplete, go to main menu
                 learner_name = prefilled_info.get("learner_name", "")
                 if learner_name:
-                    confirmation_msg = f"Bedankt {learner_name}! Ik heb een deel van je informatie kunnen verwerken. Laten we verder gaan met de intake om alles goed in te vullen."
+                    confirmation_msg = f"Bedankt {learner_name}! Ik heb een deel van je informatie kunnen verwerken.\n\n{t('general_greeting_tip', lang)}\n\nLaten we verder gaan met de intake om alles goed in te vullen."
                 else:
-                    confirmation_msg = "Bedankt! Ik heb een deel van je informatie kunnen verwerken. Laten we verder gaan met de intake om alles goed in te vullen."
+                    confirmation_msg = f"Bedankt! Ik heb een deel van je informatie kunnen verwerken.\n\n{t('general_greeting_tip', lang)}\n\nLaten we verder gaan met de intake om alles goed in te vullen."
                 
                 send_text_with_duplicate_check(cid, confirmation_msg)
                 
@@ -2684,10 +2993,16 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
                 # Show main menu
                 show_info_menu(cid, lang)
         else:
-            # First or second unclear response, ask for clarification
+            # First or second unclear response, ask for clarification with interactive menu
             print(f"❓ Unclear prefill confirmation response (attempt {unclear_count + 1})")
             set_conv_attrs(cid, {"prefill_unclear_count": unclear_count + 1})
-            send_text_with_duplicate_check(cid, "Sorry, ik begrijp je antwoord niet helemaal. Kun je kiezen uit:\n\n• ✅ Ja, dat klopt helemaal\n• ❌ Nee, ik wil het aanpassen\n• 🤔 Deels correct, ik wil details wijzigen")
+            
+            # Send interactive menu for clarification
+            send_input_select_only(cid, "❓ Sorry, ik begrijp je antwoord niet helemaal. Kun je kiezen uit:", [
+                (t("prefill_confirm_all", lang), "confirm_all"),
+                (t("prefill_correct_all", lang), "correct_all"),
+                (t("prefill_correct_partial", lang), "correct_partial")
+            ])
 
 def handle_info_menu_selection(cid, contact_id, msg_content, lang):
     """Handle info menu selections"""
@@ -2699,109 +3014,244 @@ def handle_info_menu_selection(cid, contact_id, msg_content, lang):
         start_planning_flow(cid, contact_id, lang)
         return
     
+    # Handle greetings first
+    greeting_words = ["hi", "hello", "hey", "hallo", "hoi", "goedemorgen", "goedemiddag", "goedenavond", "good morning", "good afternoon", "good evening"]
+    if msg_content.lower().strip() in greeting_words:
+        print(f"👋 Greeting detected: '{msg_content}'")
+        greeting_msg = t("greeting_response", lang)
+        send_text_with_duplicate_check(cid, greeting_msg)
+        return
+    
+    # Smart analysis for free text questions
+    # If the message doesn't match any menu options, try to analyze it as a question
+    if not any([
+        msg_content.lower() in ["tariffs", "tarieven", "2"] or "💰" in msg_content,
+        msg_content.lower() in ["work_method", "werkwijze", "3"] or "🎯" in msg_content,
+        msg_content.lower() in ["services", "diensten", "4"] or "📚" in msg_content,
+        msg_content.lower() in ["travel_costs", "reiskosten", "5"] or "🚗" in msg_content,
+        msg_content.lower() in ["last_minute", "last-minute", "6"] or "⏰" in msg_content,
+        msg_content.lower() in ["conditions", "voorwaarden", "7"] or "📋" in msg_content,
+        msg_content.lower() in ["weekend_programs", "weekend programma's", "8"] or "🌅" in msg_content,
+        msg_content.lower() in ["short_version", "korte versie", "9"] or "📝" in msg_content,
+        msg_content.lower() in ["personal_background", "persoonlijke achtergrond", "11"] or "👨‍🏫 persoonlijke" in msg_content.lower(),
+        msg_content.lower() in ["didactic_methods", "didactische methoden", "12"] or "📚 didactische" in msg_content.lower(),
+        msg_content.lower() in ["technology_tools", "technologie tools", "13"] or "💻 technologie" in msg_content.lower(),
+        msg_content.lower() in ["results_success", "resultaten succes", "14"] or "🏆 resultaten" in msg_content.lower(),
+        msg_content.lower() in ["workshops_creative", "creatieve workshops", "15"] or "🎨 creatieve" in msg_content.lower(),
+        msg_content.lower() in ["workshops_academic", "academische workshops", "16"] or "🎓 academische" in msg_content.lower(),
+        msg_content.lower() in ["consultancy", "advies", "17"] or "💼 consultancy" in msg_content.lower(),
+        msg_content.lower() in ["back_to_main", "terug naar hoofdmenu", "0"] or "⬅️" in msg_content
+    ]):
+        print(f"🤖 Analyzing free text question: '{msg_content}'")
+        
+        # Use OpenAI to analyze the question
+        analysis = analyze_info_request_with_openai(msg_content, cid)
+        
+        if analysis and analysis.get("primary_category"):
+            primary_category = analysis.get("primary_category")
+            confidence = analysis.get("confidence", 0.0)
+            
+            print(f"🎯 Analyzed question: {primary_category} (confidence: {confidence})")
+            
+            # If confidence is high enough, provide the relevant information
+            if confidence >= 0.7:
+                # Map the category to the appropriate info
+                if primary_category == "tariffs":
+                    print(f"💰 Smart detection: Showing tariffs")
+                    send_text_with_duplicate_check(cid, t("info_tariffs", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "work_method":
+                    print(f"🎯 Smart detection: Showing work method")
+                    send_text_with_duplicate_check(cid, t("info_work_method", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "services":
+                    print(f"📚 Smart detection: Showing services")
+                    send_text_with_duplicate_check(cid, t("info_services", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "travel_costs":
+                    print(f"🚗 Smart detection: Showing travel costs")
+                    send_text_with_duplicate_check(cid, t("info_travel_costs", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "last_minute":
+                    print(f"⏰ Smart detection: Showing last-minute surcharges")
+                    send_text_with_duplicate_check(cid, t("info_last_minute", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "conditions":
+                    print(f"📋 Smart detection: Showing conditions")
+                    send_text_with_duplicate_check(cid, t("info_conditions", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "weekend_programs":
+                    print(f"🌅 Smart detection: Showing weekend programs")
+                    send_text_with_duplicate_check(cid, t("info_weekend_programs", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "short_version":
+                    print(f"📝 Smart detection: Showing short version")
+                    send_text_with_duplicate_check(cid, t("info_short_version", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "personal_background":
+                    print(f"👨‍🏫 Smart detection: Showing personal background")
+                    send_text_with_duplicate_check(cid, t("info_personal_background", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "didactic_methods":
+                    print(f"📚 Smart detection: Showing didactic methods")
+                    send_text_with_duplicate_check(cid, t("info_didactic_methods", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "technology_tools":
+                    print(f"💻 Smart detection: Showing technology tools")
+                    send_text_with_duplicate_check(cid, t("info_technology_tools", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "results_success":
+                    print(f"🏆 Smart detection: Showing results and success")
+                    send_text_with_duplicate_check(cid, t("info_results_success", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "workshops_creative":
+                    print(f"🎨 Smart detection: Showing creative workshops")
+                    send_text_with_duplicate_check(cid, t("info_workshops_creative", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "workshops_academic":
+                    print(f"🎓 Smart detection: Showing academic workshops")
+                    send_text_with_duplicate_check(cid, t("info_workshops_academic", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "consultancy":
+                    print(f"💼 Smart detection: Showing consultancy")
+                    send_text_with_duplicate_check(cid, t("info_consultancy", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+            
+            # If confidence is low or no category found, try FAQ handler
+            print(f"❓ Low confidence or no category found, trying FAQ handler")
+            if handle_faq_request(cid, contact_id, msg_content, lang):
+                return
+            else:
+                # If FAQ handler also didn't match, show the menu again
+                send_text_with_duplicate_check(cid, t("error_unclear_question", lang))
+                show_info_menu(cid, lang)
+                return
+    
     # Handle tariffs
     if msg_content.lower() in ["tariffs", "tarieven", "2"] or "💰" in msg_content:
         print(f"💰 Showing tariffs")
         send_text_with_duplicate_check(cid, t("info_tariffs", lang))
-        show_info_menu(cid, lang)
+        show_info_follow_up_menu(cid, contact_id, lang)
         return
     
     # Handle work method
     if msg_content.lower() in ["work_method", "werkwijze", "3"] or "🎯" in msg_content:
         print(f"🎯 Showing work method")
         send_text_with_duplicate_check(cid, t("info_work_method", lang))
-        show_info_menu(cid, lang)
+        show_info_follow_up_menu(cid, contact_id, lang)
         return
     
     # Handle services
     if msg_content.lower() in ["services", "diensten", "4"] or "📚" in msg_content:
         print(f"📚 Showing services")
         send_text_with_duplicate_check(cid, t("info_services", lang))
-        show_info_menu(cid, lang)
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle how lessons work
+    if msg_content.lower() in ["how_lessons_work", "hoe lessen werken", "5"] or "📚 hoe lessen" in msg_content.lower():
+        print(f"📚 Showing how lessons work")
+        send_text_with_duplicate_check(cid, t("info_how_lessons_work", lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
         return
     
     # Handle travel costs
-    if msg_content.lower() in ["travel_costs", "reiskosten", "5"] or "🚗" in msg_content:
+    if msg_content.lower() in ["travel_costs", "reiskosten", "6"] or "🚗" in msg_content:
         print(f"🚗 Showing travel costs")
         send_text_with_duplicate_check(cid, t("info_travel_costs", lang))
-        show_info_menu(cid, lang)
+        show_info_follow_up_menu(cid, contact_id, lang)
         return
     
     # Handle last-minute
-    if msg_content.lower() in ["last_minute", "last-minute", "6"] or "⏰" in msg_content:
+    if msg_content.lower() in ["last_minute", "last-minute", "7"] or "⏰" in msg_content:
         print(f"⏰ Showing last-minute surcharges")
         send_text_with_duplicate_check(cid, t("info_last_minute", lang))
-        show_info_menu(cid, lang)
+        show_info_follow_up_menu(cid, contact_id, lang)
         return
     
     # Handle conditions
-    if msg_content.lower() in ["conditions", "voorwaarden", "7"] or "📋" in msg_content:
+    if msg_content.lower() in ["conditions", "voorwaarden", "8"] or "📋" in msg_content:
         print(f"📋 Showing conditions")
         send_text_with_duplicate_check(cid, t("info_conditions", lang))
-        show_info_menu(cid, lang)
+        show_info_follow_up_menu(cid, contact_id, lang)
         return
     
     # Handle weekend programs
-    if msg_content.lower() in ["weekend_programs", "weekend programma's", "8"] or "🌅" in msg_content:
+    if msg_content.lower() in ["weekend_programs", "weekend programma's", "9"] or "🌅" in msg_content:
         print(f"🌅 Showing weekend programs")
         send_text_with_duplicate_check(cid, t("info_weekend_programs", lang))
-        show_info_menu(cid, lang)
+        show_info_follow_up_menu(cid, contact_id, lang)
         return
     
     # Handle short version
-    if msg_content.lower() in ["short_version", "korte versie", "9"] or "📝" in msg_content:
+    if msg_content.lower() in ["short_version", "korte versie", "10"] or "📝" in msg_content:
         print(f"📝 Showing short version")
         send_text_with_duplicate_check(cid, t("info_short_version", lang))
-        show_info_menu(cid, lang)
+        show_info_follow_up_menu(cid, contact_id, lang)
         return
     
     # Handle personal background
     if msg_content.lower() in ["personal_background", "persoonlijke achtergrond", "11"] or "👨‍🏫 persoonlijke" in msg_content.lower():
         print(f"👨‍🏫 Showing personal background")
         send_text_with_duplicate_check(cid, t("info_personal_background", lang))
-        show_info_menu(cid, lang)
+        show_info_follow_up_menu(cid, contact_id, lang)
         return
     
     # Handle didactic methods
     if msg_content.lower() in ["didactic_methods", "didactische methoden", "12"] or "📚 didactische" in msg_content.lower():
         print(f"📚 Showing didactic methods")
         send_text_with_duplicate_check(cid, t("info_didactic_methods", lang))
-        show_info_menu(cid, lang)
+        show_info_follow_up_menu(cid, contact_id, lang)
         return
     
     # Handle technology tools
     if msg_content.lower() in ["technology_tools", "technologie tools", "13"] or "💻 technologie" in msg_content.lower():
         print(f"💻 Showing technology tools")
         send_text_with_duplicate_check(cid, t("info_technology_tools", lang))
-        show_info_menu(cid, lang)
+        show_info_follow_up_menu(cid, contact_id, lang)
         return
     
     # Handle results success
     if msg_content.lower() in ["results_success", "resultaten succes", "14"] or "🏆 resultaten" in msg_content.lower():
         print(f"🏆 Showing results and success")
         send_text_with_duplicate_check(cid, t("info_results_success", lang))
-        show_info_menu(cid, lang)
+        show_info_follow_up_menu(cid, contact_id, lang)
         return
     
     # Handle creative workshops
     if msg_content.lower() in ["workshops_creative", "creatieve workshops", "15"] or "🎨 creatieve" in msg_content.lower():
         print(f"🎨 Showing creative workshops")
         send_text_with_duplicate_check(cid, t("info_workshops_creative", lang))
-        show_info_menu(cid, lang)
+        show_info_follow_up_menu(cid, contact_id, lang)
         return
     
     # Handle academic workshops
     if msg_content.lower() in ["workshops_academic", "academische workshops", "16"] or "🎓 academische" in msg_content.lower():
         print(f"🎓 Showing academic workshops")
         send_text_with_duplicate_check(cid, t("info_workshops_academic", lang))
-        show_info_menu(cid, lang)
+        show_info_follow_up_menu(cid, contact_id, lang)
         return
     
     # Handle consultancy
     if msg_content.lower() in ["consultancy", "advies", "17"] or "💼 consultancy" in msg_content.lower():
         print(f"💼 Showing consultancy")
         send_text_with_duplicate_check(cid, t("info_consultancy", lang))
-        show_info_menu(cid, lang)
+        show_info_follow_up_menu(cid, contact_id, lang)
         return
     
     # Handle back to main info menu
@@ -2826,13 +3276,124 @@ def handle_info_menu_selection(cid, contact_id, msg_content, lang):
     print(f"❓ Unknown info menu option: '{msg_content}' - showing info menu")
     show_info_menu(cid, lang)
 
+def show_prefill_action_menu(cid, contact_id, lang):
+    """Show confirmation menu asking user if the extracted information is correct"""
+    print(f"🎯 Showing prefill confirmation menu in {lang}")
+    
+    try:
+        set_conv_attrs(cid, {"pending_intent": "prefill_confirmation"})
+    except Exception as e:
+        print(f"⚠️ SSL error setting pending_intent: {e}")
+        # Continue anyway - not critical
+    
+    # Send the confirmation question
+    confirmation_text = t("prefill_confirmation_question", lang)
+    send_text_with_duplicate_check(cid, confirmation_text)
+    
+    # Send the confirmation menu using quick_replies
+    menu_title = t("prefill_confirmation_menu_title", lang)
+    menu_options = [
+        (t("prefill_confirm_all", lang), "confirm_all"),
+        (t("prefill_correct_all", lang), "correct_all"),
+        (t("prefill_correct_partial", lang), "correct_partial")
+    ]
+    
+    # Use input_select_only for consistent menu formatting
+    send_input_select_only(cid, menu_title, menu_options)
+
+def show_prefill_action_menu_after_confirmation(cid, contact_id, lang):
+    """Show action menu after prefill confirmation - what does user want to do next?"""
+    print(f"🎯 Showing prefill action menu after confirmation in {lang}")
+    
+    # Get contact attributes to determine age and show appropriate tariffs
+    contact_attrs = get_contact_attrs(contact_id)
+    conv_attrs = get_conv_attrs(cid)
+    
+    # Determine if user is under or over 20 based on prefilled info
+    is_adult = contact_attrs.get('is_adult', False)
+    school_level = contact_attrs.get('school_level', '')
+    
+    # Show appropriate tariffs based on age/level
+    if is_adult or 'university' in school_level.lower() or 'hbo' in school_level.lower():
+        # Over 20 or higher education
+        print(f"💰 Showing tariffs for over 20/higher education")
+        send_text_with_duplicate_check(cid, t("info_tariffs_over_20", lang))
+    else:
+        # Under 20 or secondary education
+        print(f"💰 Showing tariffs for under 20/secondary education")
+        send_text_with_duplicate_check(cid, t("info_tariffs_under_20", lang))
+    
+    # Check if this is an existing customer
+    is_existing = is_existing_customer(contact_attrs)
+    
+    # Send appropriate menu based on customer type
+    action_menu_title = t("prefill_action_menu_title", lang)
+    
+    if is_existing:
+        # Existing customers get the option to plan all lessons
+        action_menu_options = [
+            (t("prefill_action_all_lessons", lang), "plan_all_lessons"),
+            (t("prefill_action_trial_first", lang), "plan_trial_lesson"),
+            (t("prefill_action_main_menu", lang), "go_to_main_menu"),
+            (t("prefill_action_handoff", lang), "handoff")
+        ]
+    else:
+        # New customers only get trial lesson option
+        action_menu_options = [
+            (t("prefill_action_trial_first", lang), "plan_trial_lesson"),
+            (t("prefill_action_main_menu", lang), "go_to_main_menu"),
+            (t("prefill_action_handoff", lang), "handoff")
+        ]
+    
+    print(f"🎯 Action menu title: '{action_menu_title}'")
+    print(f"🎯 Action menu options: {action_menu_options}")
+    print(f"🎯 Customer type: {'existing' if is_existing else 'new'}")
+    
+    try:
+        set_conv_attrs(cid, {"pending_intent": "prefill_action"})
+    except Exception as e:
+        print(f"⚠️ SSL error setting pending_intent: {e}")
+        # Continue anyway - not critical
+    
+    # Use input_select_only for consistent menu formatting
+    result = send_input_select_only(cid, action_menu_title, action_menu_options)
+    print(f"🎯 Menu send result: {result}")
+
+
+
+def show_info_follow_up_menu(cid, contact_id, lang):
+    """Show follow-up menu after displaying information"""
+    print(f"📄 Showing info follow-up menu in {lang}")
+    set_conv_attrs(cid, {"pending_intent": "info_follow_up"})
+    
+    # Get contact attributes to determine if user is existing customer
+    contact_attrs = get_contact_attrs(contact_id)
+    is_existing = is_existing_customer(contact_attrs)
+    
+    if is_existing:
+        # Existing customers get more options
+        send_input_select_only(cid, t("info_follow_up_existing", lang), [
+            (t("menu_option_plan_lesson", lang), "plan_lesson"),
+            (t("menu_more_info", lang), "more_info"),
+            (t("menu_option_handoff", lang), "handoff"),
+            (t("menu_back_to_main", lang), "back_to_main")
+        ])
+    else:
+        # New customers get trial lesson option
+        send_input_select_only(cid, t("info_follow_up_new", lang), [
+            (t("menu_option_trial_lesson", lang), "trial_lesson"),
+            (t("menu_more_info", lang), "more_info"),
+            (t("menu_option_handoff", lang), "handoff"),
+            (t("menu_back_to_main", lang), "back_to_main")
+        ])
+
 def show_detailed_info_menu(cid, lang):
     """Show detailed information menu with all submenu options"""
     print(f"📖 Showing detailed info menu in {lang}")
     print(f"🔧 Setting pending_intent to 'info_menu' for conversation {cid}")
     set_conv_attrs(cid, {"pending_intent": "info_menu"})
     print(f"🔧 Pending intent set, now sending interactive menu")
-    send_interactive_menu(cid, t("detailed_info_menu_text", lang), [
+    send_input_select_only(cid, t("detailed_info_menu_text", lang), [
         (t("menu_personal_background", lang), "personal_background"),
         (t("menu_didactic_methods", lang), "didactic_methods"),
         (t("menu_technology_tools", lang), "technology_tools"),
@@ -2850,10 +3411,22 @@ def handle_handoff_menu_selection(cid, contact_id, msg_content, lang):
     # Handle return to bot
     if msg_content.lower() in ["return_to_bot", "terug naar bot", "bot", "🤖"] or "🤖 terug" in msg_content.lower():
         print(f"🤖 Returning to bot")
-        # Clear handoff state and return to main menu
-        set_conv_attrs(cid, {"pending_intent": "none"})
+        
+        # Remove handoff labels to stop notifications to Stephen
+        remove_conv_labels(cid, ["intent_handoff_duplicate", "intent_handoff_auto", "intent_handoff"])
+        
+        # Clear handoff state completely
+        set_conv_attrs(cid, {
+            "pending_intent": "none",
+            "handoff_state": "none"
+        })
+        
         # Unassign from Stephen (assign back to bot)
         assign_conversation(cid, 1)  # Bot user_id=1
+        
+        # Send confirmation message
+        send_text_with_duplicate_check(cid, t("handoff_return_to_bot", lang))
+        
         # Show main menu
         contact_attrs = get_contact_attrs(contact_id)
         segment = detect_segment(contact_id)
@@ -2898,30 +3471,31 @@ def show_segment_menu(cid, contact_id, segment, lang):
     # Send the menu immediately
     print(f"📋 Sending menu for {segment} segment")
     
-    # No need for menu_sent flag anymore - using last_bot_message for duplicate detection
+    # Set menu_shown flag to indicate we've shown a menu to the user
+    set_conv_attrs(cid, {"menu_shown": True})
     
     if segment == "new":
-        send_interactive_menu(cid, t("menu_new", lang), [
+        send_input_select_only(cid, t("menu_new", lang), [
             (t("menu_option_trial_lesson", lang), "plan_lesson"),
             (t("menu_option_info", lang), "info"),
             (t("menu_option_handoff", lang), "handoff")
         ])
     elif segment == "existing":
-        send_interactive_menu(cid, t("menu_existing", lang), [
+        send_input_select_only(cid, t("menu_existing", lang), [
             (t("menu_option_plan_lesson", lang), "plan_lesson"),
             (t("menu_option_same_preferences", lang), "same_preferences"),
             (t("menu_option_different", lang), "different"),
             (t("menu_option_handoff", lang), "handoff")
         ])
     elif segment == "returning_broadcast":
-        send_interactive_menu(cid, t("menu_returning_broadcast", lang), [
+        send_input_select_only(cid, t("menu_returning_broadcast", lang), [
             (t("menu_option_plan_lesson", lang), "plan_lesson"),
             (t("menu_option_old_preferences", lang), "old_preferences"),
             (t("menu_option_new_intake", lang), "new_intake"),
             (t("menu_option_handoff", lang), "handoff")
         ])
     elif segment == "weekend":
-        send_interactive_menu(cid, t("menu_weekend", lang), [
+        send_input_select_only(cid, t("menu_weekend", lang), [
             (t("menu_option_plan_lesson", lang), "plan_lesson"),
             (t("menu_option_info", lang), "info"),
             (t("menu_option_handoff", lang), "handoff")
@@ -2930,9 +3504,93 @@ def show_segment_menu(cid, contact_id, segment, lang):
 def handle_menu_selection(cid, contact_id, msg_content, lang):
     """Handle main menu selections"""
     contact_attrs = get_contact_attrs(contact_id)
+    conv_attrs = get_conv_attrs(cid)
     segment = contact_attrs.get("segment", "new")
     
     print(f"🔘 Menu selection: '{msg_content}' for {segment} customer")
+    
+    # Handle prefill confirmation menu selections
+    if conv_attrs.get("pending_intent") == "prefill_confirmation":
+        print(f"🤖 Handling prefill confirmation menu selection")
+        handle_prefill_confirmation(cid, contact_id, msg_content, lang)
+        return
+    
+    # Handle prefill action menu selections
+    if conv_attrs.get("pending_intent") == "prefill_action":
+        print(f"🎯 Handling prefill action menu selection")
+        if msg_content == "plan_all_lessons" or msg_content == t("prefill_action_all_lessons", lang):
+            print(f"📅 All lessons planning requested from prefill")
+            # Set flag to indicate premium service (all lessons)
+            set_conv_attrs(cid, {"premium_service": True, "planning_profile": "premium"})
+            start_planning_flow(cid, contact_id, lang)
+            return
+        elif msg_content == "plan_trial_lesson" or msg_content == t("prefill_action_trial_first", lang):
+            print(f"📅 Trial lesson planning requested from prefill")
+            start_planning_flow(cid, contact_id, lang)
+            return
+        elif msg_content == "go_to_main_menu" or msg_content == t("prefill_action_main_menu", lang):
+            print(f"📋 Main menu requested from prefill")
+            show_segment_menu(cid, contact_id, segment, lang)
+            return
+        elif msg_content == "handoff" or msg_content == t("prefill_action_handoff", lang):
+            print(f"👨‍🏫 Handoff requested from prefill")
+            send_handoff_message(cid, t("handoff_teacher", lang))
+            return
+        else:
+            print(f"❓ Unknown prefill action: '{msg_content}'")
+            return
+    
+    # Handle info follow-up menu selections
+    if conv_attrs.get("pending_intent") == "info_follow_up":
+        print(f"📄 Handling info follow-up menu selection")
+        if msg_content == "plan_lesson" or msg_content == t("menu_option_plan_lesson", lang):
+            print(f"📅 Lesson planning requested from info follow-up")
+            start_planning_flow(cid, contact_id, lang)
+            return
+        elif msg_content == "trial_lesson" or msg_content == t("menu_option_trial_lesson", lang):
+            print(f"🎯 Trial lesson planning requested from info follow-up")
+            start_planning_flow(cid, contact_id, lang)
+            return
+        elif msg_content == "more_info" or msg_content == t("menu_more_info", lang):
+            print(f"📖 More info requested from info follow-up")
+            show_detailed_info_menu(cid, lang)
+            return
+        elif msg_content == "handoff" or msg_content == t("menu_option_handoff", lang):
+            print(f"👨‍🏫 Handoff requested from info follow-up")
+            send_handoff_message(cid, t("handoff_teacher", lang))
+            return
+        elif msg_content == "back_to_main" or msg_content == t("menu_back_to_main", lang):
+            print(f"⬅️ Back to main menu requested from info follow-up")
+            show_segment_menu(cid, contact_id, segment, lang)
+            return
+        else:
+            print(f"❓ Unknown info follow-up action: '{msg_content}'")
+            return
+    
+    # Handle post-trial action menu selections
+    if conv_attrs.get("pending_intent") == "post_trial_action":
+        print(f"🎯 Handling post-trial action menu selection")
+        if msg_content == "plan_all_lessons" or msg_content == t("post_trial_plan_all_lessons", lang):
+            print(f"📅 All lessons planning requested after trial")
+            # Set flag to indicate premium service (all lessons)
+            set_conv_attrs(cid, {"premium_service": True, "planning_profile": "premium"})
+            start_planning_flow(cid, contact_id, lang)
+            return
+        elif msg_content == "plan_single_lesson" or msg_content == t("post_trial_plan_single_lesson", lang):
+            print(f"📅 Single lesson planning requested after trial")
+            start_planning_flow(cid, contact_id, lang)
+            return
+        elif msg_content == "go_to_main_menu" or msg_content == t("post_trial_main_menu", lang):
+            print(f"📋 Main menu requested after trial")
+            show_segment_menu(cid, contact_id, segment, lang)
+            return
+        elif msg_content == "handoff" or msg_content == t("post_trial_handoff", lang):
+            print(f"👨‍🏫 Handoff requested after trial")
+            send_handoff_message(cid, t("handoff_teacher", lang))
+            return
+        else:
+            print(f"❓ Unknown post-trial action: '{msg_content}'")
+            return
     
     # Handle lesson planning (trial for new customers, regular for existing)
     if (msg_content.lower() in ["plan_lesson", "les inplannen", "1"] or 
@@ -3009,6 +3667,20 @@ def start_planning_flow(cid, contact_id, lang):
     # Detect current segment
     current_segment = detect_segment(contact_id)
     
+    # Check if this is a premium service request (all lessons)
+    is_premium = conv_attrs.get("premium_service", False)
+    
+    if is_premium:
+        print(f"💎 Premium service requested - planning all lessons")
+        set_conv_attrs(cid, {
+            "planning_profile": "premium",
+            "lesson_type": "premium",
+            "premium_service": True
+        })
+        send_text_with_duplicate_check(cid, t("planning_premium_service", lang))
+        suggest_available_slots(cid, "premium", lang)
+        return
+    
     # Check if intake is already completed for this conversation
     if has_completed_intake(conv_attrs):
         print(f"📅 Intake completed - planning regular lesson")
@@ -3020,24 +3692,97 @@ def start_planning_flow(cid, contact_id, lang):
         suggest_available_slots(cid, current_segment, lang)
     elif is_existing_customer(contact_attrs):
         print(f"📅 Existing customer - planning regular lesson")
-        # Existing customer gets direct planning for regular lesson
-        set_conv_attrs(cid, {
-            "planning_profile": current_segment,
-            "lesson_type": "regular"
-        })
-        send_text_with_duplicate_check(cid, t("planning_regular_lesson", lang))
-        suggest_available_slots(cid, current_segment, lang)
+        # Check if existing customer has completed trial lesson
+        has_completed_trial = contact_attrs.get("trial_lesson_completed", False)
+        
+        if has_completed_trial:
+            # Existing customer who completed trial - show post-trial menu
+            print(f"🎯 Existing customer with completed trial - showing post-trial menu")
+            show_post_trial_menu(cid, contact_id, lang)
+            return
+        else:
+            # Existing customer without trial - direct planning
+            set_conv_attrs(cid, {
+                "planning_profile": current_segment,
+                "lesson_type": "regular"
+            })
+            send_text_with_duplicate_check(cid, t("planning_regular_lesson", lang))
+            suggest_available_slots(cid, current_segment, lang)
     else:
         print(f"🎯 New customer - starting intake for free trial lesson")
         # New customer gets intake flow for free trial lesson
-        set_conv_attrs(cid, {"lesson_type": "trial"})
-        send_text_with_duplicate_check(cid, "🎯 Perfect! Laten we een gratis proefles van 30 minuten inplannen. Ik heb een paar vragen om de les goed voor te bereiden.")
+        # Check if we have confirmed prefill information
+        if conv_attrs.get("has_been_prefilled") and conv_attrs.get("prefill_confirmation_sent"):
+            print(f"✅ Using confirmed prefill information to skip steps")
+            set_conv_attrs(cid, {
+                "lesson_type": "trial",
+                "use_prefill": True  # Flag to use prefill info
+            })
+            send_text_with_duplicate_check(cid, t("planning_trial_lesson_intro", lang))
+            start_intake_flow(cid, contact_id, lang)
+        else:
+            print(f"🔄 No confirmed prefill - starting fresh intake")
+            # Clear any prefill information to start fresh
+            set_conv_attrs(cid, {
+                "lesson_type": "trial",
+                "has_been_prefilled": False,  # Clear prefill flag to start fresh
+                "prefill_processed_for_message": "",  # Clear prefill tracking
+                "prefill_confirmation_sent": False  # Clear confirmation flag
+            })
+        send_text_with_duplicate_check(cid, t("planning_trial_lesson_intro", lang))
         start_intake_flow(cid, contact_id, lang)
 
 def start_intake_flow(cid, contact_id, lang):
     """Start the intake flow with prefill support"""
     print(f"📋 Starting intake flow for Conv:{cid}")
     
+    conv_attrs = get_conv_attrs(cid)
+    contact_attrs = get_contact_attrs(contact_id)
+    
+    # Check if we should use prefill information
+    lesson_type = conv_attrs.get("lesson_type", "")
+    use_prefill = conv_attrs.get("use_prefill", False)
+    
+    if lesson_type == "trial" and use_prefill:
+        print(f"✅ Trial lesson with confirmed prefill - using prefill to skip steps")
+        # Keep prefill information to skip steps
+        # Don't clear anything - we want to use the confirmed prefill info
+    elif lesson_type == "trial":
+        print(f"🎯 Trial lesson requested - starting fresh intake (ignoring prefill)")
+        # Clear any prefill information to start fresh
+        set_conv_attrs(cid, {
+            "has_been_prefilled": False,
+            "prefill_processed_for_message": "",
+            "prefill_confirmation_sent": False,
+            "learner_name": "",
+            "school_level": "",
+            "topic_primary": "",
+            "topic_secondary": "",
+            "goals": "",
+            "preferred_times": "",
+            "lesson_mode": "",
+            "toolset": "",
+            "for_who": "",
+            "relationship_to_learner": "",
+            "contact_name": "",
+            "location_preference": ""
+        })
+        # Also clear contact attributes
+        set_contact_attrs(contact_id, {
+            "learner_name": "",
+            "school_level": "",
+            "topic_primary": "",
+            "topic_secondary": "",
+            "goals": "",
+            "preferred_times": "",
+            "lesson_mode": "",
+            "toolset": "",
+            "for_who": "",
+            "relationship_to_learner": "",
+            "contact_name": "",
+            "location_preference": ""
+        })
+        # Refresh attributes after clearing
     conv_attrs = get_conv_attrs(cid)
     contact_attrs = get_contact_attrs(contact_id)
     
@@ -3123,19 +3868,19 @@ def start_intake_flow(cid, contact_id, lang):
     
     # Send the appropriate question
     if first_step == "for_who":
-        send_interactive_menu(cid, t("intake_for_who", lang), [
+        send_input_select_only(cid, t("intake_for_who", lang), [
             (t("intake_option_self", lang), "self"),
             (t("intake_option_other", lang), "other")
         ])
     elif first_step == "age_check":
-        send_interactive_menu(cid, t("intake_age_check", lang), [
+        send_input_select_only(cid, t("intake_age_check", lang), [
             ("✅ Ja", "yes"),
             ("❌ Nee", "no")
         ])
     elif first_step == "learner_name":
         send_text_with_duplicate_check(cid, t("intake_learner_name", lang))
     elif first_step == "level":
-        send_interactive_menu(cid, t("intake_level", lang), [
+        send_input_select_only(cid, t("intake_level", lang), [
             ("Basisschool", "po"),
             ("VMBO", "vmbo"),
             ("HAVO", "havo"),
@@ -3146,7 +3891,7 @@ def start_intake_flow(cid, contact_id, lang):
             ("Volwassenenonderwijs", "adult")
         ])
     elif first_step == "subject":
-        send_interactive_menu(cid, t("intake_subject", lang), [
+        send_input_select_only(cid, t("intake_subject", lang), [
             ("Wiskunde", "math"),
             ("Statistiek", "stats"),
             ("Engels", "english"),
@@ -3158,7 +3903,7 @@ def start_intake_flow(cid, contact_id, lang):
     elif first_step == "goals":
         send_text_with_duplicate_check(cid, t("intake_goals", lang))
     elif first_step == "toolset":
-        send_interactive_menu(cid, "Welke tools gebruik je graag?", [
+        send_input_select_only(cid, "Welke tools gebruik je graag?", [
             ("Geen specifieke tools", "none"),
             ("Python", "python"),
             ("Excel", "excel"),
@@ -3169,7 +3914,7 @@ def start_intake_flow(cid, contact_id, lang):
     elif first_step == "preferred_times":
         send_text_with_duplicate_check(cid, t("intake_preferred_times", lang))
     elif first_step == "mode":
-        send_interactive_menu(cid, t("intake_mode", lang), [
+        send_input_select_only(cid, t("intake_mode", lang), [
             ("💻 Online", "online"),
             ("🏠 Fysiek", "in_person"),
             ("🔀 Hybride", "hybrid")
@@ -3187,7 +3932,7 @@ def handle_intake_step(cid, contact_id, msg_content, lang):
                 "intake_step": "age_check",
                 "for_who": "self"
             })
-            send_interactive_menu(cid, t("intake_age_check", lang), [
+            send_input_select_only(cid, t("intake_age_check", lang), [
                 ("✅ Ja", "yes"),
                 ("❌ Nee", "no")
             ])
@@ -3197,7 +3942,7 @@ def handle_intake_step(cid, contact_id, msg_content, lang):
                 "intake_step": "relationship",
                 "for_who": "other"
             })
-            send_interactive_menu(cid, t("intake_relationship", lang), [
+            send_input_select_only(cid, t("intake_relationship", lang), [
                 (t("intake_relationship_parent", lang), "parent"),
                 (t("intake_relationship_family", lang), "family"),
                 (t("intake_relationship_teacher", lang), "teacher"),
@@ -3235,7 +3980,7 @@ def handle_intake_step(cid, contact_id, msg_content, lang):
                     "pending_intent": "intake",
                     "intake_step": "level"
                 })
-                send_interactive_menu(cid, t("intake_level", lang), [
+                send_input_select_only(cid, t("intake_level", lang), [
                     ("Basisschool", "po"),
                     ("VMBO", "vmbo"),
                     ("HAVO", "havo"),
@@ -3262,7 +4007,7 @@ def handle_intake_step(cid, contact_id, msg_content, lang):
             send_text_with_duplicate_check(cid, t("intake_guardian_info", lang))
         else:
             print(f"❓ Age check: Unknown response '{msg_content}' - asking again")
-            send_interactive_menu(cid, t("intake_age_check", lang), [
+            send_input_select_only(cid, t("intake_age_check", lang), [
                 ("✅ Ja", "yes"),
                 ("❌ Nee", "no")
             ])
@@ -3309,7 +4054,7 @@ def handle_intake_step(cid, contact_id, msg_content, lang):
         })
         print(f"✅ Saved learner name: {msg_content}")
         print(f"[DEBUG] Intake: child_info ingevuld, door naar level. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
-        send_interactive_menu(cid, t("intake_level", lang), [
+        send_input_select_only(cid, t("intake_level", lang), [
             ("Basisschool", "po"),
             ("VMBO", "vmbo"),
             ("HAVO", "havo"),
@@ -3342,7 +4087,7 @@ def handle_intake_step(cid, contact_id, msg_content, lang):
             "intake_step": "level"
         })
         print(f"[DEBUG] Intake: learner_name ingevuld, door naar level. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
-        send_interactive_menu(cid, t("intake_level", lang), [
+        send_input_select_only(cid, t("intake_level", lang), [
             ("Basisschool", "po"),
             ("VMBO", "vmbo"),
             ("HAVO", "havo"),
@@ -3368,7 +4113,7 @@ def handle_intake_step(cid, contact_id, msg_content, lang):
         add_conv_labels(cid, [level_mapping.get(msg_content, "audience:adult")])
         set_conv_attrs(cid, {"pending_intent": "intake", "intake_step": "subject"})
         print(f"[DEBUG] Intake: level ingevuld, door naar subject. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
-        send_interactive_menu(cid, t("intake_subject", lang), [
+        send_input_select_only(cid, t("intake_subject", lang), [
             ("Wiskunde", "math"),
             ("Statistiek", "stats"),
             ("Engels", "english"),
@@ -3397,7 +4142,7 @@ def handle_intake_step(cid, contact_id, msg_content, lang):
         # Check if we need to ask for specific program
         if msg_content == "math" or msg_content == "stats":
             set_conv_attrs(cid, {"pending_intent": "intake", "intake_step": "program"})
-            send_interactive_menu(cid, "Welk specifiek programma?", [
+            send_input_select_only(cid, "Welk specifiek programma?", [
                 ("Geen specifiek programma", "none"),
                 ("MBO Rekenen 2F", "mbo_rekenen_2f"),
                 ("MBO Rekenen 3F", "mbo_rekenen_3f"),
@@ -3418,7 +4163,7 @@ def handle_intake_step(cid, contact_id, msg_content, lang):
                     "pending_intent": "intake",
                     "intake_step": "toolset"
                 })
-                send_interactive_menu(cid, "Welke tools gebruik je graag?", [
+                send_input_select_only(cid, "Welke tools gebruik je graag?", [
                     ("Geen specifieke tools", "none"),
                     ("Python", "python"),
                     ("Excel", "excel"),
@@ -3449,7 +4194,7 @@ def handle_intake_step(cid, contact_id, msg_content, lang):
                 "pending_intent": "intake",
                 "intake_step": "toolset"
             })
-            send_interactive_menu(cid, "Welke tools gebruik je graag?", [
+            send_input_select_only(cid, "Welke tools gebruik je graag?", [
                 ("Geen specifieke tools", "none"),
                 ("Python", "python"),
                 ("Excel", "excel"),
@@ -3469,7 +4214,7 @@ def handle_intake_step(cid, contact_id, msg_content, lang):
             "intake_step": "toolset"
         })
         print(f"[DEBUG] Intake: goals ingevuld, door naar toolset. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
-        send_interactive_menu(cid, "Welke tools gebruik je graag?", [
+        send_input_select_only(cid, "Welke tools gebruik je graag?", [
             ("Geen specifieke tools", "none"),
             ("Python", "python"),
             ("Excel", "excel"),
@@ -3494,7 +4239,7 @@ def handle_intake_step(cid, contact_id, msg_content, lang):
             "intake_step": "mode"
         })
         print(f"[DEBUG] Intake: preferred_times ingevuld, door naar mode. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
-        send_interactive_menu(cid, t("intake_mode", lang), [
+        send_input_select_only(cid, t("intake_mode", lang), [
             ("💻 Online", "online"),
             ("🏠 Fysiek", "in_person"),
             ("🔀 Hybride", "hybrid")
@@ -3549,9 +4294,16 @@ def suggest_available_slots(cid, profile_name, lang):
     options.append((t("planning_more_options", lang), "more_options"))
     print(f"📅 More options: '{t('planning_more_options', lang)}' -> 'more_options'")
     
-    lesson_text = "Beschikbare tijden voor gratis proefles:" if lesson_type == "trial" else "Beschikbare tijden voor les:"
+    # Determine lesson text based on type
+    if lesson_type == "premium":
+        lesson_text = t("planning_premium_slots", lang)
+    elif lesson_type == "trial":
+        lesson_text = t("planning_trial_slots", lang)
+    else:
+        lesson_text = t("planning_regular_slots", lang)
+    
     print(f"📅 Sending {len(options)} options with text: '{lesson_text}'")
-    send_interactive_menu(cid, lesson_text, options)
+    send_input_select_only(cid, lesson_text, options)
 
 def handle_planning_selection(cid, contact_id, msg_content, lang):
     """Handle planning slot selection"""
@@ -3595,11 +4347,11 @@ def handle_planning_selection(cid, contact_id, msg_content, lang):
                 print(f"🔍 Converted '{msg_content}' to ISO timestamp: {iso_timestamp}")
             else:
                 print(f"⚠️ Could not parse readable time format: '{msg_content}'")
-                send_text_with_duplicate_check(cid, "❌ Ik begrijp de tijd niet. Kies een van de beschikbare tijden.")
+                send_text_with_duplicate_check(cid, t("error_invalid_time", lang))
                 return
         except Exception as e:
             print(f"❌ Error parsing readable time format: {e}")
-            send_text_with_duplicate_check(cid, "❌ Er is een fout opgetreden bij het verwerken van de tijd. Probeer het opnieuw.")
+            send_text_with_duplicate_check(cid, t("error_time_processing", lang))
             return
     else:
         # Invalid input - provide helpful response
@@ -3641,12 +4393,12 @@ def handle_planning_selection(cid, contact_id, msg_content, lang):
             confirmation_msg = f"✅ Perfect! Ik heb een proefles ingepland op {slot_description}.\n\n📧 Voor de bevestiging heb ik nog je e-mailadres nodig. Kun je dat delen?"
             send_text_with_duplicate_check(cid, confirmation_msg)
         else:
-            send_text_with_duplicate_check(cid, "❌ Er is een fout opgetreden bij het inplannen. Probeer het later opnieuw.")
+            send_text_with_duplicate_check(cid, t("error_planning_failed", lang))
             return
             
     except Exception as e:
         print(f"❌ Error parsing slot time: {e}")
-        send_text_with_duplicate_check(cid, "❌ Er is een fout opgetreden bij het verwerken van de tijd. Probeer het opnieuw.")
+        send_text_with_duplicate_check(cid, t("error_time_processing", lang))
         return
     
     # Check lesson type and handle accordingly
@@ -3686,8 +4438,8 @@ def handle_email_request(cid, contact_id, msg_content, lang):
         confirmation_msg = f"📧 Bedankt! Ik heb je e-mailadres ({email}) opgeslagen voor de bevestiging.\n\n{t('email_confirmation', lang)}"
         send_text_with_duplicate_check(cid, confirmation_msg)
         
-        # Clear pending intent
-        set_conv_attrs(cid, {"pending_intent": ""})
+        # Show post-trial menu with option to plan all lessons
+        show_post_trial_menu(cid, contact_id, lang)
         
         print(f"✅ Email stored: {email}")
     else:
@@ -3695,6 +4447,30 @@ def handle_email_request(cid, contact_id, msg_content, lang):
         error_msg = t("email_invalid", lang)
         send_text_with_duplicate_check(cid, error_msg)
         print(f"❌ Invalid email format: {msg_content}")
+
+def show_post_trial_menu(cid, contact_id, lang):
+    """Show menu after trial lesson completion"""
+    print(f"🎯 Showing post-trial menu in {lang}")
+    
+    # Send post-trial message
+    send_text_with_duplicate_check(cid, t("post_trial_message", lang))
+    
+    # Show menu with options
+    menu_title = t("post_trial_menu_title", lang)
+    menu_options = [
+        (t("post_trial_plan_all_lessons", lang), "plan_all_lessons"),
+        (t("post_trial_plan_single_lesson", lang), "plan_single_lesson"),
+        (t("post_trial_main_menu", lang), "go_to_main_menu"),
+        (t("post_trial_handoff", lang), "handoff")
+    ]
+    
+    try:
+        set_conv_attrs(cid, {"pending_intent": "post_trial_action"})
+    except Exception as e:
+        print(f"⚠️ SSL error setting pending_intent: {e}")
+    
+    result = send_input_select_only(cid, menu_title, menu_options)
+    print(f"🎯 Post-trial menu send result: {result}")
 
 def create_payment_request(cid, contact_id, lang):
     """Create payment request"""
@@ -3801,6 +4577,48 @@ def handle_payment_success(event):
         requests.post(url, headers=headers, json=data)
     except:
         pass
+
+def handle_faq_request(cid, contact_id, msg_content, lang):
+    """Handle FAQ requests and provide relevant answers"""
+    print(f"📚 FAQ request: '{msg_content}'")
+    
+    # Common FAQ keywords and their corresponding FAQ numbers
+    faq_keywords = {
+        # Main FAQ keywords
+        "inspiratie": 1, "inspiration": 1, "waarom": 1, "why": 1,
+        "aanpak": 2, "approach": 2, "methoden": 2, "methods": 2,
+        "uniek": 3, "unique": 3, "verschil": 3, "difference": 3,
+        "leerstijlen": 4, "learning styles": 4, "niveaus": 4, "levels": 4,
+        "resultaten": 5, "results": 5, "successen": 5, "success": 5,
+        "organisatie": 6, "organization": 6, "online": 6, "fysiek": 6,
+        "kosten": 7, "costs": 7, "prijzen": 7, "prices": 7, "tarieven": 7,
+        "aanmelden": 8, "sign up": 8, "registreren": 8, "register": 8,
+        "betaling": 9, "payment": 9, "factuur": 9, "invoice": 9,
+        "proefles": 10, "trial": 10, "gratis": 10, "free": 10
+    }
+    
+    # Check if the message contains FAQ keywords
+    msg_lower = msg_content.lower()
+    matched_faq = None
+    
+    for keyword, faq_number in faq_keywords.items():
+        if keyword in msg_lower:
+            matched_faq = faq_number
+            break
+    
+    if matched_faq:
+        # Get the FAQ answer
+        answer_key = f"faq_{matched_faq}_answer"
+        answer = t(answer_key, lang)
+        
+        # Send the FAQ answer
+        send_text_with_duplicate_check(cid, answer)
+        return True
+    
+    # If no specific FAQ matched, offer general FAQ help
+    faq_help_msg = t("faq_general_help", lang)
+    send_text_with_duplicate_check(cid, faq_help_msg)
+    return False
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True) 

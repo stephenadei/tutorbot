@@ -3,6 +3,11 @@
 # TutorBot - Quick Contact Wipe Script
 # Automatically wipes all contacts and conversations from Chatwoot
 
+# Load environment variables from .env file
+if [ -f ".env" ]; then
+    export $(cat .env | grep -v '^#' | xargs)
+fi
+
 echo "🗑️  TutorBot - Quick Contact Wipe"
 echo "=================================="
 echo "📅 $(date)"
@@ -44,7 +49,7 @@ echo "🚀 Starting automatic contact wipe..."
 echo ""
 
 # Run the wipe script with automatic confirmation
-python3 scripts/wipe_contacts.py --auto-wipe
+python3 scripts/data/wipe_contacts.py --auto-wipe
 
 echo ""
 echo "🎉 Contact wipe completed!"
