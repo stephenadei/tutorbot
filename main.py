@@ -605,20 +605,20 @@ def t(key, lang="nl", **kwargs):
             "en": "📅 Schedule all lessons"
         },
         "prefill_action_trial_first": {
-            "nl": "🎯 Eerst proefles",
-            "en": "🎯 Trial lesson first"
+            "nl": "🎯 Gratis proefles (1 uur)",
+            "en": "🎯 Free trial lesson (1 hour)"
         },
         "prefill_action_urgent_session": {
             "nl": "🚨 Spoed: 2-uurs sessie (€120)",
             "en": "🚨 Urgent: 2-hour session (€120)"
         },
         "prefill_action_menu_text": {
-            "nl": "✅ *Perfect!* Ik heb je informatie verwerkt en met Stephen gedeeld zodat hij je zo goed mogelijk kan helpen.",
-            "en": "✅ *Perfect!* I've processed your information and shared it with Stephen so he can help you as best as possible."
+            "nl": "✅ *Perfect!* Ik heb je informatie verwerkt en met Stephen gedeeld zodat hij je zo goed mogelijk kan helpen.\n\n*Opties:*\n• **Gratis proefles**: Kennismaking zonder verplichting\n• **Spoedles**: Directe hulp met betaling\n• **Meer info**: Over Stephen en zijn aanpak\n• **Stephen spreken**: Direct contact",
+            "en": "✅ *Perfect!* I've processed your information and shared it with Stephen so he can help you as best as possible.\n\n*Options:*\n• **Free trial lesson**: Introduction without obligation\n• **Urgent session**: Immediate help with payment\n• **More info**: About Stephen and his approach\n• **Speak to Stephen**: Direct contact"
         },
         "prefill_action_menu_title": {
-            "nl": "✅ Perfect! Wat wil je nu doen?",
-            "en": "✅ Perfect! What would you like to do now?"
+            "nl": "✅ Perfect! Kies je optie:",
+            "en": "✅ Perfect! Choose your option:"
         },
         "preferences_check_title": {
             "nl": "⏰ Zijn je voorkeuren qua lesmomenten nog hetzelfde?",
@@ -3645,6 +3645,10 @@ def show_prefill_action_menu_after_confirmation(cid, contact_id, lang):
                 # Continue without preferences check if there's an error
         else:
             print(f"⏰ No prefill confirmation time found - skipping preferences check")
+    
+    # Send explanation text first
+    explanation_text = t("prefill_action_menu_text", lang)
+    send_text_with_duplicate_check(cid, explanation_text, persist=False)
     
     # Send appropriate menu based on trial completion
     action_menu_title = t("prefill_action_menu_title", lang)
