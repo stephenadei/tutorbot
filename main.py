@@ -3084,12 +3084,36 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
             "use_prefill": True  # Flag to use prefill in planning flow
         })
         
-        # Always show prefill action menu after confirmation
-        # This gives user choice between planning trial lesson or going to main menu
-        print(f"🎯 Showing prefill action menu after confirmation")
-        
-        # Show prefill action menu to ask if they want to plan trial lesson or go to main menu
-        show_prefill_action_menu_after_confirmation(cid, contact_id, lang)
+        # Check if we have sufficient information for a trial lesson
+        if is_prefill_sufficient_for_trial_lesson(prefilled_info):
+            # We have good information, proceed directly to trial lesson planning
+            contact_name = prefilled_info.get("contact_name", "")
+            learner_name = prefilled_info.get("learner_name", "")
+            topic = prefilled_info.get("topic_secondary", "")
+            
+            print(f"🔍 Debug greeting: contact_name='{contact_name}', for_who='{prefilled_info.get('for_who')}', learner_name='{learner_name}'")
+            
+            if contact_name and prefilled_info.get("for_who") == "child":
+                # Parent writing for child - use parent's name
+                confirmation_msg = f"Perfect {contact_name}! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
+                print(f"✅ Using contact_name: {contact_name}")
+            elif learner_name:
+                # Student writing for themselves - use their name
+                confirmation_msg = f"Perfect {learner_name}! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
+                print(f"✅ Using learner_name: {learner_name}")
+            else:
+                confirmation_msg = f"Perfect! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
+                print(f"✅ Using generic greeting")
+            
+            send_text_with_duplicate_check(cid, confirmation_msg)
+            
+            # Clear pending intent and go directly to planning flow
+            set_conv_attrs(cid, {"pending_intent": ""})
+            start_planning_flow(cid, contact_id, lang)
+        else:
+            # Not enough information, show action menu to get more info
+            print(f"🎯 Not enough info for trial lesson - showing action menu")
+            show_prefill_action_menu_after_confirmation(cid, contact_id, lang)
 
     
     elif msg_content == "correct_all" or any(word in msg_lower for word in deny_words):
