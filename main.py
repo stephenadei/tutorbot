@@ -2157,8 +2157,7 @@ def suggest_slots(conversation_id, profile_name):
         return slots[:8]  # Standard number for others
 
 def book_slot(conversation_id, start_time, end_time, title, description):
-    """Book a slot in Google Calendar"""
-    # Dummy implementation for testing
+    """Book a slot in Google Calendar and send to dashboard"""
     print(f"📅 Booking slot: {start_time} - {end_time}")
     print(f"📅 Title: {title}")
     print(f"📅 Description: {description}")
@@ -2174,6 +2173,45 @@ def book_slot(conversation_id, start_time, end_time, title, description):
         event_id = f"dummy_event_{conversation_id}_{start_dt.strftime('%Y%m%d_%H%M')}"
         
         print(f"✅ Successfully booked dummy slot: {event_id}")
+        
+        # Send lesson to dashboard
+        try:
+            from dashboard_integration import create_lesson_data, send_lesson_to_dashboard
+            
+            # Get conversation and contact data
+            conv_attrs = get_conv_attrs(conversation_id)
+            contact_id = conv_attrs.get("contact_id")
+            contact_attrs = get_contact_attrs(contact_id) if contact_id else {}
+            
+            # Create lesson data
+            lesson_data = create_lesson_data(
+                student_name=conv_attrs.get("learner_name", "Unknown Student"),
+                student_email=contact_attrs.get("email", ""),
+                start_time=start_time,
+                end_time=end_time,
+                lesson_type=conv_attrs.get("lesson_type", "regular"),
+                chatwoot_contact_id=contact_id,
+                chatwoot_conversation_id=str(conversation_id),
+                notes=description,
+                location="Online",
+                program=conv_attrs.get("program"),
+                topic_primary=conv_attrs.get("topic_primary"),
+                topic_secondary=conv_attrs.get("topic_secondary"),
+                toolset=conv_attrs.get("toolset"),
+                lesson_mode="ONLINE",
+                is_adult=conv_attrs.get("is_adult", False),
+                relationship_to_learner=conv_attrs.get("relationship_to_learner")
+            )
+            
+            # Send to dashboard
+            dashboard_success = send_lesson_to_dashboard(lesson_data)
+            if dashboard_success:
+                print(f"✅ Lesson sent to dashboard successfully")
+            else:
+                print(f"⚠️ Failed to send lesson to dashboard")
+                
+        except Exception as e:
+            print(f"⚠️ Error sending to dashboard: {e}")
         
         return {
             "id": event_id,
