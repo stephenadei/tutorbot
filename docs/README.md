@@ -12,6 +12,9 @@ Welcome to the TutorBot documentation! This comprehensive guide covers everythin
 
 ### 🏗️ **Architecture & Setup**
 - **[Project Organization](ARCHITECTURE/PROJECT_ORGANIZATION.md)** - Code structure and conventions
+- **[Planning Profiles](ARCHITECTURE/PLANNING_PROFILES.md)** - Customer segmentation and scheduling system
+- **[Prefill Confirmation Flow](ARCHITECTURE/PREFILL_CONFIRMATION_FLOW.md)** - Critical user confirmation flow with WhatsApp menus
+- **[Webhook System](ARCHITECTURE/WEBHOOK_SYSTEM.md)** - Webhook deduplication and error handling
 - **[Age Verification](SETUP/AGE_VERIFICATION.md)** - Age verification system setup
 
 ### 🔧 **Development**
@@ -21,6 +24,7 @@ Welcome to the TutorBot documentation! This comprehensive guide covers everythin
 
 ### 🔌 **Integration**
 - **[Integration Roadmap](INTEGRATION/INTEGRATION_ROADMAP.md)** - Current and planned integrations
+- **[Stripe Payment Integration](INTEGRATION/STRIPE_PAYMENT_INTEGRATION.md)** - Complete Stripe payment system
 - **[WhatsApp Formatting](INTEGRATION/WHATSAPP_FORMATTING.md)** - WhatsApp message formatting guide
 
 ### 📡 **API Reference**
@@ -31,6 +35,8 @@ Welcome to the TutorBot documentation! This comprehensive guide covers everythin
 
 ### 📖 **Reference**
 - **[Documentation Structure](REFERENCE/DOCUMENTATION_STRUCTURE.md)** - How this documentation is organized
+- **[Email Conventions](REFERENCE/EMAIL_CONVENTIES.md)** - Email formatting standards
+- **[Calendar Email Conventions](REFERENCE/KALENDER_EMAIL_CONVENTIES.md)** - Calendar email standards
 
 ## 🎯 **Quick Navigation**
 
@@ -41,8 +47,11 @@ Welcome to the TutorBot documentation! This comprehensive guide covers everythin
 
 ### **For Developers:**
 1. Read [Project Organization](ARCHITECTURE/PROJECT_ORGANIZATION.md)
-2. Follow the [Git Workflow](WORKFLOWS/GIT_WORKFLOW.md)
-3. Check [Testing Structure](DEVELOPMENT/TESTING_STRUCTURE.md)
+2. Understand [Planning Profiles](ARCHITECTURE/PLANNING_PROFILES.md)
+3. Review [Prefill Confirmation Flow](ARCHITECTURE/PREFILL_CONFIRMATION_FLOW.md) - Critical for WhatsApp menus
+4. Study [Webhook System](ARCHITECTURE/WEBHOOK_SYSTEM.md) - Error handling and deduplication
+5. Follow the [Git Workflow](WORKFLOWS/GIT_WORKFLOW.md)
+6. Check [Testing Structure](DEVELOPMENT/TESTING_STRUCTURE.md)
 
 ### **For Deployment:**
 1. Use [Docker Setup](SETUP/DOCKER.md)

@@ -19,6 +19,25 @@ Before diving into specific issues, run through this checklist:
 
 ## 🚨 Common Issues
 
+### **Webhook Errors**
+
+#### **TypeError: object of type 'NoneType' has no len()**
+**Error**: `TypeError: object of type 'NoneType' has no len()` at line 2102
+
+**Cause**: Webhook content can be `None`, causing length check to fail
+
+**Solution**: Fixed in main.py line 2102
+```python
+# Before (causing error):
+message_content = data.get("content", "")[:50] + "..." if len(data.get("content", "")) > 50 else data.get("content", "")
+
+# After (fixed):
+content = data.get("content", "")
+message_content = content[:50] + "..." if content and len(content) > 50 else content or ""
+```
+
+**Prevention**: Always check for `None` values before string operations
+
 ### 1. Application Won't Start
 
 #### Symptoms

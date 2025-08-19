@@ -8,7 +8,10 @@ docs/
 ├── API/                                # API Documentation
 │   └── CURRENT_MOCKED_FUNCTIONS.md    # Mock API implementations
 ├── ARCHITECTURE/                       # Architecture & Design
-│   └── PROJECT_ORGANIZATION.md        # Code structure & conventions
+│   ├── PROJECT_ORGANIZATION.md        # Code structure & conventions
+│   ├── PLANNING_PROFILES.md           # Customer segmentation system
+│   ├── PREFILL_CONFIRMATION_FLOW.md   # Critical user confirmation flow
+│   └── WEBHOOK_SYSTEM.md              # Webhook deduplication & error handling
 ├── DEPLOYMENT/                         # Deployment & Operations
 │   └── TROUBLESHOOTING.md             # Common issues & solutions
 ├── DEVELOPMENT/                        # Development Guides
@@ -17,9 +20,12 @@ docs/
 ├── INTEGRATION/                        # Integration Guides
 │   ├── README.md                      # Integration index
 │   ├── INTEGRATION_ROADMAP.md         # Current & planned integrations
+│   ├── STRIPE_PAYMENT_INTEGRATION.md  # Complete Stripe payment system
 │   └── WHATSAPP_FORMATTING.md         # WhatsApp message formatting
 ├── REFERENCE/                          # Reference Materials
-│   └── DOCUMENTATION_STRUCTURE.md     # Documentation organization
+│   ├── DOCUMENTATION_STRUCTURE.md     # Documentation organization
+│   ├── EMAIL_CONVENTIES.md            # Email formatting standards
+│   └── KALENDER_EMAIL_CONVENTIES.md   # Calendar email standards
 ├── SETUP/                              # Setup & Configuration
 │   ├── README.md                      # Setup index
 │   ├── AGE_VERIFICATION.md            # Age verification setup
@@ -139,7 +145,7 @@ docs/README.md → docs/DEPLOYMENT/TROUBLESHOOTING.md
 
 ## ✅ **Result**
 
-- **19 organized files** instead of scattered documentation
+- **22 organized files** instead of scattered documentation
 - **8 logical directories** with clear purposes
 - **Index files** for easy navigation
 - **Consistent structure** across all documentation

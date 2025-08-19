@@ -10,9 +10,6 @@
 # ├── Dockerfile                 # Docker image
 # ├── env_example.txt           # Environment variables template
 # ├── README.md                 # Project documentation
-            # ├── wipe.sh                   # Quick contact wipe script
-            # ├── wipe_all.sh               # Quick data wipe script (labels + attributes)
-            # ├── help.sh                   # Help and documentation script
 # ├── config/                   # Configuration files
 # │   ├── contact_attributes.yaml
 # │   ├── conversation_attributes.yaml
@@ -25,9 +22,21 @@
 # │   ├── wipe_contacts.py
 # │   ├── wipe_all.py
 # │   ├── setup_automation_rules.py
-# │   └── audit_attributes.py
+# │   ├── audit_attributes.py
+# │   ├── data/                 # Data management scripts
+# │   │   ├── wipe.sh           # Quick contact wipe script
+# │   │   └── wipe_all.sh       # Quick data wipe script
+# │   └── help.sh               # Help and documentation script
 # └── docs/                     # Documentation
-#     └── README_chatwoot_setup.md
+#     ├── README.md             # Main documentation index
+#     ├── API/                  # API documentation
+#     ├── ARCHITECTURE/         # Architecture & design
+#     ├── DEPLOYMENT/           # Deployment & operations
+#     ├── DEVELOPMENT/          # Development guides
+#     ├── INTEGRATION/          # Integration guides
+#     ├── REFERENCE/            # Reference materials
+#     ├── SETUP/                # Setup & configuration
+#     └── WORKFLOWS/            # Development workflows
 
 ## 🚨 CRITICAL RULES
 
@@ -199,6 +208,6 @@ Before creating any new file or script, verify:
 - Configuration examples: tutorbot/config/
 - Setup scripts: tutorbot/scripts/
 - Documentation: tutorbot/docs/
-- Quick scripts: tutorbot/wipe.sh, tutorbot/help.sh
+- Quick scripts: tutorbot/scripts/data/wipe.sh, tutorbot/scripts/help.sh
 
 Remember: ALWAYS work within the tutorbot/ directory structure! 
