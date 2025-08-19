@@ -91,7 +91,7 @@ def test_real_email_sending():
         
         # Test sending a simple email
         result = service.send_email(
-            to_email="test@stephenadei.nl",
+            to_email="stephen@stephenadei.nl",
             subject="Test Email - Real Service",
             body="Dit is een test email van de real email service.",
             from_name="TutorBot Test"
@@ -99,7 +99,7 @@ def test_real_email_sending():
         
         if result:
             print("✅ Real email sent successfully!")
-            print("📧 Check test@stephenadei.nl for the email")
+            print("📧 Check stephen@stephenadei.nl for the email")
             return True
         else:
             print("❌ Real email sending failed!")
@@ -120,7 +120,7 @@ def test_trial_confirmation_email():
         
         # Test sending a trial confirmation
         result = service.send_trial_confirmation(
-            to_email="test@stephenadei.nl",
+            to_email="stephen@stephenadei.nl",
             student_name="Test Student",
             lesson_date="2024-01-15",
             lesson_time="14:00"
@@ -128,7 +128,7 @@ def test_trial_confirmation_email():
         
         if result:
             print("✅ Trial confirmation email sent successfully!")
-            print("📧 Check test@stephenadei.nl for the trial confirmation")
+            print("📧 Check stephen@stephenadei.nl for the trial confirmation")
             return True
         else:
             print("❌ Trial confirmation email failed!")
