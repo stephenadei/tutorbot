@@ -196,6 +196,22 @@ def t(key, lang="nl", **kwargs):
             "nl": "Meer opties",
             "en": "More options"
         },
+        "ask_for_preferences": {
+            "nl": "🤔 Wat zijn je voorkeuren voor de les?\n\nVertel me bijvoorbeeld:\n• Welke dagen je voorkeur hebt (maandag, woensdag, etc.)\n• Welke tijden je het beste uitkomen (ochtend, middag, avond)\n• Of je specifieke tijden hebt (bijv. 'om 15:00')\n\nIk ga dan 3 momenten voorstellen die bij je passen!",
+            "en": "🤔 What are your preferences for the lesson?\n\nTell me for example:\n• Which days you prefer (Monday, Wednesday, etc.)\n• Which times work best for you (morning, afternoon, evening)\n• If you have specific times (e.g. 'at 3:00 PM')\n\nI'll then suggest 3 moments that suit you!"
+        },
+        "planning_trial_slots_ai": {
+            "nl": "🎯 Ik heb 3 momenten voor je proefles geselecteerd op basis van je voorkeuren:\n\nKies een moment dat je uitkomt:",
+            "en": "🎯 I've selected 3 moments for your trial lesson based on your preferences:\n\nChoose a moment that works for you:"
+        },
+        "planning_regular_slots_ai": {
+            "nl": "📅 Ik heb 3 momenten voor je les geselecteerd op basis van je voorkeuren:\n\nKies een moment dat je uitkomt:",
+            "en": "📅 I've selected 3 moments for your lesson based on your preferences:\n\nChoose a moment that works for you:"
+        },
+        "planning_premium_slots_ai": {
+            "nl": "💎 Ik heb 3 momenten voor je premium service geselecteerd op basis van je voorkeuren:\n\nKies een moment dat je uitkomt:",
+            "en": "💎 I've selected 3 moments for your premium service based on your preferences:\n\nChoose a moment that works for you:"
+        },
         "planning_weekend_only": {
             "nl": "Voor deze planning zijn slots op za/zo tussen 10:00–18:00 beschikbaar. Zal ik opties sturen?",
             "en": "For this scheduling, slots are available on Sat/Sun between 10:00–18:00. Should I send options?"
@@ -1118,6 +1134,86 @@ def send_admin_warning(conversation_id: int, warning_message: str):
         return False
 
 # OpenAI prefill functions
+def analyze_preferences_with_openai(preferences_text: str, conversation_id: int = None) -> Dict[str, Any]:
+    """Analyze user preferences for lesson scheduling using OpenAI"""
+    try:
+        client = openai.OpenAI(api_key=OPENAI_API_KEY)
+        
+        system_prompt = """Je bent een assistent die voorkeuren voor lesplanning analyseert. 
+
+Analyseer de voorkeuren van de gebruiker en geef 3 concrete lesmomenten voor de komende 2 weken.
+
+BELANGRIJKE REGELS:
+- Alleen weekdagen (maandag t/m vrijdag)
+- Alleen tijden tussen 17:00-19:00 voor proeflessen
+- Alleen tijden tussen 14:00-20:00 voor reguliere lessen
+- Geef specifieke data en tijden
+- Houd rekening met de voorkeuren van de gebruiker
+
+VOORKEUREN ANALYSEREN:
+- Dagen: maandag, dinsdag, woensdag, donderdag, vrijdag
+- Tijden: ochtend (8:00-12:00), middag (12:00-17:00), avond (17:00-20:00)
+- Specifieke tijden: "om 15:00", "rond 16:30", etc.
+
+Geef je antwoord als JSON in dit formaat:
+{
+    "preferred_days": ["maandag", "woensdag"],
+    "preferred_times": ["avond", "17:00"],
+    "suggested_slots": [
+        {
+            "date": "2024-01-15",
+            "time": "17:00",
+            "day_name": "maandag",
+            "reason": "Past bij voorkeur voor maandag avond"
+        },
+        {
+            "date": "2024-01-17", 
+            "time": "17:30",
+            "day_name": "woensdag",
+            "reason": "Past bij voorkeur voor woensdag avond"
+        },
+        {
+            "date": "2024-01-22",
+            "time": "18:00", 
+            "day_name": "maandag",
+            "reason": "Alternatief moment volgende week"
+        }
+    ]
+}"""
+
+        response = client.chat.completions.create(
+            model=OPENAI_MODEL,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Voorkeuren van gebruiker: {preferences_text}"}
+            ],
+            temperature=0.3,
+            max_tokens=500
+        )
+        
+        result = response.choices[0].message.content
+        print(f"🤖 OpenAI preferences analysis: {result}")
+        
+        # Parse JSON response
+        try:
+            analysis = json.loads(result)
+            return analysis
+        except json.JSONDecodeError as e:
+            print(f"❌ Failed to parse OpenAI JSON response: {e}")
+            return {
+                "preferred_days": [],
+                "preferred_times": [],
+                "suggested_slots": []
+            }
+            
+    except Exception as e:
+        print(f"❌ OpenAI preferences analysis failed: {e}")
+        return {
+            "preferred_days": [],
+            "preferred_times": [],
+            "suggested_slots": []
+        }
+
 def analyze_first_message_with_openai(message: str, conversation_id: int = None) -> Dict[str, Any]:
     """Analyze first message using OpenAI to extract intake information"""
     if not OPENAI_API_KEY:
@@ -2340,6 +2436,12 @@ def handle_message_created(data):
     if conv_attrs.get("pending_intent") == "handoff":
         print(f"👨‍🏫 Processing handoff menu selection")
         handle_handoff_menu_selection(cid, contact_id, msg_content, lang)
+        return
+    
+    # Handle preferences input
+    if conv_attrs.get("waiting_for_preferences"):
+        print(f"🤔 Processing preferences input")
+        process_preferences_and_suggest_slots(cid, msg_content, lang)
         return
     
     # Handle language selection (removed numbers to avoid conflicts with menu options)
@@ -4174,7 +4276,12 @@ def start_planning_flow(cid, contact_id, lang):
             "lesson_type": "trial"
         })
         send_text_with_duplicate_check(cid, t("planning_trial_lesson_intro", lang))
-        suggest_available_slots(cid, current_segment, lang)
+        
+        # Check if user has preferences, if not ask for them
+        if not conv_attrs.get("user_preferences"):
+            ask_for_preferences_and_suggest_slots(cid, current_segment, lang)
+        else:
+            suggest_available_slots(cid, current_segment, lang)
     elif is_existing_customer(contact_attrs):
         print(f"📅 Existing customer - planning regular lesson")
         # Check if existing customer has completed trial lesson
@@ -4192,7 +4299,12 @@ def start_planning_flow(cid, contact_id, lang):
                 "lesson_type": "regular"
             })
             send_text_with_duplicate_check(cid, t("planning_regular_lesson", lang))
-            suggest_available_slots(cid, current_segment, lang)
+            
+            # Check if user has preferences, if not ask for them
+            if not conv_attrs.get("user_preferences"):
+                ask_for_preferences_and_suggest_slots(cid, current_segment, lang)
+            else:
+                suggest_available_slots(cid, current_segment, lang)
     else:
         print(f"🎯 New customer - starting intake for free trial lesson")
         # New customer gets intake flow for free trial lesson
@@ -4768,6 +4880,20 @@ def handle_intake_step(cid, contact_id, msg_content, lang):
         # Suggest available slots
         suggest_available_slots(cid, segment, lang)
 
+def ask_for_preferences_and_suggest_slots(cid, profile_name, lang):
+    """Ask user for preferences and suggest slots based on OpenAI analysis"""
+    print(f"🤔 Asking for preferences for profile: {profile_name}")
+    
+    # Ask user for preferences
+    preference_text = t("ask_for_preferences", lang)
+    send_text_with_duplicate_check(cid, preference_text)
+    
+    # Set conversation state to wait for preferences
+    set_conv_attrs(cid, {
+        "waiting_for_preferences": True,
+        "planning_profile": profile_name
+    })
+
 def suggest_available_slots(cid, profile_name, lang):
     """Suggest available slots"""
     print(f"📅 Suggesting slots for profile: {profile_name}")
@@ -4809,6 +4935,90 @@ def suggest_available_slots(cid, profile_name, lang):
         lesson_text = t("planning_regular_slots", lang)
     
     print(f"📅 Sending {len(options)} options with text: '{lesson_text}'")
+    send_input_select_only(cid, lesson_text, options)
+
+def process_preferences_and_suggest_slots(cid, preferences_text, lang):
+    """Process user preferences with OpenAI and suggest slots"""
+    print(f"🤖 Processing preferences: {preferences_text}")
+    
+    # Analyze preferences with OpenAI
+    analysis = analyze_preferences_with_openai(preferences_text, cid)
+    
+    if not analysis.get("suggested_slots"):
+        print(f"⚠️ No slots suggested by OpenAI - using default slots")
+        conv_attrs = get_conv_attrs(cid)
+        profile_name = conv_attrs.get("planning_profile", "new")
+        suggest_available_slots(cid, profile_name, lang)
+        return
+    
+    # Create slots from OpenAI suggestions
+    slots = []
+    for slot_data in analysis["suggested_slots"]:
+        try:
+            # Parse date and time
+            date_str = slot_data["date"]
+            time_str = slot_data["time"]
+            
+            # Create datetime object
+            slot_datetime = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+            slot_datetime = TZ.localize(slot_datetime)
+            
+            # Create end time (1 hour later)
+            end_datetime = slot_datetime + timedelta(hours=1)
+            
+            # Create readable label
+            slot_label = f"{slot_datetime.strftime('%a %d %b %H:%M')}–{end_datetime.strftime('%H:%M')}"
+            
+            slots.append({
+                "start": slot_datetime.isoformat(),
+                "end": end_datetime.isoformat(),
+                "label": slot_label,
+                "reason": slot_data.get("reason", "")
+            })
+            
+        except Exception as e:
+            print(f"❌ Error processing slot {slot_data}: {e}")
+            continue
+    
+    if not slots:
+        print(f"⚠️ No valid slots created - using default slots")
+        conv_attrs = get_conv_attrs(cid)
+        profile_name = conv_attrs.get("planning_profile", "new")
+        suggest_available_slots(cid, profile_name, lang)
+        return
+    
+    # Store preferences in conversation attributes
+    set_conv_attrs(cid, {
+        "preferred_days": analysis.get("preferred_days", []),
+        "preferred_times": analysis.get("preferred_times", []),
+        "user_preferences": preferences_text,
+        "waiting_for_preferences": False
+    })
+    
+    # Create quick reply options
+    options = []
+    for slot in slots:
+        options.append((slot["label"], slot["start"]))
+        print(f"📅 AI suggested slot: '{slot['label']}' -> '{slot['start']}' (Reason: {slot['reason']})")
+    
+    options.append((t("planning_more_options", lang), "more_options"))
+    print(f"📅 More options: '{t('planning_more_options', lang)}' -> 'more_options'")
+    
+    # Set pending intent to planning
+    set_conv_attrs(cid, {"pending_intent": "planning"})
+    
+    # Get lesson type for appropriate text
+    conv_attrs = get_conv_attrs(cid)
+    lesson_type = conv_attrs.get("lesson_type", "trial")
+    
+    if lesson_type == "premium":
+        lesson_text = t("planning_premium_slots_ai", lang)
+    elif lesson_type == "trial":
+        lesson_text = t("planning_trial_slots_ai", lang)
+    else:
+        lesson_text = t("planning_regular_slots_ai", lang)
+    
+    print(f"📅 Sending {len(options)} AI-suggested options with text: '{lesson_text}'")
     send_input_select_only(cid, lesson_text, options)
 
 def handle_planning_selection(cid, contact_id, msg_content, lang):
