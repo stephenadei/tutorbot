@@ -212,6 +212,34 @@ def t(key, lang="nl", **kwargs):
             "nl": "💎 Ik heb 3 momenten voor je premium service geselecteerd op basis van je voorkeuren:\n\nKies een moment dat je uitkomt:",
             "en": "💎 I've selected 3 moments for your premium service based on your preferences:\n\nChoose a moment that works for you:"
         },
+        "ask_for_corrections": {
+            "nl": "🔧 Ik begrijp dat de informatie niet helemaal klopt. Kun je me vertellen wat er aangepast moet worden?\n\nVertel me bijvoorbeeld:\n• De juiste naam\n• Het juiste schoolniveau\n• Het juiste onderwerp\n• Of andere details die niet kloppen\n\nIk ga dan de informatie aanpassen en opnieuw vragen om bevestiging.",
+            "en": "🔧 I understand the information isn't quite right. Can you tell me what needs to be corrected?\n\nTell me for example:\n• The correct name\n• The correct school level\n• The correct subject\n• Or other details that are wrong\n\nI'll then adjust the information and ask for confirmation again."
+        },
+        "prefill_corrected_summary_title": {
+            "nl": "📋 **Gecorrigeerde Informatie**",
+            "en": "📋 **Corrected Information**"
+        },
+        "prefill_corrected_confirmation_prompt": {
+            "nl": "Klopt deze informatie nu wel? Reageer met 'ja' als het correct is, of 'nee' als er nog steeds fouten zijn.",
+            "en": "Is this information correct now? Reply with 'yes' if it's correct, or 'no' if there are still errors."
+        },
+        "correction_analysis_failed": {
+            "nl": "⚠️ Ik kon je correcties niet goed verwerken. Kun je het nog een keer proberen met duidelijke informatie?",
+            "en": "⚠️ I couldn't process your corrections properly. Can you try again with clear information?"
+        },
+        "ask_for_more_corrections": {
+            "nl": "🔧 Nog steeds niet correct. Kun je me precies vertellen wat er aangepast moet worden?",
+            "en": "🔧 Still not correct. Can you tell me exactly what needs to be adjusted?"
+        },
+        "handoff_max_corrections": {
+            "nl": "🚫 Ik heb moeite om je informatie correct te verwerken. Ik schakel je door naar Stephen zodat hij je persoonlijk kan helpen.",
+            "en": "🚫 I'm having trouble processing your information correctly. I'm transferring you to Stephen so he can help you personally."
+        },
+        "prefill_unclear_response": {
+            "nl": "🤔 Ik begrijp je antwoord niet helemaal. Kun je 'ja' zeggen als de informatie klopt, of 'nee' als er nog fouten zijn?",
+            "en": "🤔 I don't quite understand your answer. Can you say 'yes' if the information is correct, or 'no' if there are still errors?"
+        },
         "planning_weekend_only": {
             "nl": "Voor deze planning zijn slots op za/zo tussen 10:00–18:00 beschikbaar. Zal ik opties sturen?",
             "en": "For this scheduling, slots are available on Sat/Sun between 10:00–18:00. Should I send options?"
@@ -2384,6 +2412,11 @@ def handle_conversation_created(data):
         print(f"📋 Showing segment menu for {segment}")
         show_segment_menu(cid, contact_id, segment, contact_attrs.get("language", "nl"))
 
+def is_bot_disabled(cid):
+    """Check if bot is disabled for this conversation"""
+    conv_attrs = get_conv_attrs(cid)
+    return conv_attrs.get("bot_disabled", False)
+
 def handle_message_created(data):
     """Handle new message"""
     conversation = data.get("conversation", {})
@@ -2453,6 +2486,11 @@ def handle_message_created(data):
     # Refresh conv_attrs to get the latest state
     conv_attrs = get_conv_attrs(cid)
     
+    # Check if bot is disabled
+    if is_bot_disabled(cid):
+        print(f"🚫 Bot is disabled for conversation {cid} - ignoring message")
+        return
+    
     print(f"💬 Message from Conv:{cid} Contact:{contact_id} | Lang:{lang} Segment:{segment}")
     print(f"🔍 Contact attrs: {contact_attrs}")
     print(f"🔍 Conv attrs: {conv_attrs}")
@@ -2480,6 +2518,18 @@ def handle_message_created(data):
     if conv_attrs.get("waiting_for_preferences"):
         print(f"🤔 Processing preferences input")
         process_preferences_and_suggest_slots(cid, msg_content, lang)
+        return
+    
+    # Handle corrections input
+    if conv_attrs.get("waiting_for_corrections"):
+        print(f"🔧 Processing corrections input")
+        process_corrections_and_reconfirm(cid, msg_content, lang)
+        return
+    
+    # Handle corrected prefill confirmation
+    if conv_attrs.get("waiting_for_corrected_confirmation"):
+        print(f"🤖 Processing corrected prefill confirmation")
+        handle_corrected_prefill_confirmation(cid, contact_id, msg_content, lang)
         return
     
     # Handle language selection (removed numbers to avoid conflicts with menu options)
@@ -3330,12 +3380,17 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
 
     
     elif msg_content == "correct_all" or any(word in msg_lower for word in deny_words):
-        print(f"❌ User indicates information is incorrect or partially correct - initiating immediate handoff to Stephen")
-        # Immediate handoff to Stephen for any correction needed
-        handoff_text = t("handoff_teacher", lang)
-        send_handoff_message(cid, handoff_text)
-        # Set pending intent to handoff
-        safe_set_conv_attrs(cid, {"pending_intent": "handoff"})
+        print(f"❌ User indicates information is incorrect - asking for corrections")
+        
+        # Ask user to provide correct information
+        correction_text = t("ask_for_corrections", lang)
+        send_text_with_duplicate_check(cid, correction_text)
+        
+        # Set conversation state to wait for corrections
+        set_conv_attrs(cid, {
+            "waiting_for_corrections": True,
+            "prefill_correction_count": conv_attrs.get("prefill_correction_count", 0) + 1
+        })
         
     else:
         # Unclear response, check if this is a repeat attempt
@@ -4974,6 +5029,168 @@ def suggest_available_slots(cid, profile_name, lang):
     
     print(f"📅 Sending {len(options)} options with text: '{lesson_text}'")
     send_input_select_only(cid, lesson_text, options)
+
+def process_corrections_and_reconfirm(cid, corrections_text, lang):
+    """Process user corrections and ask for reconfirmation"""
+    print(f"🔧 Processing corrections: {corrections_text}")
+    
+    # Analyze corrections with OpenAI
+    analysis = analyze_first_message_with_openai(corrections_text, cid)
+    
+    if not analysis:
+        print(f"⚠️ Failed to analyze corrections - asking for manual input")
+        send_text_with_duplicate_check(cid, t("correction_analysis_failed", lang))
+        return
+    
+    # Update conversation attributes with corrected information
+    conv_attrs = get_conv_attrs(cid)
+    updated_info = {}
+    
+    # Map OpenAI analysis to conversation attributes
+    if analysis.get("learner_name"):
+        updated_info["learner_name"] = analysis["learner_name"]
+    if analysis.get("school_level"):
+        updated_info["school_level"] = analysis["school_level"]
+    if analysis.get("topic_primary"):
+        updated_info["topic_primary"] = analysis["topic_primary"]
+    if analysis.get("topic_secondary"):
+        updated_info["topic_secondary"] = analysis["topic_secondary"]
+    if analysis.get("goals"):
+        updated_info["goals"] = analysis["goals"]
+    if analysis.get("for_who"):
+        updated_info["for_who"] = analysis["for_who"]
+    if analysis.get("contact_name"):
+        updated_info["contact_name"] = analysis["contact_name"]
+    if analysis.get("is_adult"):
+        updated_info["is_adult"] = analysis["is_adult"]
+    if analysis.get("relationship_to_learner"):
+        updated_info["relationship_to_learner"] = analysis["relationship_to_learner"]
+    
+    # Update conversation attributes
+    conv_attrs.update(updated_info)
+    set_conv_attrs(cid, conv_attrs)
+    
+    print(f"✅ Updated with corrections: {list(updated_info.keys())}")
+    
+    # Show corrected information for confirmation
+    show_prefill_summary_with_corrections(cid, contact_id, lang, updated_info)
+
+def show_prefill_summary_with_corrections(cid, contact_id, lang, updated_info):
+    """Show corrected prefill information for confirmation"""
+    print(f"📋 Showing corrected prefill summary")
+    
+    # Get current conversation attributes
+    conv_attrs = get_conv_attrs(cid)
+    
+    # Build summary text with corrections highlighted
+    summary_parts = []
+    summary_parts.append(t("prefill_corrected_summary_title", lang))
+    summary_parts.append("")
+    
+    # Show corrected information
+    if updated_info.get("learner_name"):
+        summary_parts.append(f"👤 **{t('prefill_learner_name', lang)}**: {updated_info['learner_name']}")
+    if updated_info.get("school_level"):
+        school_level_display = map_school_level(updated_info["school_level"])
+        summary_parts.append(f"🎓 **{t('prefill_school_level', lang)}**: {school_level_display}")
+    if updated_info.get("topic_primary"):
+        summary_parts.append(f"📚 **{t('prefill_topic_primary', lang)}**: {updated_info['topic_primary']}")
+    if updated_info.get("topic_secondary"):
+        summary_parts.append(f"📖 **{t('prefill_topic_secondary', lang)}**: {updated_info['topic_secondary']}")
+    if updated_info.get("goals"):
+        summary_parts.append(f"🎯 **{t('prefill_goals', lang)}**: {updated_info['goals']}")
+    if updated_info.get("for_who"):
+        for_who_display = t(f"prefill_for_who_{updated_info['for_who']}", lang)
+        summary_parts.append(f"👥 **{t('prefill_for_who', lang)}**: {for_who_display}")
+    
+    summary_parts.append("")
+    summary_parts.append(t("prefill_corrected_confirmation_prompt", lang))
+    
+    # Send summary
+    summary_text = "\n".join(summary_parts)
+    send_text_with_duplicate_check(cid, summary_text)
+    
+    # Set conversation state for confirmation
+    set_conv_attrs(cid, {
+        "waiting_for_corrections": False,
+        "waiting_for_corrected_confirmation": True,
+        "corrected_info": updated_info
+    })
+
+def handle_corrected_prefill_confirmation(cid, contact_id, msg_content, lang):
+    """Handle confirmation of corrected prefill information"""
+    print(f"🤖 Corrected prefill confirmation: '{msg_content}'")
+    
+    # Check user's response
+    confirm_words = ["ja", "klopt", "correct", "yes", "✅", "ja dat klopt", "dat klopt", "klopt helemaal", "ja helemaal", "correct", "juist", "precies", "inderdaad"]
+    deny_words = ["nee", "niet", "fout", "no", "❌", "nee dat klopt niet", "dat klopt niet", "niet correct", "fout", "verkeerd", "deels", "sommige", "partially", "🤔", "deels correct", "sommige kloppen", "niet alles"]
+    
+    msg_lower = msg_content.lower().strip()
+    
+    if any(word in msg_lower for word in confirm_words):
+        print(f"✅ User confirmed corrected prefill information")
+        
+        # Get corrected information
+        conv_attrs = get_conv_attrs(cid)
+        corrected_info = conv_attrs.get("corrected_info", {})
+        
+        # Apply corrected information to contact attributes
+        if corrected_info:
+            current_contact_attrs = get_contact_attrs(contact_id)
+            current_contact_attrs.update(corrected_info)
+            current_contact_attrs["has_completed_intake"] = True
+            set_contact_attrs(contact_id, current_contact_attrs)
+            print(f"✅ Applied corrected info to contact")
+        
+        # Clear correction state and proceed with normal flow
+        set_conv_attrs(cid, {
+            "waiting_for_corrected_confirmation": False,
+            "corrected_info": None,
+            "prefill_confirmation_sent": True,
+            "use_prefill": True
+        })
+        
+        # Show action menu
+        show_prefill_action_menu_after_confirmation(cid, contact_id, lang)
+        
+    elif any(word in msg_lower for word in deny_words):
+        print(f"❌ User still indicates information is incorrect")
+        
+        # Check correction count
+        conv_attrs = get_conv_attrs(cid)
+        correction_count = conv_attrs.get("prefill_correction_count", 0)
+        
+        if correction_count >= 2:
+            # After 2 correction attempts, disable bot and handoff to Stephen
+            print(f"🚫 Maximum correction attempts reached ({correction_count}) - disabling bot")
+            
+            # Disable bot for this conversation
+            set_conv_attrs(cid, {
+                "bot_disabled": True,
+                "bot_disabled_reason": "max_correction_attempts",
+                "bot_disabled_time": datetime.now(TZ).isoformat()
+            })
+            
+            # Send handoff message
+            handoff_text = t("handoff_max_corrections", lang)
+            send_handoff_message(cid, handoff_text)
+            
+        else:
+            # Ask for more corrections
+            correction_text = t("ask_for_more_corrections", lang)
+            send_text_with_duplicate_check(cid, correction_text)
+            
+            # Set state to wait for more corrections
+            set_conv_attrs(cid, {
+                "waiting_for_corrections": True,
+                "waiting_for_corrected_confirmation": False,
+                "corrected_info": None
+            })
+    
+    else:
+        # Unclear response
+        unclear_text = t("prefill_unclear_response", lang)
+        send_text_with_duplicate_check(cid, unclear_text)
 
 def process_preferences_and_suggest_slots(cid, preferences_text, lang):
     """Process user preferences with OpenAI and suggest slots"""
