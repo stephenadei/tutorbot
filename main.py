@@ -1148,6 +1148,14 @@ def analyze_first_message_with_openai(message: str, conversation_id: int = None)
     - **for_who**: String - Voor wie is de les? ("self", "child", "student", "other")
     - **learner_name**: String - Naam van de leerling (roepnaam of volledige naam)
     - **school_level**: String - Onderwijsniveau ("po", "vmbo", "havo", "vwo", "mbo", "university_wo", "university_hbo", "adult")
+    
+    BELANGRIJKE REGELS VOOR SCHOOLNIVEAU:
+    - **"university_wo"**: Voor universiteitsstudenten (WO), inclusief volwassenen die universiteitsvakken volgen
+    - **"university_hbo"**: Voor HBO studenten, inclusief volwassenen die HBO vakken volgen  
+    - **"adult"**: Alleen voor volwassenen die middelbare school stof moeten beheersen (niet universiteit/HBO)
+    - **"mbo"**: Voor MBO studenten
+    - **"vwo/havo/vmbo"**: Voor middelbare scholieren
+    - **"po"**: Voor basisschool leerlingen
     - **topic_primary**: String - Hoofdvak/onderwerp ("math", "stats", "english", "programming", "science", "chemistry", "other")
     - **topic_secondary**: String - Specifiek vak/onderwerp (bijv. "wiskunde B", "statistiek", "calculus")
     - **goals**: String - Leerdoelen, deadlines of specifieke toetsen/examens (bijv. "eindexamen wiskunde B", "tentamen statistiek volgende week", "MBO-rekentoets")
@@ -1205,6 +1213,13 @@ def analyze_first_message_with_openai(message: str, conversation_id: int = None)
     - "Mijn dochter Maria zit in Havo 5" → for_who: "child", learner_name: "Maria", relationship_to_learner: "parent"
     - "Ik ben een docent en zoek hulp voor mijn student" → for_who: "student", relationship_to_learner: "teacher"
     - "Mijn vriend heeft problemen met wiskunde" → for_who: "other", relationship_to_learner: "other"
+    
+    VOORBEELDEN VAN SCHOOLNIVEAU:
+    - "Ik studeer aan de Rijksuniversiteit Groningen" → school_level: "university_wo"
+    - "Ik volg een HBO opleiding" → school_level: "university_hbo"  
+    - "Ik ben volwassen en moet middelbare school wiskunde leren" → school_level: "adult"
+    - "Ik zit in 6V" → school_level: "vwo"
+    - "Ik doe MBO niveau 4" → school_level: "mbo"
     
     Belangrijk: 
     - **topic_secondary** is het specifieke vak/onderwerp (bijv. "wiskunde B", "statistiek")
