@@ -80,6 +80,64 @@ def test_real_email_service_creation():
         print(f"❌ Real email service creation failed: {e}")
         return False
 
+def test_real_email_sending():
+    """Test sending a real email"""
+    print("\n🧪 Testing Real Email Sending...")
+    
+    try:
+        from real_email_service import RealEmailService
+        
+        service = RealEmailService()
+        
+        # Test sending a simple email
+        result = service.send_email(
+            to_email="test@stephenadei.nl",
+            subject="Test Email - Real Service",
+            body="Dit is een test email van de real email service.",
+            from_name="TutorBot Test"
+        )
+        
+        if result:
+            print("✅ Real email sent successfully!")
+            print("📧 Check test@stephenadei.nl for the email")
+            return True
+        else:
+            print("❌ Real email sending failed!")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Real email sending failed: {e}")
+        return False
+
+def test_trial_confirmation_email():
+    """Test sending a trial confirmation email"""
+    print("\n🧪 Testing Trial Confirmation Email...")
+    
+    try:
+        from real_email_service import RealEmailService
+        
+        service = RealEmailService()
+        
+        # Test sending a trial confirmation
+        result = service.send_trial_confirmation(
+            to_email="test@stephenadei.nl",
+            student_name="Test Student",
+            lesson_date="2024-01-15",
+            lesson_time="14:00"
+        )
+        
+        if result:
+            print("✅ Trial confirmation email sent successfully!")
+            print("📧 Check test@stephenadei.nl for the trial confirmation")
+            return True
+        else:
+            print("❌ Trial confirmation email failed!")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Trial confirmation email failed: {e}")
+        return False
+
 def main():
     """Main test function"""
     print("🚀 Simple Email Service Test")
@@ -102,6 +160,30 @@ def main():
     
     print("\n🎉 All basic tests passed!")
     print("📧 Email service is ready to use!")
+    
+    # Ask user if they want to test real email sending
+    print("\n" + "=" * 40)
+    print("🔧 Advanced Email Testing")
+    print("=" * 40)
+    
+    try:
+        response = input("Do you want to test real email sending? (y/n): ").lower().strip()
+        if response in ['y', 'yes']:
+            print("\n📧 Testing Real Email Sending...")
+            if test_real_email_sending():
+                print("\n✅ Real email test successful!")
+                
+                response2 = input("Do you want to test trial confirmation email? (y/n): ").lower().strip()
+                if response2 in ['y', 'yes']:
+                    if test_trial_confirmation_email():
+                        print("\n✅ Trial confirmation test successful!")
+                    else:
+                        print("\n❌ Trial confirmation test failed!")
+            else:
+                print("\n❌ Real email test failed!")
+    except KeyboardInterrupt:
+        print("\n\n⏹️ Test interrupted by user")
+    
     return True
 
 if __name__ == "__main__":
