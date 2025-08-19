@@ -5030,6 +5030,44 @@ def handle_email_request(cid, contact_id, msg_content, lang):
         
         # Keep pending_intent as "ask_email" so user can try again
 
+def check_trial_booking_time_and_show_menu(cid, contact_id, lang):
+    """Check if enough time has passed since trial booking to show post-trial menu"""
+    conv_attrs = get_conv_attrs(cid)
+    contact_attrs = get_contact_attrs(contact_id)
+    
+    # Check if trial booking is complete
+    if not conv_attrs.get("trial_booking_complete"):
+        return False
+    
+    # Check if trial lesson time has passed
+    trial_booking_time = conv_attrs.get("trial_booking_time")
+    if not trial_booking_time:
+        return False
+    
+    try:
+        # Parse the booking time
+        booking_dt = datetime.fromisoformat(trial_booking_time.replace('Z', '+00:00'))
+        current_dt = datetime.now(TZ)
+        
+        # Calculate time difference
+        time_diff = current_dt - booking_dt
+        hours_passed = time_diff.total_seconds() / 3600
+        
+        print(f"⏰ Trial booking time: {booking_dt}, Current time: {current_dt}, Hours passed: {hours_passed:.1f}")
+        
+        # Only show menu if at least 6 hours have passed
+        if hours_passed >= 6:
+            print(f"✅ 6+ hours passed since trial booking - showing post-trial menu")
+            show_post_trial_menu(cid, contact_id, lang)
+            return True
+        else:
+            print(f"⏳ Only {hours_passed:.1f} hours passed - post-trial menu not ready yet")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Error checking trial booking time: {e}")
+        return False
+
 def show_post_trial_menu(cid, contact_id, lang):
     """Show menu after trial lesson completion"""
     print(f"🎯 Showing post-trial menu in {lang}")
