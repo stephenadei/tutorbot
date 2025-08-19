@@ -1900,8 +1900,10 @@ def detect_segment(contact_id):
     elif (contact_attrs.get("customer_since") or 
           contact_attrs.get("has_paid_lesson") or
           contact_attrs.get("has_completed_intake") or
+          contact_attrs.get("intake_completed") or
           contact_attrs.get("trial_lesson_completed") or
-          contact_attrs.get("lesson_booked")):
+          contact_attrs.get("lesson_booked") or
+          contact_attrs.get("customer_status") == "active"):
         segment = "existing"
     # 4. Default to new
     else:
@@ -4108,11 +4110,14 @@ def is_existing_customer(contact_attrs):
             contact_attrs.get("is_parent") or
             contact_attrs.get("trial_lesson_completed") or
             contact_attrs.get("has_paid_lesson") or
-            contact_attrs.get("lesson_booked"))
+            contact_attrs.get("lesson_booked") or
+            contact_attrs.get("segment") == "existing" or
+            contact_attrs.get("intake_completed") or
+            contact_attrs.get("customer_status") == "active")
 
 def has_completed_intake(conv_attrs):
     """Check if conversation has completed intake"""
-    return conv_attrs.get("intake_completed", False)
+    return conv_attrs.get("intake_completed", False) or conv_attrs.get("has_completed_intake", False)
 
 def start_planning_flow(cid, contact_id, lang):
     """Start planning flow - determines if trial or regular lesson"""
@@ -4153,7 +4158,7 @@ def start_planning_flow(cid, contact_id, lang):
     
     # Check if this is a new customer who just completed intake for a trial lesson
     has_completed_trial = contact_attrs.get("trial_lesson_completed", False)
-    has_completed_intake_flag = contact_attrs.get("has_completed_intake", False)
+    has_completed_intake_flag = contact_attrs.get("has_completed_intake", False) or contact_attrs.get("intake_completed", False)
     
     # New customer with completed intake but no trial lesson yet = trial lesson
     if has_completed_intake_flag and not has_completed_trial:
@@ -4994,6 +4999,14 @@ def handle_email_request(cid, contact_id, msg_content, lang):
         
         # Store email in contact attributes
         set_contact_attrs(contact_id, {"email": email})
+        
+        # Mark contact as existing customer after email confirmation
+        # This completes the intake loop - they are now existing customers
+        set_contact_attrs(contact_id, {
+            "segment": "existing",  # Mark as existing customer
+            "intake_completed": True,  # Mark intake as completed
+            "customer_status": "active"  # Mark as active customer
+        })
         
         # Send confirmation
         confirmation_msg = f"📧 Bedankt! Ik heb je e-mailadres ({email}) opgeslagen voor de bevestiging.\n\n{t('email_confirmation', lang)}"
