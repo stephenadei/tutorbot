@@ -88,23 +88,27 @@ Beste {student_name},
 
 Bedankt voor je aanmelding voor een proefles bij Stephen's TutorBot!
 
-📅 **Proefles Details:**
-   Datum: {lesson_date}
-   Tijd: {lesson_time}
-   Duur: 1 uur
-   Kosten: Gratis
+PROEFLES DETAILS
+================
+Datum: {lesson_date}
+Tijd: {lesson_time}
+Duur: 1 uur
+Kosten: Gratis
 
-📍 **Locatie:**
-   Online via Zoom/Google Meet
-   (Link wordt 15 minuten voor de les gedeeld)
+LOCATIE
+=======
+Online via Zoom/Google Meet
+(Link wordt 15 minuten voor de les gedeeld)
 
-📋 **Wat neem je mee:**
-   - Laptop/computer met camera en microfoon
-   - Pen en papier voor aantekeningen
-   - Eventuele vragen over de stof
+VOORBEREIDING
+============
+• Laptop/computer met camera en microfoon
+• Pen en papier voor aantekeningen
+• Eventuele vragen over de stof
 
-📞 **Contact:**
-   Bij vragen kun je contact opnemen via WhatsApp of email.
+CONTACT
+=======
+Bij vragen kun je contact opnemen via WhatsApp of email.
 
 We kijken ernaar uit om je te ontmoeten!
 
@@ -123,17 +127,20 @@ Beste {student_name},
 
 Hier is je betaalverzoek voor de les bij Stephen's TutorBot.
 
-💰 **Betaling Details:**
-   Bedrag: €{amount}
-   Betaallink: {payment_link}
+BETALING DETAILS
+================
+Bedrag: €{amount}
+Betaallink: {payment_link}
 
-💳 **Betaalmethoden:**
-   - iDEAL
-   - Credit Card
-   - PayPal
+BETAALMETHODEN
+==============
+• iDEAL
+• Credit Card
+• PayPal
 
-📅 **Vervolgstap:**
-   Na betaling ontvang je een bevestiging en kunnen we de les inplannen.
+VERVOLGSTAP
+===========
+Na betaling ontvang je een bevestiging en kunnen we de les inplannen.
 
 Met vriendelijke groet,
 Stephen's TutorBot
@@ -150,19 +157,22 @@ Beste {student_name},
 
 Dit is een herinnering voor je les vanmorgen.
 
-📅 **Les Details:**
-   Datum: {lesson_date}
-   Tijd: {lesson_time}
-   Duur: 1 uur
+LES DETAILS
+===========
+Datum: {lesson_date}
+Tijd: {lesson_time}
+Duur: 1 uur
 
-📍 **Online Les:**
-   Link: [Wordt 15 minuten voor de les gedeeld]
-   Platform: Zoom/Google Meet
+ONLINE LES
+==========
+Link: [Wordt 15 minuten voor de les gedeeld]
+Platform: Zoom/Google Meet
 
-📋 **Voorbereiding:**
-   - Zorg dat je laptop/computer werkt
-   - Test je camera en microfoon
-   - Heb pen en papier klaar
+VOORBEREIDING
+============
+• Zorg dat je laptop/computer werkt
+• Test je camera en microfoon
+• Heb pen en papier klaar
 
 Tot straks!
 

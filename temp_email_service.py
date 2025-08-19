@@ -64,25 +64,29 @@ Body:
         body = f"""
 Beste {student_name},
 
-Bedankt voor je aanmelding voor een proefles bij Stephen's Privélessen!
+Bedankt voor je aanmelding voor een proefles bij Stephen's TutorBot!
 
-📅 **Proefles Details:**
-   Datum: {lesson_date}
-   Tijd: {lesson_time}
-   Duur: 1 uur
-   Kosten: Gratis
+PROEFLES DETAILS
+================
+Datum: {lesson_date}
+Tijd: {lesson_time}
+Duur: 1 uur
+Kosten: Gratis
 
-📍 **Locatie:**
-   Online via Zoom/Google Meet
-   (Link wordt 15 minuten voor de les gedeeld)
+LOCATIE
+=======
+Online via Zoom/Google Meet
+(Link wordt 15 minuten voor de les gedeeld)
 
-📋 **Wat neem je mee:**
-   - Laptop/computer met camera en microfoon
-   - Pen en papier voor aantekeningen
-   - Eventuele vragen over de stof
+VOORBEREIDING
+============
+• Laptop/computer met camera en microfoon
+• Pen en papier voor aantekeningen
+• Eventuele vragen over de stof
 
-📞 **Contact:**
-   Bij vragen kun je contact opnemen via WhatsApp of email.
+CONTACT
+=======
+Bij vragen kun je contact opnemen via WhatsApp of email.
 
 We kijken ernaar uit om je te ontmoeten!
 
