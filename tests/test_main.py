@@ -22,7 +22,7 @@ from main import (
     detect_language_from_message, map_topic, 
     is_prefill_sufficient_for_trial_lesson, create_child_contact,
     prefill_intake_from_message, get_contact_id_from_conversation,
-    send_input_select_only, send_intake_form,
+    send_input_select_only,
     detect_segment, suggest_slots, book_slot, create_payment_link,
     verify_stripe_webhook, verify_webhook, handle_conversation_created,
     handle_message_created, show_info_menu, handle_prefill_confirmation,
