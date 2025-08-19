@@ -4080,14 +4080,16 @@ def start_planning_flow(cid, contact_id, lang):
         suggest_available_slots(cid, "premium", lang)
         return
     
-    # Check if intake is already completed for this conversation
-    if has_completed_intake(conv_attrs):
-        print(f"📅 Intake completed - planning regular lesson")
+    # Check if this is a new customer who just completed intake for a trial lesson
+    has_completed_trial = contact_attrs.get("trial_lesson_completed", False)
+    
+    if has_completed_intake(conv_attrs) and not has_completed_trial:
+        print(f"🎯 New customer with completed intake - planning trial lesson")
         set_conv_attrs(cid, {
             "planning_profile": current_segment,
-            "lesson_type": "regular"
+            "lesson_type": "trial"
         })
-        send_text_with_duplicate_check(cid, t("planning_regular_lesson", lang))
+        send_text_with_duplicate_check(cid, t("planning_trial_lesson_intro", lang))
         suggest_available_slots(cid, current_segment, lang)
     elif is_existing_customer(contact_attrs):
         print(f"📅 Existing customer - planning regular lesson")
