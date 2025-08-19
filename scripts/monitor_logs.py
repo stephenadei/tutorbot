@@ -118,7 +118,7 @@ def main():
         print("   cd /home/stephen/tutorbot")
         print("   export CW_URL='https://crm.stephenadei.nl'")
         print("   export CW_ACC_ID='1'")
-        print("   export CW_ADMIN_TOKEN='mCNRQJzK4KbVuinP7NszBTug'")
+        print("   export CW_ADMIN_TOKEN='your_admin_token_here'")
         print("   sudo -E gunicorn --bind 0.0.0.0:8000 main:app")
         return
     
