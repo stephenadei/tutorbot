@@ -555,4 +555,4 @@ if __name__ == '__main__':
             print(f"- {test}: {traceback}")
     
     # Exit with appropriate code
-    sys.exit(len(result.failures) + len(result.errors)) 
+    sys.exit(len(result.failures) + len(result.errors)) # Cache cleared
