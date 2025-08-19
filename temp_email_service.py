@@ -92,7 +92,7 @@ We kijken ernaar uit om je te ontmoeten!
 
 Met vriendelijke groet,
 Stephen's TutorBot
-lessen@stephensprivelessen.nl
+info@stephensprivelessen.nl
         """
         
         return self.send_email(to_email, subject, body, "Stephen's Privélessen")
