@@ -4922,8 +4922,9 @@ def handle_planning_selection(cid, contact_id, msg_content, lang):
                     confirmation_msg = f"✅ Perfect! Ik heb een spoed 2-uurs sessie ingepland op {slot_description}.\n\n📧 Voor de bevestiging heb ik nog je e-mailadres nodig. Kun je dat delen?"
                     send_text_with_duplicate_check(cid, confirmation_msg)
             else:
-                # For regular trial lessons, ask for email
-                confirmation_msg = f"✅ Perfect! Ik heb een proefles ingepland op {slot_description}.\n\n📧 Voor de bevestiging heb ik nog je e-mailadres nodig. Kun je dat delen?"
+                # For regular trial lessons, just confirm the booking
+                # Email request will be handled in the lesson type check below
+                confirmation_msg = f"✅ Perfect! Ik heb een proefles ingepland op {slot_description}."
                 send_text_with_duplicate_check(cid, confirmation_msg)
         else:
             send_text_with_duplicate_check(cid, t("error_planning_failed", lang))
