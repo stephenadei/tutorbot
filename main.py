@@ -252,6 +252,26 @@ def t(key, lang="nl", **kwargs):
             "nl": "🤔 Ik begrijp je antwoord niet helemaal. Kun je 'ja' zeggen als de informatie klopt, of 'nee' als er nog fouten zijn?",
             "en": "🤔 I don't quite understand your answer. Can you say 'yes' if the information is correct, or 'no' if there are still errors?"
         },
+        "main_menu_message": {
+            "nl": "🎯 Wat wil je nu doen?",
+            "en": "🎯 What would you like to do now?"
+        },
+        "main_menu_title": {
+            "nl": "Kies een optie:",
+            "en": "Choose an option:"
+        },
+        "main_menu_plan_lesson": {
+            "nl": "📅 Les plannen",
+            "en": "📅 Plan lesson"
+        },
+        "main_menu_info": {
+            "nl": "📖 Meer informatie",
+            "en": "📖 More information"
+        },
+        "main_menu_contact": {
+            "nl": "👨‍🏫 Contact opnemen",
+            "en": "👨‍🏫 Contact Stephen"
+        },
         "planning_weekend_only": {
             "nl": "Voor deze planning zijn slots op za/zo tussen 10:00–18:00 beschikbaar. Zal ik opties sturen?",
             "en": "For this scheduling, slots are available on Sat/Sun between 10:00–18:00. Should I send options?"
@@ -5576,18 +5596,21 @@ def handle_email_request(cid, contact_id, msg_content, lang):
             "customer_status": "active"  # Mark as active customer
         })
         
-        # Send confirmation and end the conversation
+        # Send confirmation and show next steps
         confirmation_msg = f"📧 Bedankt! Ik heb je e-mailadres ({email}) opgeslagen voor de bevestiging.\n\n{t('email_confirmation', lang)}"
         send_text_with_duplicate_check(cid, confirmation_msg)
         
-        # Reset pending intent and mark conversation as complete
+        # Mark conversation as complete and show main menu
         set_conv_attrs(cid, {
             "pending_intent": "",
             "trial_booking_complete": True,
             "trial_booking_time": datetime.now(TZ).isoformat()
         })
         
-        print(f"✅ Trial lesson booking complete - conversation ended")
+        # Show main menu to allow further interaction
+        show_info_menu(cid, lang)
+        
+        print(f"✅ Trial lesson booking complete - showing main menu")
         
         print(f"✅ Email extracted and stored: {email}")
     else:
