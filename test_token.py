@@ -14,7 +14,7 @@ load_dotenv()
 # Configuration
 CW_URL = os.getenv("CW_URL", "https://crm.stephenadei.nl")
 CW_ACC_ID = os.getenv("CW_ACC_ID", "1")
-CW_TOKEN = os.getenv("CW_TOKEN", "uDSMCbD1EH4cBBDbSgj35WKS")
+CW_TOKEN = os.getenv("CW_TOKEN")
 
 def test_token_with_endpoint(endpoint, description):
     """Test token with specific endpoint"""

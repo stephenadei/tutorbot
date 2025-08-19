@@ -14,7 +14,7 @@ load_dotenv()
 # Chatwoot configuration
 CW_URL = os.getenv("CW_URL", "https://crm.stephenadei.nl")
 CW_ACC_ID = os.getenv("CW_ACC_ID", "1")
-CW_TOKEN = "uDSMCbD1EH4cBBDbSgj35WKS"  # Your bot token
+CW_TOKEN = os.getenv("CW_TOKEN")  # Your bot token
 
 def check_password_reset_endpoint():
     """Check if password reset endpoint exists and what email it uses"""

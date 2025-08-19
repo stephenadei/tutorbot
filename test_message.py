@@ -16,7 +16,7 @@ load_dotenv()
 # Configuration
 CW_URL = os.getenv("CW_URL", "https://crm.stephenadei.nl")
 CW_ACC_ID = os.getenv("CW_ACC_ID", "1")
-CW_HMAC_SECRET = os.getenv("CW_HMAC_SECRET", "e6cffc2ec52cedc73e616746e629d346ca55daee82d0c87286eca62aa8d71393")
+CW_HMAC_SECRET = os.getenv("CW_HMAC_SECRET")
 WEBHOOK_URL = "https://bot.stephensprivelessen.nl/cw"
 
 def create_webhook_signature(payload, secret):
