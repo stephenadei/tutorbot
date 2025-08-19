@@ -605,16 +605,16 @@ def t(key, lang="nl", **kwargs):
             "en": "📅 Schedule all lessons"
         },
         "prefill_action_trial_first": {
-            "nl": "🎯 Gratis proefles (1 uur)",
-            "en": "🎯 Free trial lesson (1 hour)"
+            "nl": "🎯 Gratis proefles (30 min)",
+            "en": "🎯 Free trial lesson (30 min)"
         },
         "prefill_action_urgent_session": {
             "nl": "🚨 Spoed: 2-uurs sessie (€120)",
             "en": "🚨 Urgent: 2-hour session (€120)"
         },
         "prefill_action_menu_text": {
-            "nl": "✅ *Perfect!* Ik heb je informatie verwerkt en met Stephen gedeeld zodat hij je zo goed mogelijk kan helpen.\n\n*Opties:*\n• **Gratis proefles**: Kennismaking zonder verplichting\n• **Spoedles**: Directe hulp met betaling\n• **Meer info**: Over Stephen en zijn aanpak\n• **Stephen spreken**: Direct contact",
-            "en": "✅ *Perfect!* I've processed your information and shared it with Stephen so he can help you as best as possible.\n\n*Options:*\n• **Free trial lesson**: Introduction without obligation\n• **Urgent session**: Immediate help with payment\n• **More info**: About Stephen and his approach\n• **Speak to Stephen**: Direct contact"
+            "nl": "✅ *Perfect!* Ik heb je informatie verwerkt en met Stephen gedeeld zodat hij je zo goed mogelijk kan helpen.\n\n*Opties:*\n• **Gratis proefles (30 min)**: Kennismaking zonder verplichting\n• **Spoedles**: Directe hulp met betaling\n• **Meer info**: Over Stephen en zijn aanpak\n• **Stephen spreken**: Direct contact",
+            "en": "✅ *Perfect!* I've processed your information and shared it with Stephen so he can help you as best as possible.\n\n*Options:*\n• **Free trial lesson (30 min)**: Introduction without obligation\n• **Urgent session**: Immediate help with payment\n• **More info**: About Stephen and his approach\n• **Speak to Stephen**: Direct contact"
         },
         "prefill_action_menu_title": {
             "nl": "✅ Perfect! Kies je optie:",
@@ -775,10 +775,6 @@ def t(key, lang="nl", **kwargs):
         "prefill_correct_all": {
             "nl": "❌ Nee, aanpassen",
             "en": "❌ No, change"
-        },
-        "prefill_correct_partial": {
-            "nl": "🤔 Deels correct",
-            "en": "🤔 Partly correct"
         },
         "prefill_confirmed_message": {
             "nl": "✅ Perfect! Ik heb je informatie verwerkt. Wat wil je nu doen?",
@@ -1152,10 +1148,21 @@ def analyze_first_message_with_openai(message: str, conversation_id: int = None)
     BELANGRIJKE REGELS VOOR SCHOOLNIVEAU:
     - **"university_wo"**: Voor universiteitsstudenten (WO), inclusief volwassenen die universiteitsvakken volgen
     - **"university_hbo"**: Voor HBO studenten, inclusief volwassenen die HBO vakken volgen  
-    - **"adult"**: Alleen voor volwassenen die middelbare school stof moeten beheersen (niet universiteit/HBO)
+    - **"adult"**: Voor volwassenen die middelbare school stof moeten leren (volwassenenonderwijs)
     - **"mbo"**: Voor MBO studenten
     - **"vwo/havo/vmbo"**: Voor middelbare scholieren
     - **"po"**: Voor basisschool leerlingen
+    
+    KRITIEKE REGEL: 
+    - Als iemand studeert aan een universiteit (zoals Rijksuniversiteit Groningen, UvA, VU, etc.), 
+      gebruik dan ALTIJD "university_wo", ook als ze volwassen zijn
+    - "adult" is alleen voor volwassenen die middelbare school stof moeten leren (volwassenenonderwijs), 
+      niet voor universiteitsstudenten
+    - "Volwassenenonderwijs" = middelbare school niveau voor volwassenen (vmbo/havo/vwo stof)
+    
+    BELANGRIJKSTE REGEL: Als de tekst "universiteit", "university", "Rijksuniversiteit", "UvA", "VU", "TU", 
+    "WO", "bachelor", "master", "BSc", "MSc" bevat, dan is het ALTIJD "university_wo" of "university_hbo", 
+    NOOIT "adult"!
     - **topic_primary**: String - Hoofdvak/onderwerp ("math", "stats", "english", "programming", "science", "chemistry", "other")
     - **topic_secondary**: String - Specifiek vak/onderwerp (bijv. "wiskunde B", "statistiek", "calculus")
     - **goals**: String - Leerdoelen, deadlines of specifieke toetsen/examens (bijv. "eindexamen wiskunde B", "tentamen statistiek volgende week", "MBO-rekentoets")
@@ -1217,9 +1224,14 @@ def analyze_first_message_with_openai(message: str, conversation_id: int = None)
     VOORBEELDEN VAN SCHOOLNIVEAU:
     - "Ik studeer aan de Rijksuniversiteit Groningen" → school_level: "university_wo"
     - "Ik volg een HBO opleiding" → school_level: "university_hbo"  
-    - "Ik ben volwassen en moet middelbare school wiskunde leren" → school_level: "adult"
+    - "Ik ben volwassen en moet vmbo wiskunde leren" → school_level: "adult"
+    - "Ik doe volwassenenonderwijs voor havo wiskunde" → school_level: "adult"
     - "Ik zit in 6V" → school_level: "vwo"
     - "Ik doe MBO niveau 4" → school_level: "mbo"
+    - "Ik ben 25 en studeer aan de UvA" → school_level: "university_wo" (NIET "adult")
+    - "Ik ben volwassen en moet middelbare school stof leren" → school_level: "adult"
+    - "Ik zoek een tutor voor het vak aan de Rijksuniversiteit Groningen" → school_level: "university_wo" (NIET "adult")
+    - "BSc International Economics aan de universiteit" → school_level: "university_wo" (NIET "adult")
     
     Belangrijk: 
     - **topic_secondary** is het specifieke vak/onderwerp (bijv. "wiskunde B", "statistiek")
@@ -1596,16 +1608,17 @@ def smart_extraction_check(prefilled_info: Dict[str, Any]) -> str:
         print(f"🎯 Smart check: Lesson for someone else, normal confirmation flow")
         return "normal_confirmation_flow"
 
-def create_child_contact(analysis: Dict[str, Any], conversation_id: int) -> int:
+def create_child_contact(analysis: Dict[str, Any], conversation_id: int, parent_contact_id: int = None) -> int:
     """Create a separate contact for the child when a parent is writing"""
     try:
-        # Get the parent contact ID from the conversation
-        parent_contact_id = get_contact_id_from_conversation(conversation_id)
+        # Get the parent contact ID from the conversation if not provided
         if not parent_contact_id:
-            print("❌ Could not get parent contact ID")
-            return None
+            parent_contact_id = get_contact_id_from_conversation(conversation_id)
+            if not parent_contact_id:
+                print("❌ Could not get parent contact ID")
+                return None
         
-        # Create child contact with basic info
+        # Create child contact with comprehensive info
         child_name = analysis.get("learner_name", "Onbekende leerling")
         child_attrs = {
             "language": "nl",
@@ -1613,20 +1626,38 @@ def create_child_contact(analysis: Dict[str, Any], conversation_id: int) -> int:
             "is_adult": False,
             "is_student": True,
             "parent_contact_id": str(parent_contact_id),
-            "created_by_parent": True
+            "created_by_parent": True,
+            "name": child_name
         }
         
-        # Add school level if available
-        if analysis.get("school_level"):
-            child_attrs["school_level"] = map_school_level(analysis["school_level"])
+        # Add all available child information
+        child_fields = [
+            "school_level", "topic_primary", "topic_secondary", "goals",
+            "preferred_times", "lesson_mode", "toolset", "program", "urgency"
+        ]
+        
+        for field in child_fields:
+            if analysis.get(field):
+                if field == "school_level":
+                    child_attrs[field] = map_school_level(analysis[field])
+                else:
+                    child_attrs[field] = analysis[field]
         
         # Create the child contact using ChatwootAPI
-        child_contact = ChatwootAPI.create_contact(
-            inbox_id=2,  # WhatsApp inbox
-            name=child_name,
-            phone="",  # No phone number for now
-            attrs=child_attrs
-        )
+        # Try different inbox IDs - WhatsApp is usually 1 or 2
+        for inbox_id in [1, 2]:
+            try:
+                child_contact = ChatwootAPI.create_contact(
+                    inbox_id=inbox_id,
+                    name=child_name,
+                    phone="",  # No phone number for now
+                    attrs=child_attrs
+                )
+                if child_contact:
+                    break
+            except Exception as e:
+                print(f"⚠️ Failed to create contact with inbox_id {inbox_id}: {e}")
+                continue
         
         if child_contact:
             child_contact_id = child_contact.get("id") or child_contact.get("payload", {}).get("contact", {}).get("id")
@@ -2763,35 +2794,48 @@ def handle_message_created(data):
         print(f"🎯 Processing prefill action menu selection")
         
         # Handle trial lesson planning
-        if msg_content.lower() in ["plan_trial_lesson", "proefles plannen", "plan trial lesson", "1"] or "📅" in msg_content:
+        if (msg_content.lower() in ["plan_trial_lesson", "proefles plannen", "plan trial lesson", "1"] or 
+            "📅" in msg_content or 
+            "🎯 gratis proefles" in msg_content.lower() or
+            "🎯 free trial" in msg_content.lower()):
             print(f"📅 User wants to plan trial lesson")
             set_conv_attrs(cid, {"pending_intent": ""})
             start_planning_flow(cid, contact_id, lang)
             return
         
+        # Handle urgent session
+        if (msg_content.lower() in ["urgent_session", "spoedles", "urgent session", "2"] or 
+            "🚨" in msg_content or
+            "🚨 spoed" in msg_content.lower() or
+            "🚨 urgent" in msg_content.lower()):
+            print(f"🚨 User wants urgent session")
+            set_conv_attrs(cid, {"pending_intent": ""})
+            handle_urgent_session(cid, contact_id, lang)
+            return
+        
         # Handle go to main menu
-        if msg_content.lower() in ["go_to_main_menu", "meer informatie", "more information", "2"] or "📋" in msg_content:
+        if (msg_content.lower() in ["go_to_main_menu", "meer informatie", "more information", "2"] or 
+            "📋" in msg_content or
+            "📖 meer informatie" in msg_content.lower() or
+            "📖 more info" in msg_content.lower()):
             print(f"📋 User wants to go to main menu")
             set_conv_attrs(cid, {"pending_intent": ""})
             show_info_menu(cid, lang)
             return
         
         # Handle handoff
-        if msg_content.lower() in ["handoff", "met stephen spreken", "3"] or "👨‍🏫" in msg_content:
+        if (msg_content.lower() in ["handoff", "met stephen spreken", "3"] or 
+            "👨‍🏫" in msg_content or
+            "👨‍🏫 stephen spreken" in msg_content.lower() or
+            "👨‍🏫 speak to stephen" in msg_content.lower()):
             print(f"👨‍🏫 User wants to speak with Stephen")
             set_conv_attrs(cid, {"pending_intent": ""})
             send_handoff_message(cid, t("handoff_teacher", lang))
             return
         
-        # If no valid option, show the action menu again
+        # If no valid option, show the action menu again (without explanation)
         print(f"❓ Unknown prefill action option: '{msg_content}' - showing action menu again")
-        action_menu_title = t("prefill_action_menu_title", lang)
-        action_menu_options = [
-            (t("prefill_action_trial_lesson", lang), "plan_trial_lesson"),
-            (t("prefill_action_main_menu", lang), "go_to_main_menu"),
-            (t("prefill_action_handoff", lang), "handoff")
-        ]
-        send_input_select_only(cid, action_menu_title, action_menu_options)
+        show_prefill_action_menu_after_confirmation(cid, contact_id, lang, show_explanation=False)
         return
         print(f"🧹 Processing wipe confirmation: '{msg_content}'")
         
@@ -2970,8 +3014,7 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
     
     # More comprehensive confirmation detection
     confirm_words = ["ja", "klopt", "correct", "yes", "✅", "ja dat klopt", "dat klopt", "klopt helemaal", "ja helemaal", "correct", "juist", "precies", "inderdaad"]
-    deny_words = ["nee", "niet", "fout", "no", "❌", "nee dat klopt niet", "dat klopt niet", "niet correct", "fout", "verkeerd"]
-    partial_words = ["deels", "sommige", "partially", "🤔", "deels correct", "sommige kloppen", "niet alles"]
+    deny_words = ["nee", "niet", "fout", "no", "❌", "nee dat klopt niet", "dat klopt niet", "niet correct", "fout", "verkeerd", "deels", "sommige", "partially", "🤔", "deels correct", "sommige kloppen", "niet alles"]
     
     msg_lower = msg_content.lower().strip()
     
@@ -2999,28 +3042,53 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
         # Apply prefilled information to contact attributes
         if prefilled_info:
             current_contact_attrs = get_contact_attrs(contact_id)
-            current_contact_attrs.update(prefilled_info)
             
-            # If this is for themselves and we have a learner name, set it as the contact name
+            # Determine contact type and update accordingly
             for_who = prefilled_info.get("for_who", "self")
             learner_name = prefilled_info.get("learner_name", "")
-            if for_who == "self" and learner_name:
-                current_contact_attrs["name"] = learner_name
-                current_contact_attrs["is_student"] = True
-                print(f"✅ Set contact name to learner name: {learner_name}")
+            contact_name = prefilled_info.get("contact_name", "")
             
+            if for_who == "self":
+                # Student writing for themselves
+                if learner_name:
+                    current_contact_attrs["name"] = learner_name
+                    current_contact_attrs["is_student"] = True
+                    current_contact_attrs["is_adult"] = prefilled_info.get("is_adult", True)
+                    print(f"✅ Set contact as student: {learner_name}")
+            elif for_who == "child":
+                # Parent writing for their child
+                if contact_name:
+                    current_contact_attrs["name"] = contact_name
+                    current_contact_attrs["is_parent"] = True
+                    current_contact_attrs["is_adult"] = True
+                    current_contact_attrs["relationship_to_learner"] = prefilled_info.get("relationship_to_learner", "parent")
+                    print(f"✅ Set contact as parent: {contact_name}")
+                
+                # Create child contact
+                if learner_name:
+                    child_contact_id = create_child_contact(prefilled_info, cid, contact_id)
+                    if child_contact_id:
+                        current_contact_attrs["child_contact_id"] = child_contact_id
+                        print(f"👶 Created child contact: {child_contact_id} for {learner_name}")
+                    else:
+                        print(f"⚠️ Failed to create child contact for {learner_name}")
+            else:
+                # Other cases (friend, etc.)
+                if contact_name:
+                    current_contact_attrs["name"] = contact_name
+                    current_contact_attrs["relationship_to_learner"] = prefilled_info.get("relationship_to_learner", "other")
+                    print(f"✅ Set contact as other: {contact_name}")
+            
+            # Update all other prefilled information
+            current_contact_attrs.update(prefilled_info)
+            
+            # Set intake completion flag
+            current_contact_attrs["has_completed_intake"] = True
+            current_contact_attrs["customer_since"] = datetime.now(TZ).isoformat()
+            
+            # Save updated contact attributes
             set_contact_attrs(contact_id, current_contact_attrs)
             print(f"✅ Applied prefilled info to contact: {list(prefilled_info.keys())}")
-        
-        # Create child contact if this is a parent writing for their child
-        if prefilled_info.get("for_who") == "child" and prefilled_info.get("learner_name"):
-            child_contact_id = create_child_contact(prefilled_info, cid)
-            if child_contact_id:
-                prefilled_info["child_contact_id"] = child_contact_id
-                print(f"👶 Created child contact: {child_contact_id} for {prefilled_info['learner_name']}")
-                # Update contact attributes with child contact ID
-                current_contact_attrs["child_contact_id"] = child_contact_id
-                set_contact_attrs(contact_id, current_contact_attrs)
         
         # Use smart extraction check to determine flow
         smart_check_result = smart_extraction_check(prefilled_info)
@@ -3078,7 +3146,6 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
             print(f"🏷️ Added labels: {labels_to_add}")
         
         # 4. Set customer status attributes
-        from datetime import datetime
         current_time = datetime.now().isoformat()
         
         # Set customer_since if this is their first interaction
@@ -3099,51 +3166,17 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
             "use_prefill": True  # Flag to use prefill in planning flow
         })
         
-        # Check if we have sufficient information for a trial lesson
-        if is_prefill_sufficient_for_trial_lesson(prefilled_info):
-            # We have good information, proceed directly to trial lesson planning
-            contact_name = prefilled_info.get("contact_name", "")
-            learner_name = prefilled_info.get("learner_name", "")
-            topic = prefilled_info.get("topic_secondary", "")
-            
-            print(f"🔍 Debug greeting: contact_name='{contact_name}', for_who='{prefilled_info.get('for_who')}', learner_name='{learner_name}'")
-            
-            if contact_name and prefilled_info.get("for_who") == "child":
-                # Parent writing for child - use parent's name
-                confirmation_msg = f"Perfect {contact_name}! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
-                print(f"✅ Using contact_name: {contact_name}")
-            elif learner_name:
-                # Student writing for themselves - use their name
-                confirmation_msg = f"Perfect {learner_name}! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
-                print(f"✅ Using learner_name: {learner_name}")
-            else:
-                confirmation_msg = f"Perfect! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
-                print(f"✅ Using generic greeting")
-            
-            send_text_with_duplicate_check(cid, confirmation_msg)
-            
-            # Clear pending intent and go directly to planning flow
-            set_conv_attrs(cid, {"pending_intent": ""})
-            start_planning_flow(cid, contact_id, lang)
-        else:
-            # Not enough information, show action menu to get more info
-            print(f"🎯 Not enough info for trial lesson - showing action menu")
-            show_prefill_action_menu_after_confirmation(cid, contact_id, lang)
+        # Always show the action menu after confirmation
+        print(f"🎯 Showing action menu after confirmation")
+        show_prefill_action_menu_after_confirmation(cid, contact_id, lang)
 
     
     elif msg_content == "correct_all" or any(word in msg_lower for word in deny_words):
-        print(f"❌ User indicates information is incorrect - initiating immediate handoff to Stephen")
-        # Immediate handoff to Stephen
+        print(f"❌ User indicates information is incorrect or partially correct - initiating immediate handoff to Stephen")
+        # Immediate handoff to Stephen for any correction needed
         handoff_text = t("handoff_teacher", lang)
         send_handoff_message(cid, handoff_text)
         # Set pending intent to handoff
-        safe_set_conv_attrs(cid, {"pending_intent": "handoff"})
-        
-    elif msg_content == "correct_partial" or any(word in msg_lower for word in partial_words):
-        print(f"🤔 User indicates information is only partially correct - initiating immediate handoff to Stephen")
-        # Immediate handoff as well (treat partial as not correct)
-        handoff_text = t("handoff_teacher", lang)
-        send_handoff_message(cid, handoff_text)
         safe_set_conv_attrs(cid, {"pending_intent": "handoff"})
         
     else:
@@ -3247,8 +3280,7 @@ def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
             # Send interactive menu for clarification
             send_input_select_only(cid, "❓ Sorry, ik begrijp je antwoord niet helemaal. Kun je kiezen uit:", [
                 (t("prefill_confirm_all", lang), "confirm_all"),
-                (t("prefill_correct_all", lang), "correct_all"),
-                (t("prefill_correct_partial", lang), "correct_partial")
+                (t("prefill_correct_all", lang), "correct_all")
             ])
 
 def handle_info_menu_selection(cid, contact_id, msg_content, lang):
@@ -3562,8 +3594,7 @@ def show_prefill_action_menu(cid, contact_id, lang):
     menu_title = t("prefill_confirmation_menu_title", lang)
     menu_options = [
         (t("prefill_confirm_all", lang), "confirm_all"),
-        (t("prefill_correct_all", lang), "correct_all"),
-        (t("prefill_correct_partial", lang), "correct_partial")
+        (t("prefill_correct_all", lang), "correct_all")
     ]
     
     # CRITICAL: Use input_select_only for WhatsApp menu buttons
@@ -3578,7 +3609,7 @@ def show_prefill_action_menu(cid, contact_id, lang):
         send_text_with_duplicate_check(cid, fallback_text, persist=False)
         print(f"📝 Sent fallback text menu due to input_select failure")
 
-def show_prefill_action_menu_after_confirmation(cid, contact_id, lang):
+def show_prefill_action_menu_after_confirmation(cid, contact_id, lang, show_explanation=True):
     """Show action menu after prefill confirmation - what does user want to do next?"""
     print(f"🎯 Showing prefill action menu after confirmation in {lang}")
     
@@ -3601,19 +3632,34 @@ def show_prefill_action_menu_after_confirmation(cid, contact_id, lang):
         topic                    # Has subject
     )
     
-    # Only consider is_adult if it was explicitly set (not the default False)
-    # We can't easily detect if it was explicitly set, so we'll rely on other fields
+    # Check if this is a parent writing for their child
+    for_who = contact_attrs.get('for_who', '')
+    is_parent = contact_attrs.get('is_parent', False)
     
     if has_meaningful_info:
         # Show appropriate tariffs based on age/level
-        if is_adult or 'university' in school_level.lower() or 'hbo' in school_level.lower():
-            # Over 20 or higher education
-            print(f"💰 Showing tariffs for over 20/higher education")
-            send_text_with_duplicate_check(cid, t("info_tariffs_over_20", lang))
+        # If parent is writing for child, use child's school level
+        # If adult is writing for themselves, use their level
+        if (is_parent and for_who == 'child') or (not is_parent and for_who == 'self'):
+            # Use the learner's school level for tariff determination
+            if 'university' in school_level.lower() or 'hbo' in school_level.lower():
+                # Higher education
+                print(f"💰 Showing tariffs for higher education (learner level)")
+                send_text_with_duplicate_check(cid, t("info_tariffs_over_20", lang))
+            else:
+                # Secondary education (middle school, high school)
+                print(f"💰 Showing tariffs for secondary education (learner level)")
+                send_text_with_duplicate_check(cid, t("info_tariffs_under_20", lang))
         else:
-            # Under 20 or secondary education
-            print(f"💰 Showing tariffs for under 20/secondary education")
-            send_text_with_duplicate_check(cid, t("info_tariffs_under_20", lang))
+            # Fallback to contact's is_adult status
+            if is_adult or 'university' in school_level.lower() or 'hbo' in school_level.lower():
+                # Over 20 or higher education
+                print(f"💰 Showing tariffs for over 20/higher education")
+                send_text_with_duplicate_check(cid, t("info_tariffs_over_20", lang))
+            else:
+                # Under 20 or secondary education
+                print(f"💰 Showing tariffs for under 20/secondary education")
+                send_text_with_duplicate_check(cid, t("info_tariffs_under_20", lang))
     else:
         print(f"💰 Skipping tariffs - insufficient information detected (simple greeting)")
     
@@ -3661,9 +3707,10 @@ def show_prefill_action_menu_after_confirmation(cid, contact_id, lang):
         else:
             print(f"⏰ No prefill confirmation time found - skipping preferences check")
     
-    # Send explanation text first
-    explanation_text = t("prefill_action_menu_text", lang)
-    send_text_with_duplicate_check(cid, explanation_text, persist=False)
+    # Send explanation text first (only if not already shown)
+    if show_explanation:
+        explanation_text = t("prefill_action_menu_text", lang)
+        send_text_with_duplicate_check(cid, explanation_text, persist=False)
     
     # Send appropriate menu based on trial completion
     action_menu_title = t("prefill_action_menu_title", lang)
@@ -4049,7 +4096,6 @@ def is_existing_customer(contact_attrs):
     """Check if contact is an existing customer (student or parent)"""
     return (contact_attrs.get("is_student") or 
             contact_attrs.get("is_parent") or
-            contact_attrs.get("has_completed_intake") or
             contact_attrs.get("trial_lesson_completed") or
             contact_attrs.get("has_paid_lesson") or
             contact_attrs.get("lesson_booked"))
@@ -4097,8 +4143,10 @@ def start_planning_flow(cid, contact_id, lang):
     
     # Check if this is a new customer who just completed intake for a trial lesson
     has_completed_trial = contact_attrs.get("trial_lesson_completed", False)
+    has_completed_intake_flag = contact_attrs.get("has_completed_intake", False)
     
-    if has_completed_intake(conv_attrs) and not has_completed_trial:
+    # New customer with completed intake but no trial lesson yet = trial lesson
+    if has_completed_intake_flag and not has_completed_trial:
         print(f"🎯 New customer with completed intake - planning trial lesson")
         set_conv_attrs(cid, {
             "planning_profile": current_segment,

@@ -1,0 +1,206 @@
+
+=== EMAIL LOG ENTRY ===
+Timestamp: 2025-08-19 20:41:29
+From: Stephen's Privélessen <test@stephenadei.nl>
+To: test@stephenadei.nl
+Subject: Bevestiging Proefles - Stephen's Privélessen
+Body:
+
+Beste Juul,
+
+Bedankt voor je aanmelding voor een proefles bij Stephen's Privélessen!
+
+📅 **Proefles Details:**
+   Datum: Maandag 25 augustus
+   Tijd: 14:00
+   Duur: 1 uur
+   Kosten: Gratis
+
+📍 **Locatie:**
+   Online via Zoom/Google Meet
+   (Link wordt 15 minuten voor de les gedeeld)
+
+📋 **Wat neem je mee:**
+   - Laptop/computer met camera en microfoon
+   - Pen en papier voor aantekeningen
+   - Eventuele vragen over de stof
+
+📞 **Contact:**
+   Bij vragen kun je contact opnemen via WhatsApp of email.
+
+We kijken ernaar uit om je te ontmoeten!
+
+Met vriendelijke groet,
+Stephen's Privélessen
+test@stephenadei.nl
+        
+=== END EMAIL ===
+
+
+=== EMAIL LOG ENTRY ===
+Timestamp: 2025-08-19 20:41:29
+From: Stephen's Privélessen <test@stephenadei.nl>
+To: test@stephenadei.nl
+Subject: Betaalverzoek - Stephen's Privélessen
+Body:
+
+Beste Juul,
+
+Hier is je betaalverzoek voor de bijles bij Stephen's Privélessen.
+
+💰 **Betaling Details:**
+   Bedrag: €120
+   Betaallink: https://payment.example.com/123
+
+📋 **Instructies:**
+   1. Klik op de betaallink hierboven
+   2. Vul je betalingsgegevens in
+   3. Bevestig de betaling
+
+Na ontvangst van de betaling wordt je les bevestigd.
+
+📞 **Vragen?**
+   Neem contact op via WhatsApp of email.
+
+Met vriendelijke groet,
+Stephen's Privélessen
+test@stephenadei.nl
+        
+=== END EMAIL ===
+
+
+=== EMAIL LOG ENTRY ===
+Timestamp: 2025-08-19 20:41:29
+From: Stephen's Privélessen <test@stephenadei.nl>
+To: test@stephenadei.nl
+Subject: Herinnering Proefles - Stephen's Privélessen
+Body:
+
+Beste Juul,
+
+Dit is een herinnering voor je proefles morgen!
+
+📅 **Proefles Details:**
+   Datum: Maandag 25 augustus
+   Tijd: 14:00
+   Duur: 1 uur
+
+🔗 **Zoom Link:**
+   De Zoom link wordt 15 minuten voor de les gedeeld via WhatsApp.
+
+📋 **Voorbereiding:**
+   - Zorg dat je laptop/computer werkt
+   - Test je camera en microfoon
+   - Heb pen en papier klaar
+
+Tot morgen!
+
+Met vriendelijke groet,
+Stephen's Privélessen
+test@stephenadei.nl
+        
+=== END EMAIL ===
+
+
+=== EMAIL LOG ENTRY ===
+Timestamp: 2025-08-19 20:43:31
+From: Stephen's Privélessen <testvan@stephenadei.nl>
+To: testnaar@stephenadei.nl
+Subject: Bevestiging Proefles - Stephen's Privélessen
+Body:
+
+Beste Juul,
+
+Bedankt voor je aanmelding voor een proefles bij Stephen's Privélessen!
+
+📅 **Proefles Details:**
+   Datum: Maandag 25 augustus
+   Tijd: 14:00
+   Duur: 1 uur
+   Kosten: Gratis
+
+📍 **Locatie:**
+   Online via Zoom/Google Meet
+   (Link wordt 15 minuten voor de les gedeeld)
+
+📋 **Wat neem je mee:**
+   - Laptop/computer met camera en microfoon
+   - Pen en papier voor aantekeningen
+   - Eventuele vragen over de stof
+
+📞 **Contact:**
+   Bij vragen kun je contact opnemen via WhatsApp of email.
+
+We kijken ernaar uit om je te ontmoeten!
+
+Met vriendelijke groet,
+Stephen's Privélessen
+testvan@stephenadei.nl
+        
+=== END EMAIL ===
+
+
+=== EMAIL LOG ENTRY ===
+Timestamp: 2025-08-19 20:43:31
+From: Stephen's Privélessen <testvan@stephenadei.nl>
+To: testnaar@stephenadei.nl
+Subject: Betaalverzoek - Stephen's Privélessen
+Body:
+
+Beste Juul,
+
+Hier is je betaalverzoek voor de bijles bij Stephen's Privélessen.
+
+💰 **Betaling Details:**
+   Bedrag: €120
+   Betaallink: https://payment.example.com/123
+
+📋 **Instructies:**
+   1. Klik op de betaallink hierboven
+   2. Vul je betalingsgegevens in
+   3. Bevestig de betaling
+
+Na ontvangst van de betaling wordt je les bevestigd.
+
+📞 **Vragen?**
+   Neem contact op via WhatsApp of email.
+
+Met vriendelijke groet,
+Stephen's Privélessen
+testvan@stephenadei.nl
+        
+=== END EMAIL ===
+
+
+=== EMAIL LOG ENTRY ===
+Timestamp: 2025-08-19 20:43:31
+From: Stephen's Privélessen <testvan@stephenadei.nl>
+To: testnaar@stephenadei.nl
+Subject: Herinnering Proefles - Stephen's Privélessen
+Body:
+
+Beste Juul,
+
+Dit is een herinnering voor je proefles morgen!
+
+📅 **Proefles Details:**
+   Datum: Maandag 25 augustus
+   Tijd: 14:00
+   Duur: 1 uur
+
+🔗 **Zoom Link:**
+   De Zoom link wordt 15 minuten voor de les gedeeld via WhatsApp.
+
+📋 **Voorbereiding:**
+   - Zorg dat je laptop/computer werkt
+   - Test je camera en microfoon
+   - Heb pen en papier klaar
+
+Tot morgen!
+
+Met vriendelijke groet,
+Stephen's Privélessen
+testvan@stephenadei.nl
+        
+=== END EMAIL ===
+
