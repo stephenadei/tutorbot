@@ -204,3 +204,23 @@ testvan@stephenadei.nl
         
 === END EMAIL ===
 
+
+=== EMAIL LOG ENTRY ===
+Timestamp: 2025-08-19 23:22:15
+From: TutorBot Test <lessons@stephensprivelessen.nl>
+To: test@example.com
+Subject: Test Email - Temp Service
+Body:
+Dit is een test email van de temp service.
+=== END EMAIL ===
+
+
+=== EMAIL LOG ENTRY ===
+Timestamp: 2025-08-19 23:26:04
+From: TutorBot Test <lessen@stephensprivelessen.nl>
+To: test@example.com
+Subject: Test Email - Temp Service
+Body:
+Dit is een test email van de temp service.
+=== END EMAIL ===
+

@@ -8,16 +8,12 @@ for testing purposes. It logs emails instead of actually sending them.
 
 import os
 from datetime import datetime
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
 
 class TempEmailService:
     """Temporary email service for testing"""
     
     def __init__(self):
-        self.from_email = "lessons@stephensprivelessen.nl"
+        self.from_email = "lessen@stephensprivelessen.nl"
         self.log_file = "email_log.txt"
     
     def send_email(self, to_email, subject, body, from_name="TutorBot"):
@@ -92,7 +88,7 @@ We kijken ernaar uit om je te ontmoeten!
 
 Met vriendelijke groet,
 Stephen's Privélessen
-lessons@stephensprivelessen.nl
+lessen@stephensprivelessen.nl
         """
         
         return self.send_email(to_email, subject, body, "Stephen's Privélessen")

@@ -11,10 +11,6 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
 
 class RealEmailService:
     """Real email service using Google Workspace SMTP"""
@@ -23,10 +19,10 @@ class RealEmailService:
         # Use the same SMTP settings as existing Google Workspace
         self.smtp_server = "smtp.gmail.com"
         self.smtp_port = 587
-        self.from_email = "lessons@stephensprivelessen.nl"
+        self.from_email = "lessen@stephensprivelessen.nl"
         
         # Get credentials from environment
-        self.gmail_user = os.getenv("GMAIL_USER", "lessons@stephensprivelessen.nl")
+        self.gmail_user = os.getenv("GMAIL_USER", "lessen@stephensprivelessen.nl")
         self.gmail_password = os.getenv("GMAIL_APP_PASSWORD")
         
         if not self.gmail_password:
@@ -114,7 +110,7 @@ We kijken ernaar uit om je te ontmoeten!
 
 Met vriendelijke groet,
 Stephen's Privélessen
-lessons@stephensprivelessen.nl
+lessen@stephensprivelessen.nl
         """
         
         return self.send_email(to_email, subject, body, "Stephen's Privélessen")
@@ -141,7 +137,7 @@ Hier is je betaalverzoek voor de les bij Stephen's Privélessen.
 
 Met vriendelijke groet,
 Stephen's Privélessen
-lessons@stephensprivelessen.nl
+lessen@stephensprivelessen.nl
         """
         
         return self.send_email(to_email, subject, body, "Stephen's Privélessen")
@@ -172,7 +168,7 @@ Tot straks!
 
 Met vriendelijke groet,
 Stephen's Privélessen
-lessons@stephensprivelessen.nl
+lessen@stephensprivelessen.nl
         """
         
         return self.send_email(to_email, subject, body, "Stephen's Privélessen")

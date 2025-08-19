@@ -8,10 +8,6 @@ for lessons@stephensprivelessen.nl
 
 import os
 import sys
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
 
 def test_email_configuration():
     """Test if email configuration is properly set up"""
