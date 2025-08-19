@@ -31,7 +31,7 @@ class RealEmailService:
         else:
             self.use_temp_service = False
     
-    def send_email(self, to_email, subject, body, from_name="Stephen's Privélessen"):
+    def send_email(self, to_email, subject, body, from_name="Stephen's TutorBot"):
         """
         Send a real email using Google Workspace SMTP
         
@@ -82,11 +82,11 @@ class RealEmailService:
     
     def send_trial_confirmation(self, to_email, student_name, lesson_date, lesson_time):
         """Send trial lesson confirmation email"""
-        subject = "Bevestiging Proefles - Stephen's Privélessen"
+        subject = "Bevestiging Proefles - Stephen's TutorBot"
         body = f"""
 Beste {student_name},
 
-Bedankt voor je aanmelding voor een proefles bij Stephen's Privélessen!
+Bedankt voor je aanmelding voor een proefles bij Stephen's TutorBot!
 
 📅 **Proefles Details:**
    Datum: {lesson_date}
@@ -109,19 +109,19 @@ Bedankt voor je aanmelding voor een proefles bij Stephen's Privélessen!
 We kijken ernaar uit om je te ontmoeten!
 
 Met vriendelijke groet,
-Stephen's Privélessen
+Stephen's TutorBot
 lessen@stephensprivelessen.nl
         """
         
-        return self.send_email(to_email, subject, body, "Stephen's Privélessen")
+        return self.send_email(to_email, subject, body, "Stephen's TutorBot")
     
     def send_payment_request(self, to_email, student_name, amount, payment_link):
         """Send payment request email"""
-        subject = "Betaalverzoek - Stephen's Privélessen"
+        subject = "Betaalverzoek - Stephen's TutorBot"
         body = f"""
 Beste {student_name},
 
-Hier is je betaalverzoek voor de les bij Stephen's Privélessen.
+Hier is je betaalverzoek voor de les bij Stephen's TutorBot.
 
 💰 **Betaling Details:**
    Bedrag: €{amount}
@@ -136,15 +136,15 @@ Hier is je betaalverzoek voor de les bij Stephen's Privélessen.
    Na betaling ontvang je een bevestiging en kunnen we de les inplannen.
 
 Met vriendelijke groet,
-Stephen's Privélessen
+Stephen's TutorBot
 lessen@stephensprivelessen.nl
         """
         
-        return self.send_email(to_email, subject, body, "Stephen's Privélessen")
+        return self.send_email(to_email, subject, body, "Stephen's TutorBot")
     
     def send_lesson_reminder(self, to_email, student_name, lesson_date, lesson_time):
         """Send lesson reminder email"""
-        subject = "Herinnering - Les vanmorgen - Stephen's Privélessen"
+        subject = "Herinnering - Les vanmorgen - Stephen's TutorBot"
         body = f"""
 Beste {student_name},
 
@@ -167,11 +167,11 @@ Dit is een herinnering voor je les vanmorgen.
 Tot straks!
 
 Met vriendelijke groet,
-Stephen's Privélessen
+Stephen's TutorBot
 lessen@stephensprivelessen.nl
         """
         
-        return self.send_email(to_email, subject, body, "Stephen's Privélessen")
+        return self.send_email(to_email, subject, body, "Stephen's TutorBot")
 
 # Test function
 def test_email_service():

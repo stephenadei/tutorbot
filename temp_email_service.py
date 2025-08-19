@@ -87,7 +87,7 @@ Bedankt voor je aanmelding voor een proefles bij Stephen's Privélessen!
 We kijken ernaar uit om je te ontmoeten!
 
 Met vriendelijke groet,
-Stephen's Privélessen
+Stephen's TutorBot
 lessen@stephensprivelessen.nl
         """
         
