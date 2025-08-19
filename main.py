@@ -5008,15 +5008,18 @@ def handle_email_request(cid, contact_id, msg_content, lang):
             "customer_status": "active"  # Mark as active customer
         })
         
-        # Send confirmation
+        # Send confirmation and end the conversation
         confirmation_msg = f"📧 Bedankt! Ik heb je e-mailadres ({email}) opgeslagen voor de bevestiging.\n\n{t('email_confirmation', lang)}"
         send_text_with_duplicate_check(cid, confirmation_msg)
         
-        # Reset pending intent
-        set_conv_attrs(cid, {"pending_intent": ""})
+        # Reset pending intent and mark conversation as complete
+        set_conv_attrs(cid, {
+            "pending_intent": "",
+            "trial_booking_complete": True,
+            "trial_booking_time": datetime.now(TZ).isoformat()
+        })
         
-        # Show post-trial menu with option to plan all lessons
-        show_post_trial_menu(cid, contact_id, lang)
+        print(f"✅ Trial lesson booking complete - conversation ended")
         
         print(f"✅ Email extracted and stored: {email}")
     else:
