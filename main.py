@@ -2148,6 +2148,12 @@ def verify_webhook(request):
     
     return is_valid
 
+# Health check endpoint
+@app.route("/health")
+def health():
+    """Health check endpoint for deployment monitoring"""
+    return {"status": "healthy", "service": "tutorbot"}, 200
+
 # Main webhook handler
 @app.post("/cw")
 def cw():
