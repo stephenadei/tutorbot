@@ -212,6 +212,18 @@ def t(key, lang="nl", **kwargs):
             "nl": "💎 Ik heb 3 momenten voor je premium service geselecteerd op basis van je voorkeuren:\n\nKies een moment dat je uitkomt:",
             "en": "💎 I've selected 3 moments for your premium service based on your preferences:\n\nChoose a moment that works for you:"
         },
+        "planning_trial_slots_real": {
+            "nl": "🎯 Ik heb beschikbare momenten voor je proefles gevonden in de agenda:\n\nKies een moment dat je uitkomt:",
+            "en": "🎯 I've found available moments for your trial lesson in the calendar:\n\nChoose a moment that works for you:"
+        },
+        "planning_regular_slots_real": {
+            "nl": "📅 Ik heb beschikbare momenten voor je les gevonden in de agenda:\n\nKies een moment dat je uitkomt:",
+            "en": "📅 I've found available moments for your lesson in the calendar:\n\nChoose a moment that works for you:"
+        },
+        "planning_premium_slots_real": {
+            "nl": "💎 Ik heb beschikbare momenten voor je premium service gevonden in de agenda:\n\nKies een moment dat je uitkomt:",
+            "en": "💎 I've found available moments for your premium service in the calendar:\n\nChoose a moment that works for you:"
+        },
         "ask_for_corrections": {
             "nl": "🔧 Ik begrijp dat de informatie niet helemaal klopt. Kun je me vertellen wat er aangepast moet worden?\n\nVertel me bijvoorbeeld:\n• De juiste naam\n• Het juiste schoolniveau\n• Het juiste onderwerp\n• Of andere details die niet kloppen\n\nIk ga dan de informatie aanpassen en opnieuw vragen om bevestiging.",
             "en": "🔧 I understand the information isn't quite right. Can you tell me what needs to be corrected?\n\nTell me for example:\n• The correct name\n• The correct school level\n• The correct subject\n• Or other details that are wrong\n\nI'll then adjust the information and ask for confirmation again."
@@ -2097,9 +2109,73 @@ PLANNING_PROFILES = {
     }
 }
 
-# Calendar integration (mock implementation)
+# Calendar integration with real Google Calendar
 def suggest_slots(conversation_id, profile_name):
-    """Suggest available slots based on planning profile and user preferences"""
+    """Suggest available slots based on real calendar availability"""
+    try:
+        from calendar_integration import get_available_slots
+        
+        # Get user preferences from conversation attributes
+        conv_attrs = get_conv_attrs(conversation_id)
+        preferred_times = conv_attrs.get("preferred_times", "").lower()
+        lesson_type = conv_attrs.get("lesson_type", "trial")
+        
+        # Parse preferred times into list
+        preferred_time_list = []
+        if preferred_times:
+            # Extract specific times mentioned
+            import re
+            time_pattern = r'\b(\d{1,2}):?(\d{2})?\b'
+            times = re.findall(time_pattern, preferred_times)
+            for hour, minute in times:
+                if minute:
+                    preferred_time_list.append(f"{hour.zfill(2)}:{minute}")
+                else:
+                    preferred_time_list.append(f"{hour.zfill(2)}:00")
+            
+            # Add general time preferences
+            if "avond" in preferred_times or "evening" in preferred_times:
+                preferred_time_list.extend(["17:00", "18:00", "19:00"])
+            if "middag" in preferred_times or "afternoon" in preferred_times:
+                preferred_time_list.extend(["14:00", "15:00", "16:00"])
+            if "ochtend" in preferred_times or "morning" in preferred_times:
+                preferred_time_list.extend(["09:00", "10:00", "11:00"])
+        
+        # Get date range
+        now = datetime.now(TZ)
+        start_date = now + timedelta(days=1)  # Start from tomorrow
+        end_date = now + timedelta(days=14)   # Look ahead 2 weeks
+        
+        # Get available slots from calendar
+        available_slots = get_available_slots(
+            start_date=start_date,
+            end_date=end_date,
+            preferred_times=preferred_time_list if preferred_time_list else None,
+            lesson_type=lesson_type
+        )
+        
+        # Convert to expected format
+        slots = []
+        for slot in available_slots:
+            slots.append({
+                "start": slot["start_iso"],
+                "end": slot["end_iso"],
+                "label": slot["label"]
+            })
+        
+        # Return appropriate number of slots
+        if profile_name == "premium":
+            return slots[:12]  # More options for premium
+        else:
+            return slots[:8]   # Standard number for others
+            
+    except Exception as e:
+        print(f"❌ Error getting calendar slots: {e}")
+        # Fallback to mock implementation
+        return suggest_slots_mock(conversation_id, profile_name)
+
+def suggest_slots_mock(conversation_id, profile_name):
+    """Fallback mock implementation"""
     profile = PLANNING_PROFILES.get(profile_name, PLANNING_PROFILES["new"])
     
     # Get user preferences from conversation attributes
@@ -5193,54 +5269,11 @@ def handle_corrected_prefill_confirmation(cid, contact_id, msg_content, lang):
         send_text_with_duplicate_check(cid, unclear_text)
 
 def process_preferences_and_suggest_slots(cid, preferences_text, lang):
-    """Process user preferences with OpenAI and suggest slots"""
+    """Process user preferences with AI and suggest real calendar slots"""
     print(f"🤖 Processing preferences: {preferences_text}")
     
-    # Analyze preferences with OpenAI
+    # Analyze preferences with OpenAI to extract time preferences
     analysis = analyze_preferences_with_openai(preferences_text, cid)
-    
-    if not analysis.get("suggested_slots"):
-        print(f"⚠️ No slots suggested by OpenAI - using default slots")
-        conv_attrs = get_conv_attrs(cid)
-        profile_name = conv_attrs.get("planning_profile", "new")
-        suggest_available_slots(cid, profile_name, lang)
-        return
-    
-    # Create slots from OpenAI suggestions
-    slots = []
-    for slot_data in analysis["suggested_slots"]:
-        try:
-            # Parse date and time
-            date_str = slot_data["date"]
-            time_str = slot_data["time"]
-            
-            # Create datetime object
-            slot_datetime = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
-            slot_datetime = TZ.localize(slot_datetime)
-            
-            # Create end time (1 hour later)
-            end_datetime = slot_datetime + timedelta(hours=1)
-            
-            # Create readable label
-            slot_label = f"{slot_datetime.strftime('%a %d %b %H:%M')}–{end_datetime.strftime('%H:%M')}"
-            
-            slots.append({
-                "start": slot_datetime.isoformat(),
-                "end": end_datetime.isoformat(),
-                "label": slot_label,
-                "reason": slot_data.get("reason", "")
-            })
-            
-        except Exception as e:
-            print(f"❌ Error processing slot {slot_data}: {e}")
-            continue
-    
-    if not slots:
-        print(f"⚠️ No valid slots created - using default slots")
-        conv_attrs = get_conv_attrs(cid)
-        profile_name = conv_attrs.get("planning_profile", "new")
-        suggest_available_slots(cid, profile_name, lang)
-        return
     
     # Store preferences in conversation attributes
     set_conv_attrs(cid, {
@@ -5250,31 +5283,95 @@ def process_preferences_and_suggest_slots(cid, preferences_text, lang):
         "waiting_for_preferences": False
     })
     
-    # Create quick reply options
-    options = []
-    for slot in slots:
-        options.append((slot["label"], slot["start"]))
-        print(f"📅 AI suggested slot: '{slot['label']}' -> '{slot['start']}' (Reason: {slot['reason']})")
-    
-    options.append((t("planning_more_options", lang), "more_options"))
-    print(f"📅 More options: '{t('planning_more_options', lang)}' -> 'more_options'")
-    
-    # Set pending intent to planning
-    set_conv_attrs(cid, {"pending_intent": "planning"})
-    
-    # Get lesson type for appropriate text
+    # Get real calendar slots based on preferences
     conv_attrs = get_conv_attrs(cid)
+    profile_name = conv_attrs.get("planning_profile", "new")
     lesson_type = conv_attrs.get("lesson_type", "trial")
     
-    if lesson_type == "premium":
-        lesson_text = t("planning_premium_slots_ai", lang)
-    elif lesson_type == "trial":
-        lesson_text = t("planning_trial_slots_ai", lang)
-    else:
-        lesson_text = t("planning_regular_slots_ai", lang)
+    # Convert AI analysis to preferred times string
+    preferred_times_parts = []
     
-    print(f"📅 Sending {len(options)} AI-suggested options with text: '{lesson_text}'")
-    send_input_select_only(cid, lesson_text, options)
+    # Add preferred days
+    if analysis.get("preferred_days"):
+        preferred_times_parts.extend(analysis["preferred_days"])
+    
+    # Add preferred times
+    if analysis.get("preferred_times"):
+        preferred_times_parts.extend(analysis["preferred_times"])
+    
+    # Combine into single string for calendar integration
+    preferred_times_str = " ".join(preferred_times_parts)
+    set_conv_attrs(cid, {"preferred_times": preferred_times_str})
+    
+    print(f"📅 Using preferences: {preferred_times_str}")
+    
+    # Get available slots from real calendar
+    try:
+        from calendar_integration import get_available_slots
+        
+        now = datetime.now(TZ)
+        start_date = now + timedelta(days=1)
+        end_date = now + timedelta(days=14)
+        
+        # Parse preferred times for calendar
+        preferred_time_list = []
+        if preferred_times_str:
+            # Extract specific times
+            import re
+            time_pattern = r'\b(\d{1,2}):?(\d{2})?\b'
+            times = re.findall(time_pattern, preferred_times_str)
+            for hour, minute in times:
+                if minute:
+                    preferred_time_list.append(f"{hour.zfill(2)}:{minute}")
+                else:
+                    preferred_time_list.append(f"{hour.zfill(2)}:00")
+            
+            # Add general time preferences
+            if "avond" in preferred_times_str or "evening" in preferred_times_str:
+                preferred_time_list.extend(["17:00", "18:00", "19:00"])
+            if "middag" in preferred_times_str or "afternoon" in preferred_times_str:
+                preferred_time_list.extend(["14:00", "15:00", "16:00"])
+            if "ochtend" in preferred_times_str or "morning" in preferred_times_str:
+                preferred_time_list.extend(["09:00", "10:00", "11:00"])
+        
+        # Get real calendar slots
+        available_slots = get_available_slots(
+            start_date=start_date,
+            end_date=end_date,
+            preferred_times=preferred_time_list if preferred_time_list else None,
+            lesson_type=lesson_type
+        )
+        
+        if available_slots:
+            # Create quick reply options from real calendar
+            options = []
+            for slot in available_slots[:8]:  # Limit to 8 slots
+                options.append((slot["label"], slot["start_iso"]))
+                print(f"📅 Real calendar slot: '{slot['label']}'")
+            
+            options.append((t("planning_more_options", lang), "more_options"))
+            
+            # Set pending intent to planning
+            set_conv_attrs(cid, {"pending_intent": "planning"})
+            
+            # Get appropriate text
+            if lesson_type == "premium":
+                lesson_text = t("planning_premium_slots_real", lang)
+            elif lesson_type == "trial":
+                lesson_text = t("planning_trial_slots_real", lang)
+            else:
+                lesson_text = t("planning_regular_slots_real", lang)
+            
+            print(f"📅 Sending {len(options)} real calendar options")
+            send_input_select_only(cid, lesson_text, options)
+            return
+            
+    except Exception as e:
+        print(f"❌ Error getting real calendar slots: {e}")
+    
+    # Fallback to default slot suggestion
+    print(f"⚠️ Using fallback slot suggestion")
+    suggest_available_slots(cid, profile_name, lang)
 
 def handle_planning_selection(cid, contact_id, msg_content, lang):
     """Handle planning slot selection"""
