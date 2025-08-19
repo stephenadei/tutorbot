@@ -22,8 +22,7 @@ from main import (
     detect_language_from_message, map_topic, 
     is_prefill_sufficient_for_trial_lesson, create_child_contact,
     prefill_intake_from_message, get_contact_id_from_conversation,
-    send_quick_replies, send_interactive_menu, send_input_select_only,
-    send_input_select_fallback, send_intake_form, send_intake_fallback,
+    send_input_select_only, send_intake_form,
     detect_segment, suggest_slots, book_slot, create_payment_link,
     verify_stripe_webhook, verify_webhook, handle_conversation_created,
     handle_message_created, show_info_menu, handle_prefill_confirmation,
@@ -284,8 +283,8 @@ class TestIntakeFlow(unittest.TestCase):
     @patch('main.set_contact_attrs')
     @patch('main.get_conv_attrs')
     @patch('main.set_conv_attrs')
-    @patch('main.send_interactive_menu')
-    def test_start_intake_flow(self, mock_send_menu, mock_set_conv, mock_get_conv, mock_set_contact, mock_get_contact):
+    @patch('main.send_text_with_duplicate_check')
+    def test_start_intake_flow(self, mock_send_text, mock_set_conv, mock_get_conv, mock_set_contact, mock_get_contact):
         """Test intake flow start"""
         mock_get_contact.return_value = {}
         mock_get_conv.return_value = {}
@@ -294,14 +293,13 @@ class TestIntakeFlow(unittest.TestCase):
         
         # Should set pending intent and send first question
         mock_set_conv.assert_called()
-        mock_send_menu.assert_called()
+        mock_send_text.assert_called()
     
     @patch('main.get_conv_attrs')
     @patch('main.set_conv_attrs')
     @patch('main.set_contact_attrs')
-    @patch('main.send_interactive_menu')
     @patch('main.send_text_with_duplicate_check')
-    def test_handle_intake_step(self, mock_send_text, mock_send_menu, mock_set_contact, mock_set_conv, mock_get_conv):
+    def test_handle_intake_step(self, mock_send_text, mock_set_contact, mock_set_conv, mock_get_conv):
         """Test intake step handling"""
         # Test for_who step
         mock_get_conv.return_value = {"pending_intent": "intake", "intake_step": "for_who"}
@@ -309,19 +307,19 @@ class TestIntakeFlow(unittest.TestCase):
         handle_intake_step(123, 456, "self", "nl")
         
         mock_set_conv.assert_called()
-        mock_send_menu.assert_called()
+        mock_send_text.assert_called()
 
 class TestMenuHandling(unittest.TestCase):
     """Test menu and selection handling"""
     
     @patch('main.set_conv_attrs')
-    @patch('main.send_interactive_menu')
-    def test_show_info_menu(self, mock_send_menu, mock_set_conv):
+    @patch('main.send_text_with_duplicate_check')
+    def test_show_info_menu(self, mock_send_text, mock_set_conv):
         """Test info menu display"""
         show_info_menu(123, "nl")
         
         mock_set_conv.assert_called_with(123, {"pending_intent": "info_menu"})
-        mock_send_menu.assert_called()
+        mock_send_text.assert_called()
     
     @patch('main.get_conv_attrs')
     @patch('main.set_conv_attrs')
@@ -449,9 +447,9 @@ class TestIntegrationScenarios(unittest.TestCase):
     @patch('main.get_conv_attrs')
     @patch('main.set_contact_attrs')
     @patch('main.set_conv_attrs')
-    @patch('main.send_interactive_menu')
+    @patch('main.send_text_with_duplicate_check')
     @patch('main.detect_segment')
-    def test_new_customer_flow(self, mock_detect_segment, mock_send_menu, mock_set_conv, 
+    def test_new_customer_flow(self, mock_detect_segment, mock_send_text, mock_set_conv, 
                               mock_set_contact, mock_get_conv, mock_get_contact):
         """Test new customer flow"""
         mock_get_contact.return_value = {"language": "nl"}
@@ -461,7 +459,7 @@ class TestIntegrationScenarios(unittest.TestCase):
         # Test segment menu for new customer
         show_segment_menu(123, 456, "new", "nl")
         
-        mock_send_menu.assert_called()
+        mock_send_text.assert_called()
     
     @patch('main.get_contact_attrs')
     @patch('main.get_conv_attrs')
