@@ -1161,7 +1161,8 @@ def analyze_first_message_with_openai(message: str, conversation_id: int = None)
     - "Volwassenenonderwijs" = middelbare school niveau voor volwassenen (vmbo/havo/vwo stof)
     
     BELANGRIJKSTE REGEL: Als de tekst "universiteit", "university", "Rijksuniversiteit", "UvA", "VU", "TU", 
-    "WO", "bachelor", "master", "BSc", "MSc" bevat, dan is het ALTIJD "university_wo" of "university_hbo", 
+    "WO", "bachelor", "master", "BSc", "MSc", "2e jaars", "3e jaars", "eerste jaar", "tweede jaar", "derde jaar",
+    "bachelor student", "master student", "universiteitsstudent", "universiteit student" bevat, dan is het ALTIJD "university_wo" of "university_hbo", 
     NOOIT "adult"!
     - **topic_primary**: String - Hoofdvak/onderwerp ("math", "stats", "english", "programming", "science", "chemistry", "other")
     - **topic_secondary**: String - Specifiek vak/onderwerp (bijv. "wiskunde B", "statistiek", "calculus")
@@ -1232,6 +1233,11 @@ def analyze_first_message_with_openai(message: str, conversation_id: int = None)
     - "Ik ben volwassen en moet middelbare school stof leren" → school_level: "adult"
     - "Ik zoek een tutor voor het vak aan de Rijksuniversiteit Groningen" → school_level: "university_wo" (NIET "adult")
     - "BSc International Economics aan de universiteit" → school_level: "university_wo" (NIET "adult")
+    - "2e jaars wiskunde vak binnen de BSc International Economics" → school_level: "university_wo" (NIET "adult")
+    - "Ik ben een bachelor student" → school_level: "university_wo"
+    - "Ik doe een master" → school_level: "university_wo"
+    - "Ik ben een universiteitsstudent" → school_level: "university_wo"
+    - "Ik zit in mijn tweede jaar aan de universiteit" → school_level: "university_wo"
     
     Belangrijk: 
     - **topic_secondary** is het specifieke vak/onderwerp (bijv. "wiskunde B", "statistiek")
@@ -1307,6 +1313,10 @@ def map_school_level(level_text: str) -> str:
         "hbo": "university_hbo", "wo": "university_wo", "universiteit": "university_wo",
         "universiteit hbo": "university_hbo", "universiteit wo": "university_wo",
         "hogeschool": "university_hbo", "university": "university_wo",
+        "rijksuniversiteit": "university_wo", "uva": "university_wo", "vu": "university_wo", "tu": "university_wo",
+        "bachelor": "university_wo", "master": "university_wo", "bsc": "university_wo", "msc": "university_wo",
+        "bachelor student": "university_wo", "master student": "university_wo", "universiteitsstudent": "university_wo",
+        "2e jaars": "university_wo", "3e jaars": "university_wo", "eerste jaar": "university_wo", "tweede jaar": "university_wo", "derde jaar": "university_wo",
         
         # Adult Education
         "volwassenenonderwijs": "adult", "adult": "adult", "volwassenen": "adult",
