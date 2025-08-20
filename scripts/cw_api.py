@@ -210,7 +210,7 @@ class ChatwootAPI:
                     url, 
                     headers=_user_headers(), 
                     json={"custom_attributes": merged_attrs}, 
-                    timeout=(3, 3),
+                    timeout=(10, 10),
                     verify=False
                 )
                 response.raise_for_status()
@@ -292,7 +292,7 @@ class ChatwootAPI:
             payload["content_attributes"] = content_attributes
             
         try:
-            response = requests.post(url, headers=_user_headers(), json=payload, timeout=(3, 3), verify=False)
+            response = requests.post(url, headers=_user_headers(), json=payload, timeout=(10, 10), verify=False)
             response.raise_for_status()
             return True
         except Exception as e:

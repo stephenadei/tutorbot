@@ -15,7 +15,7 @@ class DashboardIntegration:
     """Integration with the privelessen-dashboard"""
     
     def __init__(self):
-        self.dashboard_url = os.getenv("DASHBOARD_API_URL", "http://localhost:4141")
+        self.dashboard_url = os.getenv("DASHBOARD_API_URL", "http://host.docker.internal:4141")
         self.api_key = os.getenv("DASHBOARD_API_KEY", "")
         
     def send_lesson_to_dashboard(self, lesson_data: Dict[str, Any]) -> bool:
@@ -99,22 +99,22 @@ class DashboardIntegration:
             Dict containing lesson data
         """
         return {
-            "studentName": student_name,
-            "studentEmail": student_email,
-            "startTime": start_time,
-            "endTime": end_time,
-            "lessonType": lesson_type,
-            "chatwootContactId": chatwoot_contact_id,
-            "chatwootConversationId": chatwoot_conversation_id,
+            "student_name": student_name,
+            "student_email": student_email,
+            "start_time": start_time,
+            "end_time": end_time,
+            "lesson_type": lesson_type,
+            "chatwoot_contact_id": chatwoot_contact_id,
+            "chatwoot_conversation_id": chatwoot_conversation_id,
             "notes": notes,
             "location": location,
             "program": program,
-            "topicPrimary": topic_primary,
-            "topicSecondary": topic_secondary,
+            "topic_primary": topic_primary,
+            "topic_secondary": topic_secondary,
             "toolset": toolset,
-            "lessonMode": lesson_mode,
-            "isAdult": is_adult,
-            "relationshipToLearner": relationship_to_learner
+            "lesson_mode": lesson_mode,
+            "is_adult": is_adult,
+            "relationship_to_learner": relationship_to_learner
         }
 
 # Global instance

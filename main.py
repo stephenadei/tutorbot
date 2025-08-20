@@ -196,6 +196,26 @@ def t(key, lang="nl", **kwargs):
             "nl": "Meer opties",
             "en": "More options"
         },
+        "urgent_session_booked": {
+            "nl": "Perfect! Ik heb een spoed 2-uurs sessie ingepland op {slot}.\n\n💳 **Direct betalen:** {payment_link}\n\n📧 Voor de bevestiging heb ik nog je e-mailadres nodig. Kun je dat delen?",
+            "en": "Perfect! I've scheduled an urgent 2-hour session on {slot}.\n\n💳 **Pay now:** {payment_link}\n\n📧 For confirmation, I still need your email address. Can you share that?"
+        },
+        "urgent_session_booked_no_payment": {
+            "nl": "Perfect! Ik heb een spoed 2-uurs sessie ingepland op {slot}.\n\n📧 Voor de bevestiging heb ik nog je e-mailadres nodig. Kun je dat delen?",
+            "en": "Perfect! I've scheduled an urgent 2-hour session on {slot}.\n\n📧 For confirmation, I still need your email address. Can you share that?"
+        },
+        "trial_lesson_booked": {
+            "nl": "Perfect! Ik heb een proefles ingepland op {slot}.",
+            "en": "Perfect! I've scheduled a trial lesson on {slot}."
+        },
+        "trial_lesson_confirmed": {
+            "nl": "Perfect! Je proefles is ingepland op {slot}.",
+            "en": "Perfect! Your trial lesson is scheduled on {slot}."
+        },
+        "email_thanks": {
+            "nl": "Bedankt! Ik heb je e-mailadres ({email}) opgeslagen voor de bevestiging.",
+            "en": "Thank you! I've saved your email address ({email}) for confirmation."
+        },
         "ask_for_preferences": {
             "nl": "🤔 Wat zijn je voorkeuren voor de les?\n\nVertel me bijvoorbeeld:\n• Welke dagen je voorkeur hebt (maandag, woensdag, etc.)\n• Welke tijden je het beste uitkomen (ochtend, middag, avond)\n• Of je specifieke tijden hebt (bijv. 'om 15:00')\n\nIk ga dan 3 momenten voorstellen die bij je passen!",
             "en": "🤔 What are your preferences for the lesson?\n\nTell me for example:\n• Which days you prefer (Monday, Wednesday, etc.)\n• Which times work best for you (morning, afternoon, evening)\n• If you have specific times (e.g. 'at 3:00 PM')\n\nI'll then suggest 3 moments that suit you!"
@@ -229,12 +249,20 @@ def t(key, lang="nl", **kwargs):
             "en": "🔧 I understand the information isn't quite right. Can you tell me what needs to be corrected?\n\nTell me for example:\n• The correct name\n• The correct school level\n• The correct subject\n• Or other details that are wrong\n\nI'll then adjust the information and ask for confirmation again."
         },
         "prefill_corrected_summary_title": {
-            "nl": "📋 **Gecorrigeerde Informatie**",
-            "en": "📋 **Corrected Information**"
+            "nl": "📋 Gecorrigeerde Informatie",
+            "en": "📋 Corrected Information"
         },
         "prefill_corrected_confirmation_prompt": {
-            "nl": "Klopt deze informatie nu wel? Reageer met 'ja' als het correct is, of 'nee' als er nog steeds fouten zijn.",
-            "en": "Is this information correct now? Reply with 'yes' if it's correct, or 'no' if there are still errors."
+            "nl": "Klopt deze informatie nu wel?",
+            "en": "Is this information correct now?"
+        },
+        "prefill_confirm_yes": {
+            "nl": "✅ Ja, klopt!",
+            "en": "✅ Yes, correct!"
+        },
+        "prefill_confirm_no": {
+            "nl": "❌ Nee, nog fouten",
+            "en": "❌ No, still errors"
         },
         "correction_analysis_failed": {
             "nl": "⚠️ Ik kon je correcties niet goed verwerken. Kun je het nog een keer proberen met duidelijke informatie?",
@@ -300,6 +328,10 @@ def t(key, lang="nl", **kwargs):
             "nl": "💰 *Tarieven*\n\n📚 *Hoger onderwijs:*\n• 1 les (1 uur): €90\n• 2 lessen (2 uur): €140\n• 4 lessen (4 uur): €250\n\n🎓 *Voortgezet onderwijs 20+:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €230\n\n🎓 *Voortgezet onderwijs 20-:*\n• 1 les (1 uur): €75\n• 2 lessen (2 uur): €130\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €65 (1u) • €125 (2u) • €180 (4u)\n• 3-4 personen: €55 (1u) • €95 (2u) • €150 (4u)\n\n🎯 *MBO Rekentrajecten (alleen online, 18+):*\n• Spoedpakket: 1 week, 4 uur (€275)\n• Korte cursus: 4 weken, 4 uur (€225)\n• Volledig Commit: 12 weken, 13-14 uur (€550)\n• Volledig Flex: 12 weken, 13-14 uur (€690 in 3 termijnen)\n\n📊 *Scriptiebegeleiding:*\n• Statistiek & onderzoek: €90/uur\n• Data science & AI: €100/uur",
             "en": "💰 *Rates*\n\n📚 *Higher education:*\n• 1 lesson (1 hour): €90\n• 2 lessons (2 hours): €140\n• 4 lessons (4 hours): €250\n\n🎓 *Secondary education 20+:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €230\n\n🎓 *Secondary education 20-:*\n• 1 lesson (1 hour): €75\n• 2 lessons (2 hours): €130\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €65 (1h) • €125 (2h) • €180 (4h)\n• 3-4 persons: €55 (1h) • €95 (2h) • €150 (4h)\n\n🎯 *MBO Math trajectories (online only, 18+):*\n• Emergency: 1 week, 4 hours (€275)\n• Short course: 4 weeks, 4 hours (€225)\n• Full Commit: 12 weeks, 13-14 hours (€550)\n• Full Flex: 12 weeks, 13-14 hours (€690 in 3 installments)\n\n📊 *Thesis guidance:*\n• Statistics & research: €90/hour\n• Data science & AI: €100/hour"
         },
+        "info_tariffs_no_mbo": {
+            "nl": "💰 *Tarieven*\n\n📚 *Hoger onderwijs:*\n• 1 les (1 uur): €90\n• 2 lessen (2 uur): €140\n• 4 lessen (4 uur): €250\n\n🎓 *Voortgezet onderwijs 20+:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €230\n\n🎓 *Voortgezet onderwijs 20-:*\n• 1 les (1 uur): €75\n• 2 lessen (2 uur): €130\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €65 (1u) • €125 (2u) • €180 (4u)\n• 3-4 personen: €55 (1u) • €95 (2u) • €150 (4u)\n\n📊 *Scriptiebegeleiding:*\n• Statistiek & onderzoek: €90/uur\n• Data science & AI: €100/uur",
+            "en": "💰 *Rates*\n\n📚 *Higher education:*\n• 1 lesson (1 hour): €90\n• 2 lessons (2 hours): €140\n• 4 lessons (4 hours): €250\n\n🎓 *Secondary education 20+:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €230\n\n🎓 *Secondary education 20-:*\n• 1 lesson (1 hour): €75\n• 2 lessons (2 hours): €130\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €65 (1h) • €125 (2h) • €180 (4h)\n• 3-4 persons: €55 (1h) • €95 (2h) • €150 (4h)\n\n📊 *Thesis guidance:*\n• Statistics & research: €90/hour\n• Data science & AI: €100/hour"
+        },
         "info_tariffs_under_20": {
             "nl": "💰 *Tarieven (Onder 20 jaar)*\n\n🎓 *Voortgezet onderwijs:*\n• 1 les (1 uur): €75\n• 2 lessen (2 uur): €130\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €55 (1u) • €110 (2u) • €165 (4u)\n• 3-4 personen: €45 (1u) • €80 (2u) • €125 (4u)",
             "en": "💰 *Rates (Under 20 years)*\n\n🎓 *Secondary education:*\n• 1 lesson (1 hour): €75\n• 2 lessons (2 hours): €130\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €55 (1h) • €110 (2h) • €165 (4h)\n• 3-4 persons: €45 (1h) • €80 (2h) • €125 (4h)"
@@ -308,9 +340,13 @@ def t(key, lang="nl", **kwargs):
             "nl": "💰 *Tarieven (20 jaar en ouder)*\n\n📚 *Hoger onderwijs:*\n• 1 les (1 uur): €90\n• 2 lessen (2 uur): €140\n• 4 lessen (4 uur): €250\n\n🎓 *Voortgezet onderwijs:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €230\n\n👥 *Groepslessen:*\n• 2 personen: €65 (1u) • €125 (2u) • €180 (4u)\n• 3-4 personen: €55 (1u) • €95 (2u) • €150 (4u)\n\n🎯 *MBO Rekentrajecten:*\n• Spoedpakket: 1 week, 4 uur (€275)\n• Korte cursus: 4 weken, 4 uur (€225)\n• Volledig Commit: 12 weken, 13-14 uur (€550)\n• Volledig Flex: 12 weken, 13-14 uur (€690 in 3 termijnen)\n\n📊 *Scriptiebegeleiding:*\n• Statistiek & onderzoek: €90/uur\n• Data science & AI: €100/uur",
             "en": "💰 *Rates (20 years and older)*\n\n📚 *Higher education:*\n• 1 lesson (1 hour): €90\n• 2 lessons (2 hours): €140\n• 4 lessons (4 hours): €250\n\n🎓 *Secondary education:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €230\n\n👥 *Group lessons:*\n• 2 persons: €65 (1h) • €125 (2h) • €180 (4h)\n• 3-4 persons: €55 (1h) • €95 (2h) • €150 (4h)\n\n🎯 *MBO Math trajectories:*\n• Emergency: 1 week, 4 hours (€275)\n• Short course: 4 weeks, 4 hours (€225)\n• Full Commit: 12 weeks, 13-14 hours (€550)\n• Full Flex: 12 weeks, 13-14 hours (€690 in 3 installments)\n\n📊 *Thesis guidance:*\n• Statistics & research: €90/hour\n• Data science & AI: €100/hour"
         },
+        "info_tariffs_over_20_no_mbo": {
+            "nl": "💰 *Tarieven (20 jaar en ouder)*\n\n📚 *Hoger onderwijs:*\n• 1 les (1 uur): €90\n• 2 lessen (2 uur): €140\n• 4 lessen (4 uur): €250\n\n🎓 *Voortgezet onderwijs:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €230\n\n👥 *Groepslessen:*\n• 2 personen: €65 (1u) • €125 (2u) • €180 (4u)\n• 3-4 personen: €55 (1u) • €95 (2u) • €150 (4u)\n\n📊 *Scriptiebegeleiding:*\n• Statistiek & onderzoek: €90/uur\n• Data science & AI: €100/uur",
+            "en": "💰 *Rates (20 years and older)*\n\n📚 *Higher education:*\n• 1 lesson (1 hour): €90\n• 2 lessons (2 hours): €140\n• 4 lessons (4 hours): €250\n\n🎓 *Secondary education:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €230\n\n👥 *Group lessons:*\n• 2 persons: €65 (1h) • €125 (2h) • €180 (4h)\n• 3-4 persons: €55 (1h) • €95 (2h) • €150 (4h)\n\n📊 *Thesis guidance:*\n• Statistics & research: €90/hour\n• Data science & AI: €100/hour"
+        },
         "info_travel_costs": {
-            "nl": "🚗 *Reiskosten:*\n\n• VU/UvA: €15\n• Thuis (Amsterdam): €40\n• Science Park: €0",
-            "en": "🚗 *Travel costs:*\n\n• VU/UvA: €15\n• Home (Amsterdam): €40\n• Science Park: €0"
+            "nl": "🚗 *Reiskosten:*\n\n• VU/UvA (niet SP): €20\n• Thuis (Amsterdam): €50\n• Science Park: €0",
+            "en": "🚗 *Travel costs:*\n\n• VU/UvA (not SP): €20\n• Home (Amsterdam): €50\n• Science Park: €0"
         },
         "info_last_minute": {
             "nl": "⏰ *Last-minute toeslagen:*\n\n• < 24 uur: +20%\n• < 12 uur: +50%",
@@ -361,8 +397,8 @@ def t(key, lang="nl", **kwargs):
             "en": "🌅 **Weekend Programs (Amsterdam Southeast)**\n\n🇬🇭 **Boa me na menboa mo (Ghanaian community):**\n• **50% discount** for Ghanaian youth: €30/hour instead of €60\n• **Location**: Douwe Egberts (Dubbelink 2) or at home in Gein\n• **Times**: Saturday and Sunday, flexible times\n• **Free trial lesson** of 30 minutes\n\n🌅 **Weekend Tutoring Southeast:**\n• **50% discount**: €30/hour instead of €60\n• **Same locations** and times\n• **For all residents** of Southeast\n\n📍 **Locations:**\n• Douwe Egberts (Dubbelink 2, Amsterdam Southeast)\n• At home in Gein and surrounding area\n• Bijlmerplein 888, 1102 MG Amsterdam\n\n⏰ **Availability:**\n• Saturday: 10:00–18:00\n• Sunday: 10:00–18:00\n• Flexible times possible\n\n🎯 **Special Features:**\n• **Community focus**: Accessible rates for different target groups\n• **Experience with special needs**: Experience with students with mild autism\n• **Structured and patient learning environment**\n• **Adaptation to specific needs**\n\n📞 **Contact:**\n• Phone: +31 6 47357426\n• Email: info@stephenadei.nl\n• Website: stephensprivelessen.nl"
         },
         "info_short_version": {
-            "nl": "📝 **Korte versie:**\n\nHO: 1× €90 • 2× €140 • 4× €250\nVO 20+: 1× €80 • 2× €135 • 4× €230\nVO 20-: 1× €75 • 2× €130 • 4× €200\n\nReiskosten: VU/UvA (niet SP) €15 • Thuis (AMS e.o.) €40 • Science Park €0\n\nLast-minute: <24u +20% • <12u +50%\n\nPakketten: 2× geldig 2 weken • 4× geldig 1 maand; bij directe planning loopt geldigheid vanaf 1e les. Flex-premium (alleen bij niet-direct plannen): +€15 (2×) / +€30 (4×).",
-            "en": "📝 **Short version:**\n\nHE: 1× €90 • 2× €140 • 4× €250\nSE 20+: 1× €80 • 2× €135 • 4× €230\nSE 20-: 1× €75 • 2× €130 • 4× €200\n\nTravel: VU/UvA (not SP) €15 • Home (AMS area) €40 • Science Park €0\n\nLast-minute: <24h +20% • <12h +50%\n\nPackages: 2× valid 2 weeks • 4× valid 1 month; with direct scheduling validity runs from 1st lesson. Flex-premium (only when not scheduling directly): +€15 (2×) / +€30 (4×)."
+            "nl": "📝 **Korte versie:**\n\nHO: 1× €90 • 2× €140 • 4× €250\nVO 20+: 1× €80 • 2× €135 • 4× €230\nVO 20-: 1× €75 • 2× €130 • 4× €200\n\nReiskosten: VU/UvA (niet SP) €20 • Thuis (AMS e.o.) €50 • Science Park €0\n\nLast-minute: <24u +20% • <12u +50%\n\nPakketten: 2× geldig 2 weken • 4× geldig 1 maand; bij directe planning loopt geldigheid vanaf 1e les. Flex-premium (alleen bij niet-direct plannen): +€15 (2×) / +€30 (4×).",
+            "en": "📝 **Short version:**\n\nHE: 1× €90 • 2× €140 • 4× €250\nSE 20+: 1× €80 • 2× €135 • 4× €230\nSE 20-: 1× €75 • 2× €130 • 4× €200\n\nTravel: VU/UvA (not SP) €20 • Home (AMS area) €50 • Science Park €0\n\nLast-minute: <24h +20% • <12h +50%\n\nPackages: 2× valid 2 weeks • 4× valid 1 month; with direct scheduling validity runs from 1st lesson. Flex-premium (only when not scheduling directly): +€15 (2×) / +€30 (4×)."
         },
         "info_personal_background": {
             "nl": "👨‍🏫 **Persoonlijke Achtergrond & Motivatie**\n\n**Stephen Adei** - MSc Mathematics (Gespecialiseerd in quantum informatie en discrete wiskunde)\n• **Master Leraar** (Eerstegraads bevoegdheid in één keer)\n• **10+ jaar ervaring** sinds 2012 in onderwijs en begeleiding\n• **Persoonlijke reis**: Van wiskunde-uitdagingen (gemiddelde 5 in 3e jaar) naar excellente resultaten (gemiddelde 10 in 4e/5e jaar)\n• **Expertise**: Wiskunde, quantum informatie, discrete wiskunde, statistiek, data-analyse, multidisciplinaire achtergrond\n• **Passie**: Deze ervaring inspireerde tot het helpen van anderen met vergelijkbare uitdagingen\n\n**Visie & Filosofie:**\n• **Onderwijs moet empoweren**, niet alleen kennis overdragen\n• **Elke student kan leren**, mits de juiste begeleiding en motivatie\n• **Persoonlijke groei** staat centraal in mijn aanpak\n• **Zelfvertrouwen** is de basis voor succesvol leren\n\n**Academische Kwalificaties:**\n• **MSc Mathematics**: Gespecialiseerd in quantum informatie en discrete wiskunde\n• **Master Leraar**: Eerstegraads bevoegdheid (volledige lesbevoegdheid)\n• **Evidence-based didactiek**: Wetenschappelijk onderbouwde onderwijsmethoden\n• **Academische achtergrond** gecombineerd met **praktische onderwijservaring**\n\n**Multidisciplinaire Achtergrond:**\n• **Wiskunde & Statistiek**: Academische achtergrond en praktische toepassingen\n• **Quantum informatie**: Geavanceerde wiskundige concepten en algoritmen\n• **Discrete wiskunde**: Combinatoriek, grafentheorie, algoritmen\n• **Programmeren**: Python, Java, C#, C++, web development\n• **Muziek & Creativiteit**: Muziekproductie, DJ, creatieve workshops\n• **Fotografie & Design**: Analoge fotografie, visuele storytelling\n• **AI & Innovatie**: Integratie van moderne technologie in onderwijs\n\n**Community Focus:**\n• **Ghanese gemeenschap**: Speciale programma's en ondersteuning\n• **Amsterdam Zuidoost**: Weekend programma's met toegankelijke tarieven\n• **Inclusiviteit**: Ervaring met diverse leerstijlen en speciale behoeften",
@@ -393,8 +429,8 @@ def t(key, lang="nl", **kwargs):
             "en": "💼 **Consultancy & Advice**\n\n**Data Analysis & Statistical Modeling:**\n• **Statistical analyses**: Comprehensive data analysis and interpretation\n• **Predictive modeling**: Predictive models and trends\n• **Data visualization**: Interactive dashboards and reports\n• **Quality control**: Statistical quality assurance\n• **Research design**: Experimental design and methodology\n\n**Research Methodology:**\n• **Research design**: Design of scientific studies\n• **Sampling methods**: Representative data collection\n• **Validation**: Reliability and validity of research\n• **Ethics**: Research ethics and privacy protection\n• **Reporting**: Scientific reporting and presentation\n\n**Machine Learning & AI:**\n• **Algorithm development**: Custom machine learning models\n• **Data preprocessing**: Data cleaning and feature engineering\n• **Model evaluation**: Performance assessment and validation\n• **AI implementation**: Practical applications of AI\n• **Ethical AI**: Responsible AI development\n\n**Software Development:**\n• **Web development**: Frontend and backend development\n• **Database design**: Data architecture and optimization\n• **API development**: Integration and system coupling\n• **Testing & QA**: Quality assurance and debugging\n• **Deployment**: Implementation and maintenance\n\n**Consultancy Approach:**\n\n**1. Initial Conversation & Needs Analysis**\n• Intake conversation to understand goals and challenges\n• Analysis of current situation and wishes\n• Determination of scope and expectations\n• Development of project plan and timeline\n\n**2. Data Evaluation & Assessment**\n• Analysis of available data and systems\n• Identification of improvement points and opportunities\n• Assessment of technical infrastructure\n• Benchmarking against best practices\n\n**3. Solution Design**\n• Development of custom solutions\n• Technical specifications and architecture\n• Implementation strategy and planning\n• Risk analysis and mitigation\n\n**4. Implementation & Guidance**\n• Step-by-step implementation of solutions\n• Training and knowledge transfer\n• Monitoring and evaluation of results\n• Continuous support and optimization\n\n**5. Knowledge Transfer & Support**\n• Documentation and manuals\n• Staff training\n• Best practices and procedures\n• Long-term support and maintenance\n\n**Sectors & Applications:**\n• **Education**: Educational technology and data analysis\n• **Healthcare**: Medical data analysis and statistics\n• **Finance**: Financial modeling and risk analysis\n• **Marketing**: Customer analytics and targeting\n• **Research**: Scientific research and publications\n\n**Deliverables:**\n• **Reports**: Comprehensive analyses and recommendations\n• **Dashboards**: Interactive data visualizations\n• **Models**: Machine learning and statistical models\n• **Software**: Custom applications and tools\n• **Training**: Workshops and knowledge transfer\n• **Support**: Continuous guidance and optimization"
         },
         "info_how_lessons_work": {
-            "nl": "📚 **Hoe Lessen Werken**\n\n**🎯 Lesopzet & Structuur:**\n• **Intake gesprek**: Eerste les start altijd met een uitgebreide intake\n• **Diagnostische toets**: Bepaling van huidig niveau en leerdoelen\n• **Persoonlijk plan**: Op maat gemaakt leertraject op basis van intake\n• **Flexibele duur**: 60-90 minuten afhankelijk van behoefte\n\n**💻 Lesvormen & Locaties:**\n• **Online lessen**: Via Zoom/Google Meet met interactieve whiteboards\n• **Fysieke lessen**: Thuis, op school, of op locatie (Amsterdam)\n• **Hybride optie**: Combinatie van online en fysiek mogelijk\n• **Locaties**: Science Park (gratis), VU/UvA (€15), thuis (€40)\n• **MBO trajecten**: Alleen online beschikbaar\n\n**📱 Technologie & Tools:**\n• **iPad aantekeningen**: Digitale notities gedeeld na elke les\n• **Online whiteboards**: Interactieve uitleg en samenwerking\n• **AI ondersteuning**: ChatGPT voor conceptverduidelijking\n• **WhatsApp support**: 7 dagen na elke les beschikbaar\n\n**📋 Lesverloop:**\n• **Voorbereiding**: Student bereidt vragen/voorbereiding voor\n• **Uitleg**: Stapsgewijze uitleg van concepten\n• **Samen oefenen**: Interactieve oefeningen en samenwerking\n• **Feedback**: Directe feedback en tips\n• **Huiswerk**: Gepersonaliseerde opdrachten en oefeningen\n• **Evaluatie**: Korte evaluatie van voortgang en doelen\n\n**🎓 Specifieke Vakken:**\n• **Wiskunde**: Alle niveaus (basisonderwijs t/m universiteit)\n• **Programmeren**: Python, Java, C#, web development\n• **Statistiek**: SPSS, R, data-analyse, onderzoek\n• **Scriptiebegeleiding**: Methodologie, analyse, structuur\n• **MBO trajecten**: Alleen voor volwassenen (18+), online trajecten\n\n**⏰ Planning & Beschikbaarheid:**\n• **Flexibele tijden**: Maandag t/m zondag, 9:00-22:00\n• **Last-minute**: Mogelijk met toeslag (<24u +20%, <12u +50%)\n• **Pakketten**: 2 of 4 lessen met verschillende geldigheid\n• **Proefles**: Gratis 30 minuten intake en kennismaking\n\n**📞 Ondersteuning:**\n• **WhatsApp**: 7 dagen na elke les voor vragen\n• **Reactietijd**: Binnen 24 uur op alle vragen\n• **Check-ins**: Korte motivatie- en planningsgesprekken\n• **Ouder communicatie**: Regelmatige updates en feedback",
-            "en": "📚 **How Lessons Work**\n\n**🎯 Lesson Structure & Setup:**\n• **Intake conversation**: First lesson always starts with comprehensive intake\n• **Diagnostic test**: Assessment of current level and learning goals\n• **Personal plan**: Custom learning trajectory based on intake\n• **Flexible duration**: 60-90 minutes depending on needs\n\n**💻 Lesson Formats & Locations:**\n• **Online lessons**: Via Zoom/Google Meet with interactive whiteboards\n• **In-person lessons**: At home, at school, or on location (Amsterdam)\n• **Hybrid option**: Combination of online and in-person possible\n• **Locations**: Science Park (free), VU/UvA (€15), home (€40)\n• **MBO trajectories**: Online only\n\n**📱 Technology & Tools:**\n• **iPad notes**: Digital notes shared after each lesson\n• **Online whiteboards**: Interactive explanation and collaboration\n• **AI support**: ChatGPT for concept clarification\n• **WhatsApp support**: Available 7 days after each lesson\n\n**📋 Lesson Flow:**\n• **Preparation**: Student prepares questions/preparation\n• **Explanation**: Step-by-step explanation of concepts\n• **Practice together**: Interactive exercises and collaboration\n• **Feedback**: Direct feedback and tips\n• **Homework**: Personalized assignments and exercises\n• **Evaluation**: Brief evaluation of progress and goals\n\n**🎓 Specific Subjects:**\n• **Mathematics**: All levels (primary education to university)\n• **Programming**: Python, Java, C#, web development\n• **Statistics**: SPSS, R, data analysis, research\n• **Thesis guidance**: Methodology, analysis, structure\n• **MBO trajectories**: Adults only (18+), online trajectories\n\n**⏰ Scheduling & Availability:**\n• **Flexible times**: Monday to Sunday, 9:00-22:00\n• **Last-minute**: Possible with surcharge (<24h +20%, <12h +50%)\n• **Packages**: 2 or 4 lessons with different validity\n• **Trial lesson**: Free 30 minutes intake and introduction\n\n**📞 Support:**\n• **WhatsApp**: 7 days after each lesson for questions\n• **Response time**: Within 24 hours on all questions\n• **Check-ins**: Short motivation and planning conversations\n• **Parent communication**: Regular updates and feedback"
+            "nl": "📚 **Hoe Lessen Werken**\n\n**🎯 Lesopzet & Structuur:**\n• **Intake gesprek**: Eerste les start altijd met een uitgebreide intake\n• **Diagnostische toets**: Bepaling van huidig niveau en leerdoelen\n• **Persoonlijk plan**: Op maat gemaakt leertraject op basis van intake\n• **Flexibele duur**: 60-90 minuten afhankelijk van behoefte\n\n**💻 Lesvormen & Locaties:**\n• **Online lessen**: Via Zoom/Google Meet met interactieve whiteboards\n• **Fysieke lessen**: Thuis, op school, of op locatie (Amsterdam)\n• **Hybride optie**: Combinatie van online en fysiek mogelijk\n• **Locaties**: Science Park (gratis), VU/UvA (€20), thuis (€50)\n• **MBO trajecten**: Alleen online beschikbaar\n\n**📱 Technologie & Tools:**\n• **iPad aantekeningen**: Digitale notities gedeeld na elke les\n• **Online whiteboards**: Interactieve uitleg en samenwerking\n• **AI ondersteuning**: ChatGPT voor conceptverduidelijking\n• **WhatsApp support**: 7 dagen na elke les beschikbaar\n\n**📋 Lesverloop:**\n• **Voorbereiding**: Student bereidt vragen/voorbereiding voor\n• **Uitleg**: Stapsgewijze uitleg van concepten\n• **Samen oefenen**: Interactieve oefeningen en samenwerking\n• **Feedback**: Directe feedback en tips\n• **Huiswerk**: Gepersonaliseerde opdrachten en oefeningen\n• **Evaluatie**: Korte evaluatie van voortgang en doelen\n\n**🎓 Specifieke Vakken:**\n• **Wiskunde**: Alle niveaus (basisonderwijs t/m universiteit)\n• **Programmeren**: Python, Java, C#, web development\n• **Statistiek**: SPSS, R, data-analyse, onderzoek\n• **Scriptiebegeleiding**: Methodologie, analyse, structuur\n• **MBO trajecten**: Alleen voor volwassenen (18+), online trajecten\n\n**⏰ Planning & Beschikbaarheid:**\n• **Flexibele tijden**: Maandag t/m zondag, 9:00-22:00\n• **Last-minute**: Mogelijk met toeslag (<24u +20%, <12u +50%)\n• **Pakketten**: 2 of 4 lessen met verschillende geldigheid\n• **Proefles**: Gratis 30 minuten intake en kennismaking\n\n**📞 Ondersteuning:**\n• **WhatsApp**: 7 dagen na elke les voor vragen\n• **Reactietijd**: Binnen 24 uur op alle vragen\n• **Check-ins**: Korte motivatie- en planningsgesprekken\n• **Ouder communicatie**: Regelmatige updates en feedback",
+            "en": "📚 **How Lessons Work**\n\n**🎯 Lesson Structure & Setup:**\n• **Intake conversation**: First lesson always starts with comprehensive intake\n• **Diagnostic test**: Assessment of current level and learning goals\n• **Personal plan**: Custom learning trajectory based on intake\n• **Flexible duration**: 60-90 minutes depending on needs\n\n**💻 Lesson Formats & Locations:**\n• **Online lessons**: Via Zoom/Google Meet with interactive whiteboards\n• **In-person lessons**: At home, at school, or on location (Amsterdam)\n• **Hybrid option**: Combination of online and in-person possible\n• **Locations**: Science Park (free), VU/UvA (€20), home (€50)\n• **MBO trajectories**: Online only\n\n**📱 Technology & Tools:**\n• **iPad notes**: Digital notes shared after each lesson\n• **Online whiteboards**: Interactive explanation and collaboration\n• **AI support**: ChatGPT for concept clarification\n• **WhatsApp support**: Available 7 days after each lesson\n\n**📋 Lesson Flow:**\n• **Preparation**: Student prepares questions/preparation\n• **Explanation**: Step-by-step explanation of concepts\n• **Practice together**: Interactive exercises and collaboration\n• **Feedback**: Direct feedback and tips\n• **Homework**: Personalized assignments and exercises\n• **Evaluation**: Brief evaluation of progress and goals\n\n**🎓 Specific Subjects:**\n• **Mathematics**: All levels (primary education to university)\n• **Programming**: Python, Java, C#, web development\n• **Statistics**: SPSS, R, data analysis, research\n• **Thesis guidance**: Methodology, analysis, structure\n• **MBO trajectories**: Adults only (18+), online trajectories\n\n**⏰ Scheduling & Availability:**\n• **Flexible times**: Monday to Sunday, 9:00-22:00\n• **Last-minute**: Possible with surcharge (<24h +20%, <12h +50%)\n• **Packages**: 2 or 4 lessons with different validity\n• **Trial lesson**: Free 30 minutes intake and introduction\n\n**📞 Support:**\n• **WhatsApp**: 7 days after each lesson for questions\n• **Response time**: Within 24 hours on all questions\n• **Check-ins**: Short motivation and planning conversations\n• **Parent communication**: Regular updates and feedback"
         },
         "menu_tariffs": {
             "nl": "💰 Tarieven",
@@ -968,6 +1004,22 @@ def t(key, lang="nl", **kwargs):
             "nl": "🎯 Perfect! Laten we een gratis proefles van 30 minuten inplannen. Ik heb een paar vragen om de les goed voor te bereiden.",
             "en": "🎯 Perfect! Let's schedule a free 30-minute trial lesson. I have a few questions to prepare the lesson well."
         },
+        "trial_lesson_mode_question": {
+            "nl": "📱 Wil je de proefles online of fysiek doen?\n\n💻 *Online*: Via Zoom/Google Meet met interactieve whiteboards\n🏫 *Fysiek*: Alleen mogelijk op Science Park (Amsterdam)\n\nKies je voorkeur:",
+            "en": "📱 Do you want the trial lesson online or in-person?\n\n💻 *Online*: Via Zoom/Google Meet with interactive whiteboards\n🏫 *In-person*: Only possible at Science Park (Amsterdam)\n\nChoose your preference:"
+        },
+        "trial_lesson_online": {
+            "nl": "💻 Online proefles",
+            "en": "💻 Online trial lesson"
+        },
+        "trial_lesson_fysiek": {
+            "nl": "🏫 Fysiek op Science Park",
+            "en": "🏫 In-person at Science Park"
+        },
+        "trial_lesson_mode_confirmed": {
+            "nl": "✅ {mode} geselecteerd! Nu ga ik beschikbare tijden sturen.",
+            "en": "✅ {mode} selected! Now I'll send available times."
+        },
         "planning_premium_service": {
             "nl": "📅 Perfect! Laten we alle lessen inplannen. Ik ga je helpen met het plannen van een volledig pakket.",
             "en": "📅 Perfect! Let's schedule all lessons. I'll help you plan a complete package."
@@ -1027,6 +1079,64 @@ def t(key, lang="nl", **kwargs):
         "error_planning_failed": {
             "nl": "❌ Er is een fout opgetreden bij het inplannen. Probeer het later opnieuw.",
             "en": "❌ An error occurred while scheduling. Please try again later."
+        },
+        
+        # Prefill field labels
+        "prefill_learner_name": {
+            "nl": "Naam leerling",
+            "en": "Student name"
+        },
+        "prefill_school_level": {
+            "nl": "Schoolniveau",
+            "en": "School level"
+        },
+        "prefill_topic_primary": {
+            "nl": "Hoofdvak",
+            "en": "Primary subject"
+        },
+        "prefill_topic_secondary": {
+            "nl": "Specifiek vak",
+            "en": "Specific subject"
+        },
+        "prefill_goals": {
+            "nl": "Leerdoelen",
+            "en": "Learning goals"
+        },
+        "prefill_for_who": {
+            "nl": "Voor wie",
+            "en": "For whom"
+        },
+        "prefill_for_who_self": {
+            "nl": "Voor mijzelf",
+            "en": "For myself"
+        },
+        "prefill_for_who_child": {
+            "nl": "Voor mijn kind",
+            "en": "For my child"
+        },
+        "prefill_for_who_student": {
+            "nl": "Voor een student",
+            "en": "For a student"
+        },
+        "prefill_for_who_other": {
+            "nl": "Voor iemand anders",
+            "en": "For someone else"
+        },
+        "prefill_corrected_summary_title": {
+            "nl": "📋 Gecorrigeerde Informatie",
+            "en": "📋 Corrected Information"
+        },
+        "prefill_corrected_confirmation_prompt": {
+            "nl": "Klopt deze informatie nu wel?",
+            "en": "Is this information correct now?"
+        },
+        "prefill_confirm_yes": {
+            "nl": "✅ Ja, klopt!",
+            "en": "✅ Yes, correct!"
+        },
+        "prefill_confirm_no": {
+            "nl": "❌ Nee, nog fouten",
+            "en": "❌ No, still errors"
         }
     }
     
@@ -1248,7 +1358,7 @@ Geef je antwoord als JSON in dit formaat:
                 {"role": "user", "content": f"Voorkeuren van gebruiker: {preferences_text}"}
             ],
             temperature=0.3,
-            max_tokens=500
+            max_completion_tokens=500
         )
         
         result = response.choices[0].message.content
@@ -1414,17 +1524,25 @@ def analyze_first_message_with_openai(message: str, conversation_id: int = None)
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Analyseer dit bericht: {message}"}
             ],
-            temperature=0.1,
-            max_tokens=500
+            max_completion_tokens=500,
+            timeout=30  # 30 second timeout
         )
         
         content = response.choices[0].message.content.strip()
+        print(f"🔍 OpenAI raw response: '{content}'")
+        print(f"🔍 Response length: {len(content)}")
+        
+        if not content:
+            print(f"❌ OpenAI returned empty response")
+            return {}
+            
         try:
             result = json.loads(content)
             print(f"✅ OpenAI prefill analysis completed")
             return result
         except json.JSONDecodeError as e:
             print(f"❌ Failed to parse OpenAI response: {e}")
+            print(f"🔍 Raw content that failed to parse: '{content}'")
             return {}
             
     except Exception as e:
@@ -1439,11 +1557,15 @@ def analyze_first_message_with_openai(message: str, conversation_id: int = None)
                 warning_message = "OpenAI API rate limit exceeded"
             elif "authentication" in error_details.lower() or "invalid_api_key" in error_details.lower():
                 warning_message = "OpenAI API authentication failed - check API key"
+            elif "timeout" in error_details.lower():
+                warning_message = "OpenAI API timeout - network issues"
             else:
                 warning_message = f"OpenAI API error: {error_details[:100]}"
             
             send_admin_warning(conversation_id, warning_message)
         
+        # Return empty result to continue with normal flow
+        print(f"⚠️ Returning empty result due to OpenAI error - continuing with normal flow")
         return {}
 
 def map_school_level(level_text: str) -> str:
@@ -1479,6 +1601,58 @@ def map_school_level(level_text: str) -> str:
         "werkende": "adult", "professional": "adult"
     }
     return level_mapping.get(level_text.lower(), "adult")
+
+def get_school_level_display(level_code: str, lang: str = "nl") -> str:
+    """Convert internal school level codes to readable display text"""
+    display_mapping = {
+        "po": {"nl": "Basisschool", "en": "Primary School"},
+        "vmbo": {"nl": "VMBO", "en": "VMBO"},
+        "havo": {"nl": "HAVO", "en": "HAVO"},
+        "vwo": {"nl": "VWO", "en": "VWO"},
+        "mbo": {"nl": "MBO", "en": "MBO"},
+        "university_hbo": {"nl": "HBO", "en": "HBO"},
+        "university_wo": {"nl": "Universiteit (WO)", "en": "University (WO)"},
+        "adult": {"nl": "Volwassenenonderwijs", "en": "Adult Education"}
+    }
+    
+    return display_mapping.get(level_code, {}).get(lang, level_code)
+
+def get_appropriate_tariffs_key(school_level: str, age_over_20: bool = False) -> str:
+    """Get the appropriate tariffs key based on school level and age"""
+    # MBO students should see MBO trajectories
+    if school_level == "mbo":
+        if age_over_20:
+            return "info_tariffs_over_20"
+        else:
+            return "info_tariffs"
+    
+    # Higher education students (HBO, WO, university) should NOT see MBO trajectories
+    elif school_level in ["university_hbo", "university_wo"]:
+        if age_over_20:
+            return "info_tariffs_over_20_no_mbo"
+        else:
+            return "info_tariffs_no_mbo"
+    
+    # Secondary education (HAVO, VWO) should NOT see MBO trajectories
+    elif school_level in ["havo", "vwo"]:
+        if age_over_20:
+            return "info_tariffs_over_20_no_mbo"
+        else:
+            return "info_tariffs_no_mbo"
+    
+    # VMBO students might be interested in MBO trajectories, so show them
+    elif school_level == "vmbo":
+        if age_over_20:
+            return "info_tariffs_over_20"
+        else:
+            return "info_tariffs"
+    
+    # Primary education and adults - show all options
+    else:
+        if age_over_20:
+            return "info_tariffs_over_20"
+        else:
+            return "info_tariffs"
 
 def detect_language_from_message(message: str) -> str:
     """Detect language from message content"""
@@ -1599,7 +1773,7 @@ def analyze_info_request_with_openai(message: str, conversation_id: int = None) 
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Analyseer deze informatie vraag: {message}"}
             ],
-            max_tokens=200,
+            max_completion_tokens=200,
             temperature=0.3
         )
         
@@ -1699,7 +1873,7 @@ def analyze_preferences_with_openai(message: str, conversation_id: int = None) -
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Analyseer deze lesvoorkeuren: {message}"}
             ],
-            max_tokens=200,
+            max_completion_tokens=200,
             temperature=0.3
         )
         
@@ -2079,7 +2253,7 @@ PLANNING_PROFILES = {
         "buffer_before_min": 15,
         "buffer_after_min": 15,
         "days_ahead": 10,
-        "slot_step_minutes": 30,
+        "slot_step_minutes": 60,
         "exclude_weekends": True
     },
     "existing": {
@@ -2090,7 +2264,7 @@ PLANNING_PROFILES = {
         "buffer_before_min": 10,
         "buffer_after_min": 10,
         "days_ahead": 14,
-        "slot_step_minutes": 30,
+        "slot_step_minutes": 60,
         "exclude_weekends": True
     },
     "returning_broadcast": {
@@ -2101,7 +2275,7 @@ PLANNING_PROFILES = {
         "buffer_before_min": 10,
         "buffer_after_min": 10,
         "days_ahead": 14,
-        "slot_step_minutes": 30,
+        "slot_step_minutes": 60,
         "exclude_weekends": True
     },
     "weekend": {
@@ -2112,7 +2286,7 @@ PLANNING_PROFILES = {
         "buffer_before_min": 10,
         "buffer_after_min": 10,
         "days_ahead": 7,
-        "slot_step_minutes": 30,
+        "slot_step_minutes": 60,
         "exclude_weekends": False,
         "allowed_weekdays": [5, 6]  # Saturday, Sunday
     },
@@ -2124,7 +2298,7 @@ PLANNING_PROFILES = {
         "buffer_before_min": 20,
         "buffer_after_min": 20,
         "days_ahead": 21,  # 3 weeks ahead
-        "slot_step_minutes": 30,
+        "slot_step_minutes": 60,
         "exclude_weekends": False  # Premium includes weekends
     }
 }
@@ -2185,9 +2359,9 @@ def suggest_slots(conversation_id, profile_name):
         
         # Return appropriate number of slots
         if profile_name == "premium":
-            return slots[:12]  # More options for premium
+            return slots[:15]  # More options for premium
         else:
-            return slots[:8]   # Standard number for others
+            return slots[:6]   # Standard number for others
             
     except Exception as e:
         print(f"❌ Error getting calendar slots: {e}")
@@ -2243,7 +2417,14 @@ def suggest_slots_mock(conversation_id, profile_name):
         for hour in range(profile["earliest_hour"], profile["latest_hour"]):
             for minute in range(0, 60, profile["slot_step_minutes"]):
                 start_time = date.replace(hour=hour, minute=minute, second=0, microsecond=0)
-                end_time = start_time + timedelta(minutes=profile["duration_minutes"])
+                
+                # Adjust duration based on lesson type
+                if lesson_type == "trial":
+                    duration_minutes = 30  # Trial lessons are 30 minutes
+                else:
+                    duration_minutes = profile["duration_minutes"]  # Use profile duration for other lessons
+                
+                end_time = start_time + timedelta(minutes=duration_minutes)
                 
                 # Check if slot is in the future and meets minimum lead time
                 if start_time > now + timedelta(minutes=profile["min_lead_minutes"]):
@@ -2276,9 +2457,9 @@ def suggest_slots_mock(conversation_id, profile_name):
     
     # Return more slots for premium service, fewer for others
     if profile_name == "premium":
-        return slots[:12]  # More options for premium
+        return slots[:15]  # More options for premium
     else:
-        return slots[:8]  # Standard number for others
+        return slots[:6]  # Standard number for others
 
 def book_slot(conversation_id, start_time, end_time, title, description):
     """Book a slot in Google Calendar and send to dashboard"""
@@ -2391,7 +2572,13 @@ def verify_webhook(request):
     
     signature = request.headers.get('X-Chatwoot-Signature')
     if not signature:
-        print("⚠️ No signature found in headers - allowing request")
+        # Only log this occasionally to reduce noise
+        if not hasattr(verify_webhook, 'no_sig_count'):
+            verify_webhook.no_sig_count = 0
+        verify_webhook.no_sig_count += 1
+        
+        if verify_webhook.no_sig_count % 10 == 1:  # Log every 10th occurrence
+            print(f"⚠️ No signature found in headers (count: {verify_webhook.no_sig_count}) - allowing request")
         return True  # Temporarily allow requests without signature for testing
     
     expected = hmac.new(
@@ -2619,7 +2806,7 @@ def handle_message_created(data):
     # Handle corrections input
     if conv_attrs.get("waiting_for_corrections"):
         print(f"🔧 Processing corrections input")
-        process_corrections_and_reconfirm(cid, msg_content, lang)
+        process_corrections_and_reconfirm(cid, contact_id, msg_content, lang)
         return
     
     # Handle corrected prefill confirmation
@@ -3073,6 +3260,12 @@ def handle_message_created(data):
     if conv_attrs.get("pending_intent") == "planning":
         print(f"📅 Processing planning selection")
         handle_planning_selection(cid, contact_id, msg_content, lang)
+        return
+    
+    # Handle trial lesson mode selection
+    if conv_attrs.get("pending_intent") == "trial_lesson_mode_selection":
+        print(f"📱 Processing trial lesson mode selection")
+        handle_trial_lesson_mode_selection(cid, contact_id, msg_content, lang)
         return
     
     # Handle prefill confirmation
@@ -3646,7 +3839,19 @@ def handle_info_menu_selection(cid, contact_id, msg_content, lang):
                 # Map the category to the appropriate info
                 if primary_category == "tariffs":
                     print(f"💰 Smart detection: Showing tariffs")
-                    send_text_with_duplicate_check(cid, t("info_tariffs", lang))
+                    # Get contact info to determine appropriate tariffs
+                    contact_attrs = get_contact_attrs(contact_id)
+                    school_level = contact_attrs.get("school_level", "")
+                    is_adult = contact_attrs.get("is_adult", False)
+                    
+                    # Determine if over 20 (adults are typically over 20)
+                    age_over_20 = is_adult or school_level in ["university_hbo", "university_wo"]
+                    
+                    # Get appropriate tariffs key
+                    tariffs_key = get_appropriate_tariffs_key(school_level, age_over_20)
+                    print(f"💰 Using tariffs key: {tariffs_key} for school_level: {school_level}, age_over_20: {age_over_20}")
+                    
+                    send_text_with_duplicate_check(cid, t(tariffs_key, lang))
                     show_info_follow_up_menu(cid, contact_id, lang)
                     return
                 elif primary_category == "work_method":
@@ -3733,7 +3938,19 @@ def handle_info_menu_selection(cid, contact_id, msg_content, lang):
     # Handle tariffs
     if msg_content.lower() in ["tariffs", "tarieven", "2"] or "💰" in msg_content:
         print(f"💰 Showing tariffs")
-        send_text_with_duplicate_check(cid, t("info_tariffs", lang))
+        # Get contact info to determine appropriate tariffs
+        contact_attrs = get_contact_attrs(contact_id)
+        school_level = contact_attrs.get("school_level", "")
+        is_adult = contact_attrs.get("is_adult", False)
+        
+        # Determine if over 20 (adults are typically over 20)
+        age_over_20 = is_adult or school_level in ["university_hbo", "university_wo"]
+        
+        # Get appropriate tariffs key
+        tariffs_key = get_appropriate_tariffs_key(school_level, age_over_20)
+        print(f"💰 Using tariffs key: {tariffs_key} for school_level: {school_level}, age_over_20: {age_over_20}")
+        
+        send_text_with_duplicate_check(cid, t(tariffs_key, lang))
         show_info_follow_up_menu(cid, contact_id, lang)
         return
     
@@ -3951,24 +4168,16 @@ def show_prefill_action_menu_after_confirmation(cid, contact_id, lang, show_expl
         # If adult is writing for themselves, use their level
         if (is_parent and for_who == 'child') or (not is_parent and for_who == 'self'):
             # Use the learner's school level for tariff determination
-            if 'university' in school_level.lower() or 'hbo' in school_level.lower():
-                # Higher education
-                print(f"💰 Showing tariffs for higher education (learner level)")
-                send_text_with_duplicate_check(cid, t("info_tariffs_over_20", lang))
-            else:
-                # Secondary education (middle school, high school)
-                print(f"💰 Showing tariffs for secondary education (learner level)")
-                send_text_with_duplicate_check(cid, t("info_tariffs_under_20", lang))
+            age_over_20 = is_adult or 'university' in school_level.lower() or 'hbo' in school_level.lower()
+            tariffs_key = get_appropriate_tariffs_key(school_level, age_over_20)
+            print(f"💰 Showing tariffs for learner level: {tariffs_key}")
+            send_text_with_duplicate_check(cid, t(tariffs_key, lang))
         else:
             # Fallback to contact's is_adult status
-            if is_adult or 'university' in school_level.lower() or 'hbo' in school_level.lower():
-                # Over 20 or higher education
-                print(f"💰 Showing tariffs for over 20/higher education")
-                send_text_with_duplicate_check(cid, t("info_tariffs_over_20", lang))
-            else:
-                # Under 20 or secondary education
-                print(f"💰 Showing tariffs for under 20/secondary education")
-                send_text_with_duplicate_check(cid, t("info_tariffs_under_20", lang))
+            age_over_20 = is_adult or 'university' in school_level.lower() or 'hbo' in school_level.lower()
+            tariffs_key = get_appropriate_tariffs_key(school_level, age_over_20)
+            print(f"💰 Showing tariffs for contact level: {tariffs_key}")
+            send_text_with_duplicate_check(cid, t(tariffs_key, lang))
     else:
         print(f"💰 Skipping tariffs - insufficient information detected (simple greeting)")
     
@@ -4466,11 +4675,9 @@ def start_planning_flow(cid, contact_id, lang):
         })
         send_text_with_duplicate_check(cid, t("planning_trial_lesson_intro", lang))
         
-        # Check if user has preferences, if not ask for them
-        if not conv_attrs.get("user_preferences"):
-            ask_for_preferences_and_suggest_slots(cid, current_segment, lang)
-        else:
-            suggest_available_slots(cid, current_segment, lang)
+        # Ask for lesson mode (online vs fysiek) for trial lessons
+        ask_trial_lesson_mode(cid, contact_id, lang)
+        return
     elif is_existing_customer(contact_attrs):
         print(f"📅 Existing customer - planning regular lesson")
         # Check if existing customer has completed trial lesson
@@ -4507,7 +4714,8 @@ def start_planning_flow(cid, contact_id, lang):
                 "planning_profile": current_segment
             })
             send_text_with_duplicate_check(cid, t("planning_trial_lesson_intro", lang))
-            suggest_available_slots(cid, current_segment, lang)
+            # Ask for lesson mode (online vs fysiek) for trial lessons
+            ask_trial_lesson_mode(cid, contact_id, lang)
         else:
             print(f"🔄 No prefill information - starting intake flow")
             set_conv_attrs(cid, {
@@ -4516,8 +4724,68 @@ def start_planning_flow(cid, contact_id, lang):
                 "prefill_processed_for_message": "",  # Clear prefill tracking
                 "prefill_confirmation_sent": False  # Clear confirmation flag
             })
-            send_text_with_duplicate_check(cid, t("planning_trial_lesson_intro", lang))
             start_intake_flow(cid, contact_id, lang)
+            return
+
+def ask_trial_lesson_mode(cid, contact_id, lang):
+    """Ask user for trial lesson mode (online vs fysiek)"""
+    print(f"📱 Asking for trial lesson mode")
+    
+    # Set conversation state to wait for mode selection
+    set_conv_attrs(cid, {
+        "pending_intent": "trial_lesson_mode_selection"
+    })
+    
+    # Send mode selection question with input select
+    mode_options = [
+        (t("trial_lesson_online", lang), "online"),
+        (t("trial_lesson_fysiek", lang), "fysiek")
+    ]
+    
+    send_input_select_only(cid, t("trial_lesson_mode_question", lang), mode_options)
+
+def handle_trial_lesson_mode_selection(cid, contact_id, msg_content, lang):
+    """Handle trial lesson mode selection"""
+    print(f"📱 Trial lesson mode selection: '{msg_content}'")
+    
+    if msg_content == "online":
+        mode_display = t("trial_lesson_online", lang)
+        lesson_mode = "online"
+        print(f"💻 User selected online trial lesson")
+    elif msg_content == "fysiek":
+        mode_display = t("trial_lesson_fysiek", lang)
+        lesson_mode = "fysiek"
+        print(f"🏫 User selected fysiek trial lesson (Science Park only)")
+    else:
+        # Invalid selection
+        print(f"⚠️ Invalid mode selection: '{msg_content}'")
+        send_text_with_duplicate_check(cid, t("error_invalid_selection", lang))
+        ask_trial_lesson_mode(cid, contact_id, lang)
+        return
+    
+    # Store the lesson mode
+    conv_attrs = get_conv_attrs(cid)
+    current_segment = conv_attrs.get("planning_profile", "new")
+    
+    set_conv_attrs(cid, {
+        "lesson_mode": lesson_mode,
+        "pending_intent": "planning"
+    })
+    
+    # Update contact attributes
+    contact_attrs = get_contact_attrs(contact_id)
+    contact_attrs["lesson_mode"] = lesson_mode
+    set_contact_attrs(contact_id, contact_attrs)
+    
+    # Confirm mode selection
+    confirmation_msg = t("trial_lesson_mode_confirmed", lang, mode=mode_display)
+    send_text_with_duplicate_check(cid, confirmation_msg)
+    
+    # Check if user has preferences, if not ask for them
+    if not conv_attrs.get("user_preferences"):
+        ask_for_preferences_and_suggest_slots(cid, current_segment, lang)
+    else:
+        suggest_available_slots(cid, current_segment, lang)
 
 def start_intake_flow(cid, contact_id, lang):
     """Start the intake flow with prefill support"""
@@ -5088,6 +5356,13 @@ def suggest_available_slots(cid, profile_name, lang):
     print(f"📅 Suggesting slots for profile: {profile_name}")
     conv_attrs = get_conv_attrs(cid)
     lesson_type = conv_attrs.get("lesson_type", "trial")
+    lesson_mode = conv_attrs.get("lesson_mode", "online")
+    
+    # For fysiek lessons, only show Science Park slots
+    if lesson_mode == "fysiek":
+        print(f"🏫 Fysiek lesson requested - filtering for Science Park only")
+        # Set location preference to Science Park for fysiek lessons
+        set_conv_attrs(cid, {"location_preference": "Science Park"})
     
     slots = suggest_slots(cid, profile_name)
     
@@ -5126,7 +5401,7 @@ def suggest_available_slots(cid, profile_name, lang):
     print(f"📅 Sending {len(options)} options with text: '{lesson_text}'")
     send_input_select_only(cid, lesson_text, options)
 
-def process_corrections_and_reconfirm(cid, corrections_text, lang):
+def process_corrections_and_reconfirm(cid, contact_id, corrections_text, lang):
     """Process user corrections and ask for reconfirmation"""
     print(f"🔧 Processing corrections: {corrections_text}")
     
@@ -5185,39 +5460,56 @@ def show_prefill_summary_with_corrections(cid, contact_id, lang, updated_info):
     
     # Show corrected information
     if updated_info.get("learner_name"):
-        summary_parts.append(f"👤 **{t('prefill_learner_name', lang)}**: {updated_info['learner_name']}")
+        summary_parts.append(f"👤 {t('prefill_learner_name', lang)}: {updated_info['learner_name']}")
     if updated_info.get("school_level"):
-        school_level_display = map_school_level(updated_info["school_level"])
-        summary_parts.append(f"🎓 **{t('prefill_school_level', lang)}**: {school_level_display}")
+        school_level_display = get_school_level_display(updated_info["school_level"], lang)
+        summary_parts.append(f"🎓 {t('prefill_school_level', lang)}: {school_level_display}")
     if updated_info.get("topic_primary"):
-        summary_parts.append(f"📚 **{t('prefill_topic_primary', lang)}**: {updated_info['topic_primary']}")
+        summary_parts.append(f"📚 {t('prefill_topic_primary', lang)}: {updated_info['topic_primary']}")
     if updated_info.get("topic_secondary"):
-        summary_parts.append(f"📖 **{t('prefill_topic_secondary', lang)}**: {updated_info['topic_secondary']}")
+        summary_parts.append(f"📖 {t('prefill_topic_secondary', lang)}: {updated_info['topic_secondary']}")
     if updated_info.get("goals"):
-        summary_parts.append(f"🎯 **{t('prefill_goals', lang)}**: {updated_info['goals']}")
+        summary_parts.append(f"🎯 {t('prefill_goals', lang)}: {updated_info['goals']}")
     if updated_info.get("for_who"):
         for_who_display = t(f"prefill_for_who_{updated_info['for_who']}", lang)
-        summary_parts.append(f"👥 **{t('prefill_for_who', lang)}**: {for_who_display}")
+        summary_parts.append(f"👥 {t('prefill_for_who', lang)}: {for_who_display}")
     
     summary_parts.append("")
     summary_parts.append(t("prefill_corrected_confirmation_prompt", lang))
     
-    # Send summary
+    # Create input select options for confirmation
+    options = [
+        (t("prefill_confirm_yes", lang), "confirm_yes"),
+        (t("prefill_confirm_no", lang), "confirm_no")
+    ]
+    
+    # Send combined message with text and input select menu
     summary_text = "\n".join(summary_parts)
-    send_text_with_duplicate_check(cid, summary_text)
+    send_input_select_only(cid, summary_text, options)
     
     # Set conversation state for confirmation
     set_conv_attrs(cid, {
         "waiting_for_corrections": False,
         "waiting_for_corrected_confirmation": True,
-        "corrected_info": updated_info
+        "corrected_info": updated_info,
+        "pending_intent": "prefill_confirmation"
     })
 
 def handle_corrected_prefill_confirmation(cid, contact_id, msg_content, lang):
     """Handle confirmation of corrected prefill information"""
     print(f"🤖 Corrected prefill confirmation: '{msg_content}'")
     
-    # Check user's response
+    # Check for input select responses first
+    if msg_content == "confirm_yes":
+        print(f"✅ User confirmed corrected prefill information via input select")
+        handle_prefill_confirmation_yes(cid, contact_id, lang)
+        return
+    elif msg_content == "confirm_no":
+        print(f"❌ User denied corrected prefill information via input select")
+        handle_prefill_confirmation_no(cid, contact_id, lang)
+        return
+    
+    # Check user's text response (fallback)
     confirm_words = ["ja", "klopt", "correct", "yes", "✅", "ja dat klopt", "dat klopt", "klopt helemaal", "ja helemaal", "correct", "juist", "precies", "inderdaad"]
     deny_words = ["nee", "niet", "fout", "no", "❌", "nee dat klopt niet", "dat klopt niet", "niet correct", "fout", "verkeerd", "deels", "sommige", "partially", "🤔", "deels correct", "sommige kloppen", "niet alles"]
     
@@ -5287,6 +5579,71 @@ def handle_corrected_prefill_confirmation(cid, contact_id, msg_content, lang):
         # Unclear response
         unclear_text = t("prefill_unclear_response", lang)
         send_text_with_duplicate_check(cid, unclear_text)
+
+def handle_prefill_confirmation_yes(cid, contact_id, lang):
+    """Handle positive confirmation of corrected prefill information"""
+    print(f"✅ User confirmed corrected prefill information")
+    
+    # Get corrected information
+    conv_attrs = get_conv_attrs(cid)
+    corrected_info = conv_attrs.get("corrected_info", {})
+    
+    # Apply corrected information to contact attributes
+    if corrected_info:
+        current_contact_attrs = get_contact_attrs(contact_id)
+        current_contact_attrs.update(corrected_info)
+        current_contact_attrs["has_completed_intake"] = True
+        set_contact_attrs(contact_id, current_contact_attrs)
+        print(f"✅ Applied corrected info to contact")
+    
+    # Clear correction state and proceed with normal flow
+    set_conv_attrs(cid, {
+        "waiting_for_corrected_confirmation": False,
+        "corrected_info": None,
+        "prefill_confirmation_sent": True,
+        "use_prefill": True,
+        "pending_intent": None
+    })
+    
+    # Show action menu
+    show_prefill_action_menu_after_confirmation(cid, contact_id, lang)
+
+def handle_prefill_confirmation_no(cid, contact_id, lang):
+    """Handle negative confirmation of corrected prefill information"""
+    print(f"❌ User still indicates information is incorrect")
+    
+    # Check correction count
+    conv_attrs = get_conv_attrs(cid)
+    correction_count = conv_attrs.get("prefill_correction_count", 0)
+    
+    if correction_count >= 2:
+        # After 2 correction attempts, disable bot and handoff to Stephen
+        print(f"🚫 Maximum correction attempts reached ({correction_count}) - disabling bot")
+        
+        # Disable bot for this conversation
+        set_conv_attrs(cid, {
+            "bot_disabled": True,
+            "bot_disabled_reason": "max_correction_attempts",
+            "bot_disabled_time": datetime.now(TZ).isoformat(),
+            "pending_intent": None
+        })
+        
+        # Send handoff message
+        handoff_text = t("handoff_max_corrections", lang)
+        send_handoff_message(cid, handoff_text)
+        
+    else:
+        # Ask for more corrections
+        correction_text = t("ask_for_more_corrections", lang)
+        send_text_with_duplicate_check(cid, correction_text)
+        
+        # Set state to wait for more corrections
+        set_conv_attrs(cid, {
+            "waiting_for_corrections": True,
+            "waiting_for_corrected_confirmation": False,
+            "corrected_info": None,
+            "pending_intent": None
+        })
 
 def process_preferences_and_suggest_slots(cid, preferences_text, lang):
     """Process user preferences with AI and suggest real calendar slots"""
@@ -5456,6 +5813,7 @@ def handle_planning_selection(cid, contact_id, msg_content, lang):
     conv_attrs = get_conv_attrs(cid)
     learner_name = conv_attrs.get("learner_name", "Student")
     lesson_type = conv_attrs.get("lesson_type", "trial")
+    lesson_mode = conv_attrs.get("lesson_mode", "online")
     is_urgent = conv_attrs.get("urgent_session", False)
     
     # Calculate end time based on lesson type
@@ -5467,11 +5825,22 @@ def handle_planning_selection(cid, contact_id, msg_content, lang):
             end_dt = start_dt + timedelta(minutes=120)
             lesson_title = f"Stephen's Privélessen — Spoed Sessie"
             lesson_description = f"Spoed 2-uurs sessie voor {learner_name}"
+        elif lesson_type == "trial":
+            # 30-minute session for trial lessons
+            end_dt = start_dt + timedelta(minutes=30)
+            lesson_title = f"Stephen's Privélessen — Proefles"
+            if lesson_mode == "fysiek":
+                lesson_description = f"Proefles voor {learner_name} (Fysiek op Science Park)"
+            else:
+                lesson_description = f"Proefles voor {learner_name} (Online)"
         else:
             # 1-hour session for regular bookings
             end_dt = start_dt + timedelta(minutes=60)
-            lesson_title = f"Stephen's Privélessen — Proefles"
-            lesson_description = f"Proefles voor {learner_name}"
+            lesson_title = f"Stephen's Privélessen — Les"
+            if lesson_mode == "fysiek":
+                lesson_description = f"Les voor {learner_name} (Fysiek op Science Park)"
+            else:
+                lesson_description = f"Les voor {learner_name} (Online)"
         
         end_time = end_dt.isoformat()
         
@@ -5509,15 +5878,15 @@ def handle_planning_selection(cid, contact_id, msg_content, lang):
                 )
                 
                 if payment_link:
-                    confirmation_msg = f"✅ Perfect! Ik heb een spoed 2-uurs sessie ingepland op {slot_description}.\n\n💳 **Direct betalen:** {payment_link}\n\n📧 Voor de bevestiging heb ik nog je e-mailadres nodig. Kun je dat delen?"
+                    confirmation_msg = f"✅ {t('urgent_session_booked', lang, slot=slot_description, payment_link=payment_link)}"
                     send_text_with_duplicate_check(cid, confirmation_msg)
                 else:
-                    confirmation_msg = f"✅ Perfect! Ik heb een spoed 2-uurs sessie ingepland op {slot_description}.\n\n📧 Voor de bevestiging heb ik nog je e-mailadres nodig. Kun je dat delen?"
+                    confirmation_msg = f"✅ {t('urgent_session_booked_no_payment', lang, slot=slot_description)}"
                     send_text_with_duplicate_check(cid, confirmation_msg)
             else:
                 # For regular trial lessons, just confirm the booking
                 # Email request will be handled in the lesson type check below
-                confirmation_msg = f"✅ Perfect! Ik heb een proefles ingepland op {slot_description}."
+                confirmation_msg = f"✅ {t('trial_lesson_booked', lang, slot=slot_description)}"
                 send_text_with_duplicate_check(cid, confirmation_msg)
         else:
             send_text_with_duplicate_check(cid, t("error_planning_failed", lang))
@@ -5597,7 +5966,7 @@ def handle_email_request(cid, contact_id, msg_content, lang):
         })
         
         # Send confirmation and show next steps
-        confirmation_msg = f"📧 Bedankt! Ik heb je e-mailadres ({email}) opgeslagen voor de bevestiging.\n\n{t('email_confirmation', lang)}"
+        confirmation_msg = f"📧 {t('email_thanks', lang, email=email)}\n\n{t('email_confirmation', lang)}"
         send_text_with_duplicate_check(cid, confirmation_msg)
         
         # Mark conversation as complete and show main menu
