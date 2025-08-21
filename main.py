@@ -137,31 +137,26 @@ from modules.handlers.payment import (
 from modules.handlers.webhook import verify_webhook as _verify_webhook
 
 # =============================================================================
-# CONFIGURATION CONSTANTS
+# CONFIGURATION (imported from modules/core/config.py)
 # =============================================================================
-
-# Chatwoot Configuration
-CW = os.getenv("CW_URL", "https://crm.stephenadei.nl")
-ACC = os.getenv("CW_ACC_ID")
-TOK = os.getenv("CW_TOKEN")
-ADMIN_TOK = os.getenv("CW_ADMIN_TOKEN")
-SIG = os.getenv("CW_HMAC_SECRET")
-TZ = ZoneInfo("Europe/Amsterdam")
-
-# Stripe Configuration
-STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
-STANDARD_PRICE_ID_60 = os.getenv("STANDARD_PRICE_ID_60")
-STANDARD_PRICE_ID_90 = os.getenv("STANDARD_PRICE_ID_90")
-WEEKEND_PRICE_ID_60 = os.getenv("WEEKEND_PRICE_ID_60")
-WEEKEND_PRICE_ID_90 = os.getenv("WEEKEND_PRICE_ID_90")
-
-# Google Calendar Configuration
-GCAL_SERVICE_ACCOUNT_JSON = os.getenv("GCAL_SERVICE_ACCOUNT_JSON")
-GCAL_CALENDAR_ID = os.getenv("GCAL_CALENDAR_ID", "primary")
-
-# OpenAI Configuration
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+from modules.core.config import (
+    CW_URL as CW,
+    CW_ACC_ID as ACC, 
+    CW_TOKEN as TOK,
+    CW_ADMIN_TOKEN as ADMIN_TOK,
+    CW_HMAC_SECRET as SIG,
+    TZ,
+    STRIPE_WEBHOOK_SECRET,
+    STANDARD_PRICE_ID_60,
+    STANDARD_PRICE_ID_90,
+    WEEKEND_PRICE_ID_60,
+    WEEKEND_PRICE_ID_90,
+    GCAL_SERVICE_ACCOUNT_JSON,
+    GCAL_CALENDAR_ID,
+    OPENAI_API_KEY,
+    OPENAI_MODEL,
+    PLANNING_PROFILES
+)
 
 # =============================================================================
 # FLASK APP INITIALIZATION
@@ -170,77 +165,7 @@ app = Flask(__name__)
 
 
 
-def analyze_preferences_with_openai(message: str, conversation_id: int = None) -> Dict[str, Any]:
-    """Analyze lesson preferences with OpenAI to extract structured information"""
-    if not OPENAI_API_KEY:
-        print("⚠️ OpenAI API key not available, skipping preferences analysis")
-        return {
-            "preferred_times": "",
-            "location_preference": "",
-            "other_preferences": "",
-            "confidence": 0.0
-        }
-    
-    system_prompt = """
-    Je bent een AI assistent die lesvoorkeuren analyseert om gestructureerde informatie te extraheren.
-    
-    Analyseer de boodschap en extraheer:
-    1. **Voorkeur tijden**: Wanneer is de persoon beschikbaar voor lessen?
-    2. **Locatie voorkeur**: Waar wil de persoon les hebben?
-    3. **Andere voorkeuren**: Eventuele andere relevante voorkeuren
-    
-    Geef een JSON response met:
-    {
-        "preferred_times": "string", // Beschikbare tijden (bijv. "maandag 19:00, woensdag 20:00")
-        "location_preference": "string", // Locatie voorkeur (bijv. "thuis", "Science Park", "VU/UvA")
-        "other_preferences": "string", // Andere voorkeuren
-        "confidence": "float" // Zekerheid (0.0-1.0)
-    }
-    
-    Voorbeelden:
-    - "Ik ben beschikbaar op maandag en woensdag om 19:00" → preferred_times: "maandag 19:00, woensdag 19:00"
-    - "Ik wil les thuis" → location_preference: "thuis"
-    - "Ik heb les op Science Park" → location_preference: "Science Park"
-    - "Ik ben flexibel met tijden" → preferred_times: "flexibel"
-    
-    Als de boodschap onduidelijk is of geen specifieke voorkeuren bevat, geef confidence: 0.0
-    
-    Geef alleen de JSON response, geen extra tekst.
-    """
-    
-    try:
-        client = openai.OpenAI(api_key=OPENAI_API_KEY)
-        
-        response = client.chat.completions.create(
-            model=OPENAI_MODEL,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Analyseer deze lesvoorkeuren: {message}"}
-            ],
-            max_completion_tokens=200,
-            temperature=0.3
-        )
-        
-        result = response.choices[0].message.content.strip()
-        print(f"🤖 Preferences analysis result: {result}")
-        
-        # Parse JSON response
-        import json
-        analysis = json.loads(result)
-        
-        return analysis
-        
-    except Exception as e:
-        print(f"❌ Error analyzing preferences: {e}")
-        if conversation_id:
-            send_admin_warning(conversation_id, f"Preferences analysis failed: {str(e)[:100]}")
-        
-        return {
-            "preferred_times": "",
-            "location_preference": "",
-            "other_preferences": "",
-            "confidence": 0.0
-        }
+# REMOVED: analyze_preferences_with_openai moved to modules/integrations/openai_service.py
 
 
 
@@ -330,65 +255,7 @@ def create_child_contact(analysis: Dict[str, Any], conversation_id: int, parent_
 
 
 
-# Planning profiles
-PLANNING_PROFILES = {
-    "new": {
-        "duration_minutes": 60,
-        "earliest_hour": 10,
-        "latest_hour": 20,
-        "min_lead_minutes": 720,
-        "buffer_before_min": 15,
-        "buffer_after_min": 15,
-        "days_ahead": 10,
-        "slot_step_minutes": 60,
-        "exclude_weekends": True
-    },
-    "existing": {
-        "duration_minutes": 60,
-        "earliest_hour": 9,
-        "latest_hour": 21,
-        "min_lead_minutes": 360,
-        "buffer_before_min": 10,
-        "buffer_after_min": 10,
-        "days_ahead": 14,
-        "slot_step_minutes": 60,
-        "exclude_weekends": True
-    },
-    "returning_broadcast": {
-        "duration_minutes": 60,
-        "earliest_hour": 9,
-        "latest_hour": 21,
-        "min_lead_minutes": 360,
-        "buffer_before_min": 10,
-        "buffer_after_min": 10,
-        "days_ahead": 14,
-        "slot_step_minutes": 60,
-        "exclude_weekends": True
-    },
-    "weekend": {
-        "duration_minutes": 60,
-        "earliest_hour": 10,
-        "latest_hour": 18,
-        "min_lead_minutes": 180,
-        "buffer_before_min": 10,
-        "buffer_after_min": 10,
-        "days_ahead": 7,
-        "slot_step_minutes": 60,
-        "exclude_weekends": False,
-        "allowed_weekdays": [5, 6]  # Saturday, Sunday
-    },
-    "premium": {
-        "duration_minutes": 90,  # Longer lessons for premium
-        "earliest_hour": 8,
-        "latest_hour": 22,
-        "min_lead_minutes": 240,  # 4 hours notice
-        "buffer_before_min": 20,
-        "buffer_after_min": 20,
-        "days_ahead": 21,  # 3 weeks ahead
-        "slot_step_minutes": 60,
-        "exclude_weekends": False  # Premium includes weekends
-    }
-}
+# REMOVED: Planning profiles moved to modules/core/config.py
 
 # Calendar integration with real Google Calendar
 def suggest_slots(conversation_id, profile_name):

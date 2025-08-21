@@ -20,7 +20,81 @@ from typing import Dict, Any
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
-def analyze_preferences_with_openai(preferences_text: str, conversation_id: int = None) -> Dict[str, Any]:
+def analyze_preferences_with_openai(message: str, conversation_id: int = None) -> Dict[str, Any]:
+    """Analyze lesson preferences with OpenAI to extract structured information"""
+    if not OPENAI_API_KEY:
+        print("⚠️ OpenAI API key not available, skipping preferences analysis")
+        return {
+            "preferred_times": "",
+            "location_preference": "",
+            "other_preferences": "",
+            "confidence": 0.0
+        }
+    
+    system_prompt = """
+    Je bent een AI assistent die lesvoorkeuren analyseert om gestructureerde informatie te extraheren.
+    
+    Analyseer de boodschap en extraheer:
+    1. **Voorkeur tijden**: Wanneer is de persoon beschikbaar voor lessen?
+    2. **Locatie voorkeur**: Waar wil de persoon les hebben?
+    3. **Andere voorkeuren**: Eventuele andere relevante voorkeuren
+    
+    Geef een JSON response met:
+    {
+        "preferred_times": "string", // Beschikbare tijden (bijv. "maandag 19:00, woensdag 20:00")
+        "location_preference": "string", // Locatie voorkeur (bijv. "thuis", "Science Park", "VU/UvA")
+        "other_preferences": "string", // Andere voorkeuren
+        "confidence": "float" // Zekerheid (0.0-1.0)
+    }
+    
+    Voorbeelden:
+    - "Ik ben beschikbaar op maandag en woensdag om 19:00" → preferred_times: "maandag 19:00, woensdag 19:00"
+    - "Ik wil les thuis" → location_preference: "thuis"
+    - "Ik heb les op Science Park" → location_preference: "Science Park"
+    - "Ik ben flexibel met tijden" → preferred_times: "flexibel"
+    
+    Als de boodschap onduidelijk is of geen specifieke voorkeuren bevat, geef confidence: 0.0
+    
+    Geef alleen de JSON response, geen extra tekst.
+    """
+    
+    try:
+        client = openai.OpenAI(api_key=OPENAI_API_KEY)
+        
+        response = client.chat.completions.create(
+            model=OPENAI_MODEL,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Analyseer deze lesvoorkeuren: {message}"}
+            ],
+            max_completion_tokens=200,
+            temperature=0.3
+        )
+        
+        result = response.choices[0].message.content.strip()
+        print(f"🤖 Preferences analysis result: {result}")
+        
+        # Parse JSON response
+        import json
+        analysis = json.loads(result)
+        
+        return analysis
+        
+    except Exception as e:
+        print(f"❌ Error analyzing preferences: {e}")
+        if conversation_id:
+            # Import here to avoid circular imports
+            from modules.utils.text_helpers import send_admin_warning
+            send_admin_warning(conversation_id, f"Preferences analysis failed: {str(e)[:100]}")
+        
+        return {
+            "preferred_times": "",
+            "location_preference": "",
+            "other_preferences": "",
+            "confidence": 0.0
+        }
+
+def analyze_preferences_with_openai_v2(message: str, conversation_id: int = None) -> Dict[str, Any]:
     """Analyze user preferences for lesson scheduling using OpenAI"""
     try:
         client = openai.OpenAI(api_key=OPENAI_API_KEY)
