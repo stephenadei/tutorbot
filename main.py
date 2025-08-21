@@ -155,6 +155,7 @@ from modules.core.config import (
     GCAL_CALENDAR_ID,
     OPENAI_API_KEY,
     OPENAI_MODEL,
+    HANDOFF_AGENT_ID,
     PLANNING_PROFILES
 )
 

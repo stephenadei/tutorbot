@@ -25,6 +25,9 @@ TZ=Europe/Amsterdam
 # Bot Configuration
 FLASK_ENV=production
 
+# Agent Configuration
+HANDOFF_AGENT_ID=1
+
 # Instructies:
 # 1. Kopieer dit bestand naar .env
 # 2. Vervang de waarden met jouw echte Chatwoot gegevens

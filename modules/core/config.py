@@ -33,6 +33,9 @@ GCAL_CALENDAR_ID: str = os.getenv("GCAL_CALENDAR_ID", "primary")
 OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY")
 OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
+# Agent configuration
+HANDOFF_AGENT_ID: int = int(os.getenv("HANDOFF_AGENT_ID", "1"))
+
 # Timezone
 TZ: ZoneInfo = ZoneInfo("Europe/Amsterdam")
 

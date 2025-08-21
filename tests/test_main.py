@@ -100,6 +100,7 @@ class TestMessageHandling(unittest.TestCase):
     
     @patch('modules.utils.text_helpers.send_text_with_duplicate_check')
     @patch('modules.utils.text_helpers.assign_conversation')
+    @patch('modules.core.config.HANDOFF_AGENT_ID', 1)
     def test_send_handoff_message(self, mock_assign, mock_send_text):
         """Test handoff message sending"""
         # Mock successful message sending and assignment
@@ -109,7 +110,10 @@ class TestMessageHandling(unittest.TestCase):
         result = send_handoff_message(123, "Handoff message")
         self.assertTrue(result)
         mock_send_text.assert_called_with(123, "Handoff message")
-        mock_assign.assert_called_with(123, 1)  # Agent ID 1
+        
+        # Get the expected agent ID from config
+        from modules.core.config import HANDOFF_AGENT_ID
+        mock_assign.assert_called_with(123, HANDOFF_AGENT_ID)
         
         # Test failed message sending
         mock_send_text.return_value = False

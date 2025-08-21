@@ -1441,10 +1441,13 @@ def send_handoff_message(conversation_id, text):
         success = send_text_with_duplicate_check(conversation_id, text)
         
         if success:
-            # Assign to human agent (agent ID 1)
-            assign_success = assign_conversation(conversation_id, 1)
+            # Import the handoff agent ID from config
+            from modules.core.config import HANDOFF_AGENT_ID
+            
+            # Assign to human agent (using environment variable)
+            assign_success = assign_conversation(conversation_id, HANDOFF_AGENT_ID)
             if assign_success:
-                print(f"🤝 Handing off conversation {conversation_id} to human agent (ID: 1)")
+                print(f"🤝 Handing off conversation {conversation_id} to human agent (ID: {HANDOFF_AGENT_ID})")
             else:
                 print(f"⚠️ Failed to assign conversation {conversation_id} to human agent")
             
