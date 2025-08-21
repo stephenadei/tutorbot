@@ -18,7 +18,7 @@ from typing import Dict, Any
 
 # OpenAI Configuration
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+from modules.core.config import OPENAI_MODEL, OPENAI_TIMEOUT, OPENAI_MAX_TOKENS, OPENAI_TEMPERATURE
 
 def analyze_preferences_with_openai(message: str, conversation_id: int = None) -> Dict[str, Any]:
     """Analyze lesson preferences with OpenAI to extract structured information"""
@@ -67,8 +67,8 @@ def analyze_preferences_with_openai(message: str, conversation_id: int = None) -
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Analyseer deze lesvoorkeuren: {message}"}
             ],
-            max_completion_tokens=200,
-            temperature=0.3
+                    max_completion_tokens=OPENAI_MAX_TOKENS,
+        temperature=OPENAI_TEMPERATURE
         )
         
         result = response.choices[0].message.content.strip()
@@ -147,8 +147,8 @@ Geef je antwoord als JSON in dit formaat:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Voorkeuren van gebruiker: {preferences_text}"}
             ],
-            temperature=0.3,
-            max_completion_tokens=500
+                    temperature=OPENAI_TEMPERATURE,
+        max_completion_tokens=500
         )
         
         result = response.choices[0].message.content
@@ -314,8 +314,8 @@ def analyze_first_message_with_openai(message: str, conversation_id: int = None,
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Analyseer dit bericht: {message}"}
             ],
-            max_completion_tokens=500,
-            timeout=30  # 30 second timeout
+                    max_completion_tokens=500,
+        timeout=OPENAI_TIMEOUT
         )
         
         content = response.choices[0].message.content.strip()
@@ -392,8 +392,8 @@ def analyze_info_request_with_openai(message: str, conversation_id: int = None) 
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Analyseer dit bericht: {message}"}
             ],
-            max_completion_tokens=200,
-            timeout=30
+                    max_completion_tokens=OPENAI_MAX_TOKENS,
+        timeout=OPENAI_TIMEOUT
         )
         
         content = response.choices[0].message.content.strip()
@@ -461,8 +461,8 @@ def interpret_slot_selection_with_openai(user_text: str, available_slots: list[D
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            temperature=0.2,
-            max_completion_tokens=200,
+                    temperature=OPENAI_TEMPERATURE,
+        max_completion_tokens=OPENAI_MAX_TOKENS,
         )
         content = resp.choices[0].message.content.strip()
         print(f"🤖 Slot interpretation raw: {content}")

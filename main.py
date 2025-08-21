@@ -156,6 +156,9 @@ from modules.core.config import (
     OPENAI_API_KEY,
     OPENAI_MODEL,
     HANDOFF_AGENT_ID,
+    FLASK_PORT,
+    FLASK_HOST,
+    FLASK_DEBUG,
     PLANNING_PROFILES
 )
 
@@ -1391,7 +1394,7 @@ def handle_handoff_menu_selection(cid, contact_id, msg_content, lang):
         })
         
         # Unassign from Stephen (assign back to bot)
-        assign_conversation(cid, 1)  # Bot user_id=1
+        assign_conversation(cid, HANDOFF_AGENT_ID)  # Use configurable agent ID
         
         # Send confirmation message
         send_text_with_duplicate_check(cid, t("handoff_return_to_bot", lang))
@@ -2139,4 +2142,4 @@ show_handoff_menu = _show_handoff_menu_mod
 handle_handoff_menu_selection = _handle_handoff_menu_selection_mod
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, debug=True) 
+    app.run(host=FLASK_HOST, port=FLASK_PORT, debug=FLASK_DEBUG) 

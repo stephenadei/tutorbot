@@ -36,66 +36,76 @@ OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 # Agent configuration
 HANDOFF_AGENT_ID: int = int(os.getenv("HANDOFF_AGENT_ID", "1"))
 
+# Server configuration
+FLASK_PORT: int = int(os.getenv("FLASK_PORT", "8000"))
+FLASK_HOST: str = os.getenv("FLASK_HOST", "0.0.0.0")
+FLASK_DEBUG: bool = os.getenv("FLASK_DEBUG", "True").lower() == "true"
+
+# OpenAI configuration
+OPENAI_TIMEOUT: int = int(os.getenv("OPENAI_TIMEOUT", "30"))
+OPENAI_MAX_TOKENS: int = int(os.getenv("OPENAI_MAX_TOKENS", "200"))
+OPENAI_TEMPERATURE: float = float(os.getenv("OPENAI_TEMPERATURE", "0.3"))
+
 # Timezone
 TZ: ZoneInfo = ZoneInfo("Europe/Amsterdam")
 
 # Planning profiles for different customer segments
 PLANNING_PROFILES = {
     "new": {
-        "duration_minutes": 60,
-        "earliest_hour": 10,
-        "latest_hour": 20,
-        "min_lead_minutes": 720,
-        "buffer_before_min": 15,
-        "buffer_after_min": 15,
-        "days_ahead": 10,
-        "slot_step_minutes": 60,
-        "exclude_weekends": True
+        "duration_minutes": int(os.getenv("PLANNING_NEW_DURATION", "60")),
+        "earliest_hour": int(os.getenv("PLANNING_NEW_EARLIEST", "10")),
+        "latest_hour": int(os.getenv("PLANNING_NEW_LATEST", "20")),
+        "min_lead_minutes": int(os.getenv("PLANNING_NEW_LEAD", "720")),
+        "buffer_before_min": int(os.getenv("PLANNING_NEW_BUFFER_BEFORE", "15")),
+        "buffer_after_min": int(os.getenv("PLANNING_NEW_BUFFER_AFTER", "15")),
+        "days_ahead": int(os.getenv("PLANNING_NEW_DAYS", "10")),
+        "slot_step_minutes": int(os.getenv("PLANNING_NEW_STEP", "60")),
+        "exclude_weekends": os.getenv("PLANNING_NEW_EXCLUDE_WEEKENDS", "True").lower() == "true"
     },
     "existing": {
-        "duration_minutes": 60,
-        "earliest_hour": 9,
-        "latest_hour": 21,
-        "min_lead_minutes": 360,
-        "buffer_before_min": 10,
-        "buffer_after_min": 10,
-        "days_ahead": 14,
-        "slot_step_minutes": 60,
-        "exclude_weekends": True
+        "duration_minutes": int(os.getenv("PLANNING_EXISTING_DURATION", "60")),
+        "earliest_hour": int(os.getenv("PLANNING_EXISTING_EARLIEST", "9")),
+        "latest_hour": int(os.getenv("PLANNING_EXISTING_LATEST", "21")),
+        "min_lead_minutes": int(os.getenv("PLANNING_EXISTING_LEAD", "360")),
+        "buffer_before_min": int(os.getenv("PLANNING_EXISTING_BUFFER_BEFORE", "10")),
+        "buffer_after_min": int(os.getenv("PLANNING_EXISTING_BUFFER_AFTER", "10")),
+        "days_ahead": int(os.getenv("PLANNING_EXISTING_DAYS", "14")),
+        "slot_step_minutes": int(os.getenv("PLANNING_EXISTING_STEP", "60")),
+        "exclude_weekends": os.getenv("PLANNING_EXISTING_EXCLUDE_WEEKENDS", "True").lower() == "true"
     },
     "returning_broadcast": {
-        "duration_minutes": 60,
-        "earliest_hour": 9,
-        "latest_hour": 21,
-        "min_lead_minutes": 360,
-        "buffer_before_min": 10,
-        "buffer_after_min": 10,
-        "days_ahead": 14,
-        "slot_step_minutes": 60,
-        "exclude_weekends": True
+        "duration_minutes": int(os.getenv("PLANNING_RETURNING_DURATION", "60")),
+        "earliest_hour": int(os.getenv("PLANNING_RETURNING_EARLIEST", "9")),
+        "latest_hour": int(os.getenv("PLANNING_RETURNING_LATEST", "21")),
+        "min_lead_minutes": int(os.getenv("PLANNING_RETURNING_LEAD", "360")),
+        "buffer_before_min": int(os.getenv("PLANNING_RETURNING_BUFFER_BEFORE", "10")),
+        "buffer_after_min": int(os.getenv("PLANNING_RETURNING_BUFFER_AFTER", "10")),
+        "days_ahead": int(os.getenv("PLANNING_RETURNING_DAYS", "14")),
+        "slot_step_minutes": int(os.getenv("PLANNING_RETURNING_STEP", "60")),
+        "exclude_weekends": os.getenv("PLANNING_RETURNING_EXCLUDE_WEEKENDS", "True").lower() == "true"
     },
     "weekend": {
-        "duration_minutes": 60,
-        "earliest_hour": 10,
-        "latest_hour": 18,
-        "min_lead_minutes": 180,
-        "buffer_before_min": 10,
-        "buffer_after_min": 10,
-        "days_ahead": 7,
-        "slot_step_minutes": 60,
-        "exclude_weekends": False,
+        "duration_minutes": int(os.getenv("PLANNING_WEEKEND_DURATION", "60")),
+        "earliest_hour": int(os.getenv("PLANNING_WEEKEND_EARLIEST", "10")),
+        "latest_hour": int(os.getenv("PLANNING_WEEKEND_LATEST", "18")),
+        "min_lead_minutes": int(os.getenv("PLANNING_WEEKEND_LEAD", "180")),
+        "buffer_before_min": int(os.getenv("PLANNING_WEEKEND_BUFFER_BEFORE", "10")),
+        "buffer_after_min": int(os.getenv("PLANNING_WEEKEND_BUFFER_AFTER", "10")),
+        "days_ahead": int(os.getenv("PLANNING_WEEKEND_DAYS", "7")),
+        "slot_step_minutes": int(os.getenv("PLANNING_WEEKEND_STEP", "60")),
+        "exclude_weekends": os.getenv("PLANNING_WEEKEND_EXCLUDE_WEEKENDS", "False").lower() == "true",
         "allowed_weekdays": [5, 6]  # Saturday, Sunday
     },
     "premium": {
-        "duration_minutes": 90,  # Longer lessons for premium
-        "earliest_hour": 8,
-        "latest_hour": 22,
-        "min_lead_minutes": 240,  # 4 hours notice
-        "buffer_before_min": 20,
-        "buffer_after_min": 20,
-        "days_ahead": 21,  # 3 weeks ahead
-        "slot_step_minutes": 60,
-        "exclude_weekends": False  # Premium includes weekends
+        "duration_minutes": int(os.getenv("PLANNING_PREMIUM_DURATION", "90")),
+        "earliest_hour": int(os.getenv("PLANNING_PREMIUM_EARLIEST", "8")),
+        "latest_hour": int(os.getenv("PLANNING_PREMIUM_LATEST", "22")),
+        "min_lead_minutes": int(os.getenv("PLANNING_PREMIUM_LEAD", "240")),
+        "buffer_before_min": int(os.getenv("PLANNING_PREMIUM_BUFFER_BEFORE", "20")),
+        "buffer_after_min": int(os.getenv("PLANNING_PREMIUM_BUFFER_AFTER", "20")),
+        "days_ahead": int(os.getenv("PLANNING_PREMIUM_DAYS", "21")),
+        "slot_step_minutes": int(os.getenv("PLANNING_PREMIUM_STEP", "60")),
+        "exclude_weekends": os.getenv("PLANNING_PREMIUM_EXCLUDE_WEEKENDS", "False").lower() == "true"
     }
 }
 
