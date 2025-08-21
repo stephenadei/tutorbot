@@ -14,25 +14,26 @@ from zoneinfo import ZoneInfo
 # Add the project root to the path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import the main application
+# Import the main application and modules
 from main import (
     t, send_text_with_duplicate_check, assign_conversation, 
     send_handoff_message, send_handoff_menu, send_admin_warning,
-    analyze_first_message_with_openai, map_school_level, 
-    detect_language_from_message, map_topic, 
-    is_prefill_sufficient_for_trial_lesson, create_child_contact,
-    prefill_intake_from_message, get_contact_id_from_conversation,
-    send_input_select_only,
-    detect_segment, suggest_slots, book_slot, create_payment_link,
-    verify_stripe_webhook, verify_webhook, handle_conversation_created,
-    handle_message_created, show_info_menu, handle_prefill_confirmation,
-    handle_info_menu_selection, show_detailed_info_menu,
-    handle_handoff_menu_selection, show_segment_menu, handle_menu_selection,
-    is_existing_customer, has_completed_intake, start_planning_flow,
-    start_intake_flow, handle_intake_step, suggest_available_slots,
-    handle_planning_selection, handle_email_request, create_payment_request,
-    handle_payment_success, PLANNING_PROFILES
+    create_child_contact, suggest_slots, book_slot, create_payment_link,
+    verify_stripe_webhook, verify_webhook, show_info_menu, 
+    handle_prefill_confirmation, handle_info_menu_selection, 
+    show_detailed_info_menu, handle_handoff_menu_selection, 
+    show_segment_menu, handle_menu_selection, handle_email_request, 
+    create_payment_request, PLANNING_PROFILES
 )
+
+# Import from modules
+from modules.utils.text_helpers import send_input_select_only, get_contact_id_from_conversation
+from modules.utils.mapping import map_school_level, map_topic, detect_segment, is_prefill_sufficient_for_trial_lesson
+from modules.utils.language import detect_language_from_message
+from modules.integrations.openai_service import analyze_first_message_with_openai, prefill_intake_from_message
+from modules.handlers.conversation import is_existing_customer, has_completed_intake
+from modules.handlers.intake import start_intake_flow, handle_intake_step
+from modules.handlers.planning import start_planning_flow, suggest_available_slots, handle_planning_selection
 
 # Mock the cw_api module
 sys.modules['cw_api'] = Mock()
