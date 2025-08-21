@@ -1,0 +1,2081 @@
+        print(f"❌ Failed to send confirmation menu: {e}")
+        # Fallback: send as text with options
+        fallback_text = f"{menu_title}\n\n" + "\n".join([f"• {option[0]}" for option in menu_options])
+        send_text_with_duplicate_check(cid, fallback_text, persist=False)
+        print(f"📝 Sent fallback text menu due to input_select failure")
+
+def show_prefill_action_menu_after_confirmation(cid, contact_id, lang, show_explanation=True):
+    """Show action menu after prefill confirmation - what does user want to do next?"""
+    print(f"🎯 Showing prefill action menu after confirmation in {lang}")
+    
+    # Get contact attributes to determine age and show appropriate tariffs
+    contact_attrs = get_contact_attrs(contact_id)
+    conv_attrs = get_conv_attrs(cid)
+    
+    # Only show tariffs if we have sufficient information about age/level
+    # Don't show tariffs for simple greetings like "Hello Stephen, i found you online"
+    is_adult = contact_attrs.get('is_adult', False)
+    school_level = contact_attrs.get('school_level', '')
+    learner_name = contact_attrs.get('learner_name', '')
+    topic = contact_attrs.get('topic_primary', '') or contact_attrs.get('topic_secondary', '')
+    
+    # Check if we have meaningful information beyond just "for_who"
+    # We need to check if any meaningful information was actually detected
+    has_meaningful_info = (
+        school_level or          # Has school level
+        learner_name or          # Has name
+        topic                    # Has subject
+    )
+    
+    # Check if this is a parent writing for their child
+    for_who = contact_attrs.get('for_who', '')
+    is_parent = contact_attrs.get('is_parent', False)
+    
+    if has_meaningful_info:
+        # Show appropriate tariffs based on age/level
+        # If parent is writing for child, use child's school level
+        # If adult is writing for themselves, use their level
+        if (is_parent and for_who == 'child') or (not is_parent and for_who == 'self'):
+            # Use the learner's school level for tariff determination
+            age_over_20 = is_adult or 'university' in school_level.lower() or 'hbo' in school_level.lower()
+            tariffs_key = get_appropriate_tariffs_key(school_level, age_over_20)
+            print(f"💰 Showing tariffs for learner level: {tariffs_key}")
+            send_text_with_duplicate_check(cid, t(tariffs_key, lang))
+        else:
+            # Fallback to contact's is_adult status
+            age_over_20 = is_adult or 'university' in school_level.lower() or 'hbo' in school_level.lower()
+            tariffs_key = get_appropriate_tariffs_key(school_level, age_over_20)
+            print(f"💰 Showing tariffs for contact level: {tariffs_key}")
+            send_text_with_duplicate_check(cid, t(tariffs_key, lang))
+    else:
+        print(f"💰 Skipping tariffs - insufficient information detected (simple greeting)")
+    
+    # Check if they have completed a trial lesson (this is the key criteria)
+    has_completed_trial = contact_attrs.get("trial_lesson_completed", False)
+    
+    # For new customers, check if preferences are still current (only if significant time has passed)
+    if not has_completed_trial:
+        preferred_times = contact_attrs.get("preferred_times", "")
+        location_preference = contact_attrs.get("location_preference", "")
+        
+        # Check if preferences were recently confirmed (within last hour)
+        prefill_confirmation_time = conv_attrs.get("prefill_confirmation_time", "")
+        current_time = datetime.now(TZ)
+        
+        if prefill_confirmation_time:
+            try:
+                confirmation_dt = datetime.fromisoformat(prefill_confirmation_time.replace('Z', '+00:00'))
+                time_diff = current_time - confirmation_dt
+                
+                # Only check preferences if more than 1 hour has passed
+                if time_diff.total_seconds() < 3600:  # 1 hour = 3600 seconds
+                    print(f"⏰ Preferences recently confirmed ({time_diff.total_seconds()/60:.1f} minutes ago) - skipping check")
+                else:
+                    print(f"⏰ Preferences confirmed {time_diff.total_seconds()/3600:.1f} hours ago - checking if still current")
+                    if preferred_times and location_preference:
+                        # Show current preferences and ask if they're still correct
+                        preferences_msg = t("preferences_share_current", lang, 
+                                          preferred_times=preferred_times, 
+                                          location_preference=location_preference)
+                        send_text_with_duplicate_check(cid, preferences_msg)
+                        
+                        # Show preferences check menu
+                        preferences_options = [
+                            (t("preferences_check_yes", lang), "preferences_same"),
+                            (t("preferences_check_no", lang), "preferences_changed")
+                        ]
+                        
+                        set_conv_attrs(cid, {"pending_intent": "preferences_check"})
+                        send_input_select_only(cid, t("preferences_check_title", lang), preferences_options)
+                        return
+            except Exception as e:
+                print(f"⚠️ Error checking prefill confirmation time: {e}")
+                # Continue without preferences check if there's an error
+        else:
+            print(f"⏰ No prefill confirmation time found - skipping preferences check")
+    
+    # Send explanation text first (only if not already shown)
+    if show_explanation:
+        explanation_text = t("prefill_action_menu_text", lang)
+        send_text_with_duplicate_check(cid, explanation_text, persist=False)
+    
+    # Send appropriate menu based on trial completion
+    action_menu_title = t("prefill_action_menu_title", lang)
+    
+    if has_completed_trial:
+        # Customers who completed trial get the option to plan all lessons
+        action_menu_options = [
+            (t("prefill_action_all_lessons", lang), "plan_all_lessons"),
+            (t("prefill_action_trial_first", lang), "plan_trial_lesson"),
+            (t("prefill_action_main_menu", lang), "go_to_main_menu"),
+            (t("prefill_action_handoff", lang), "handoff")
+        ]
+    else:
+        # All customers without trial get trial lesson and urgent session options
+        action_menu_options = [
+            (t("prefill_action_trial_first", lang), "plan_trial_lesson"),
+            (t("prefill_action_urgent_session", lang), "urgent_session"),
+            (t("prefill_action_main_menu", lang), "go_to_main_menu"),
+            (t("prefill_action_handoff", lang), "handoff")
+        ]
+    
+    print(f"🎯 Action menu title: '{action_menu_title}'")
+    print(f"🎯 Action menu options: {action_menu_options}")
+    print(f"🎯 Customer type: {'with trial' if has_completed_trial else 'without trial'}")
+    
+    try:
+        set_conv_attrs(cid, {"pending_intent": "prefill_action"})
+    except Exception as e:
+        print(f"⚠️ SSL error setting pending_intent: {e}")
+        # Continue anyway - not critical
+    
+    # Use input_select_only for consistent menu formatting
+    result = send_input_select_only(cid, action_menu_title, action_menu_options)
+    print(f"🎯 Menu send result: {result}")
+
+
+
+def show_info_follow_up_menu(cid, contact_id, lang):
+    """Show follow-up menu after displaying information"""
+    print(f"📄 Showing info follow-up menu in {lang}")
+    set_conv_attrs(cid, {"pending_intent": "info_follow_up"})
+    
+    # Get contact attributes to check if they have completed a trial lesson
+    contact_attrs = get_contact_attrs(contact_id)
+    has_completed_trial = contact_attrs.get("trial_lesson_completed", False)
+    
+    if has_completed_trial:
+        # Customers who completed trial get plan lesson option
+        send_input_select_only(cid, t("info_follow_up_existing", lang), [
+            (t("menu_option_plan_lesson", lang), "plan_lesson"),
+            (t("menu_more_info", lang), "more_info"),
+            (t("menu_option_handoff", lang), "handoff"),
+            (t("menu_back_to_main", lang), "back_to_main")
+        ])
+    else:
+        # Customers without trial get trial lesson option
+        send_input_select_only(cid, t("info_follow_up_new", lang), [
+            (t("menu_option_trial_lesson", lang), "trial_lesson"),
+            (t("menu_more_info", lang), "more_info"),
+            (t("menu_option_handoff", lang), "handoff"),
+            (t("menu_back_to_main", lang), "back_to_main")
+        ])
+
+def show_detailed_info_menu(cid, lang):
+    """Show detailed information menu with all submenu options"""
+    print(f"📖 Showing detailed info menu in {lang}")
+    print(f"🔧 Setting pending_intent to 'info_menu' for conversation {cid}")
+    set_conv_attrs(cid, {"pending_intent": "info_menu"})
+    print(f"🔧 Pending intent set, now sending interactive menu")
+    send_input_select_only(cid, t("detailed_info_menu_text", lang), [
+        (t("menu_personal_background", lang), "personal_background"),
+        (t("menu_didactic_methods", lang), "didactic_methods"),
+        (t("menu_technology_tools", lang), "technology_tools"),
+        (t("menu_results_success", lang), "results_success"),
+        (t("menu_workshops_creative", lang), "workshops_creative"),
+        (t("menu_workshops_academic", lang), "workshops_academic"),
+        (t("menu_consultancy", lang), "consultancy"),
+        (t("menu_back_to_main", lang), "back_to_main_info")
+    ])
+
+def handle_handoff_menu_selection(cid, contact_id, msg_content, lang):
+    """Handle handoff menu selections"""
+    print(f"👨‍🏫 Handoff menu selection: '{msg_content}'")
+    
+    # Handle return to bot
+    if msg_content.lower() in ["return_to_bot", "terug naar bot", "bot", "🤖"] or "🤖 terug" in msg_content.lower():
+        print(f"🤖 Returning to bot")
+        
+        # Remove handoff labels to stop notifications to Stephen
+        remove_conv_labels(cid, ["intent_handoff_duplicate", "intent_handoff_auto", "intent_handoff"])
+        
+        # Clear handoff state completely
+        set_conv_attrs(cid, {
+            "pending_intent": "none",
+            "handoff_state": "none"
+        })
+        
+        # Unassign from Stephen (assign back to bot)
+        assign_conversation(cid, 1)  # Bot user_id=1
+        
+        # Send confirmation message
+        send_text_with_duplicate_check(cid, t("handoff_return_to_bot", lang))
+        
+        # Show main menu
+        contact_attrs = get_contact_attrs(contact_id)
+        segment = detect_segment(contact_id)
+        show_segment_menu(cid, contact_id, segment, lang)
+        return
+    
+    # Handle stay with Stephen
+    if msg_content.lower() in ["stay_with_stephen", "blijf bij stephen", "stephen", "👨‍🏫"] or "👨‍🏫 blijf" in msg_content.lower():
+        print(f"👨‍🏫 Staying with Stephen")
+        send_text_with_duplicate_check(cid, t("handoff_stay_with_stephen", lang))
+        return
+    
+    # If no valid option, show the handoff menu again
+    print(f"❓ Unknown handoff menu option: '{msg_content}' - showing handoff menu again")
+    send_handoff_menu(cid)
+
+def show_segment_menu(cid, contact_id, segment, lang):
+    """Show appropriate menu based on segment"""
+    print(f"📋 Showing {segment} menu in {lang}")
+    
+    # Check if we have a name and greet the client
+    contact_attrs = get_contact_attrs(contact_id)
+    print(f"🔍 Contact attrs in show_segment_menu: {contact_attrs}")
+    contact_name = contact_attrs.get("name", "")
+    print(f"🔍 Contact name found: {contact_name}")
+    
+    # Re-detect segment to ensure we have the latest status
+    current_segment = detect_segment(contact_id)
+    if current_segment != segment:
+        print(f"🔄 Segment changed from {segment} to {current_segment}")
+        segment = current_segment
+        set_contact_attrs(contact_id, {"segment": segment})
+    
+    if contact_name:
+        # Extract first name from full name
+        first_name = contact_name.split()[0] if contact_name else ""
+        if first_name:
+            greeting = t("greeting_with_name", lang).format(name=first_name)
+            print(f"👋 Greeting client: {first_name}")
+            send_text_with_duplicate_check(cid, greeting)
+    
+    # Send the menu immediately
+    print(f"📋 Sending menu for {segment} segment")
+    
+    # Set menu_shown flag to indicate we've shown a menu to the user
+    set_conv_attrs(cid, {"menu_shown": True})
+    
+    if segment == "new":
+        send_input_select_only(cid, t("menu_new", lang), [
+            (t("menu_option_trial_lesson", lang), "plan_lesson"),
+            (t("menu_option_info", lang), "info"),
+            (t("menu_option_handoff", lang), "handoff")
+        ])
+    elif segment == "existing":
+        send_input_select_only(cid, t("menu_existing", lang), [
+            (t("menu_option_plan_lesson", lang), "plan_lesson"),
+            (t("menu_option_same_preferences", lang), "same_preferences"),
+            (t("menu_option_different", lang), "different"),
+            (t("menu_option_handoff", lang), "handoff")
+        ])
+    elif segment == "returning_broadcast":
+        send_input_select_only(cid, t("menu_returning_broadcast", lang), [
+            (t("menu_option_plan_lesson", lang), "plan_lesson"),
+            (t("menu_option_old_preferences", lang), "old_preferences"),
+            (t("menu_option_new_intake", lang), "new_intake"),
+            (t("menu_option_handoff", lang), "handoff")
+        ])
+    elif segment == "weekend":
+        send_input_select_only(cid, t("menu_weekend", lang), [
+            (t("menu_option_plan_lesson", lang), "plan_lesson"),
+            (t("menu_option_info", lang), "info"),
+            (t("menu_option_handoff", lang), "handoff")
+        ])
+
+def handle_menu_selection(cid, contact_id, msg_content, lang):
+    """Handle main menu selections"""
+    contact_attrs = get_contact_attrs(contact_id)
+    conv_attrs = get_conv_attrs(cid)
+    segment = contact_attrs.get("segment", "new")
+    
+    print(f"🔘 Menu selection: '{msg_content}' for {segment} customer")
+    
+    # Handle prefill confirmation menu selections
+    if conv_attrs.get("pending_intent") == "prefill_confirmation":
+        print(f"🤖 Handling prefill confirmation menu selection")
+        handle_prefill_confirmation(cid, contact_id, msg_content, lang)
+        return
+    
+    # Handle preferences check menu selections
+    if conv_attrs.get("pending_intent") == "preferences_check":
+        print(f"⏰ Handling preferences check menu selection")
+        if msg_content == "preferences_same" or msg_content == t("preferences_check_yes", lang):
+            print(f"✅ Preferences still the same - proceeding with current info")
+            # Continue with current preferences, show action menu
+            show_prefill_action_menu_after_confirmation(cid, contact_id, lang)
+            return
+        elif msg_content == "preferences_changed" or msg_content == t("preferences_check_no", lang):
+            print(f"🔄 Preferences have changed - requesting new preferences")
+            # Ask for new preferences
+            send_text_with_duplicate_check(cid, t("preferences_update_request", lang))
+            set_conv_attrs(cid, {"pending_intent": "preferences_update"})
+            return
+        else:
+            print(f"❓ Unknown preferences check action: '{msg_content}'")
+            return
+    
+    # Handle preferences update (AI analysis)
+    if conv_attrs.get("pending_intent") == "preferences_update":
+        print(f"🔄 Handling preferences update with AI analysis")
+        # Use AI to analyze the new preferences
+        analysis = analyze_preferences_with_openai(msg_content, cid)
+        
+        if analysis:
+            # Update contact attributes with new preferences
+            set_contact_attrs(contact_id, {
+                "preferred_times": analysis.get("preferred_times", ""),
+                "location_preference": analysis.get("location_preference", ""),
+                "preferences_updated": True
+            })
+            
+            # Confirm the updated preferences
+            confirmation_msg = f"✅ Perfect! Ik heb je nieuwe voorkeuren opgeslagen:\n\n⏰ **Voorkeur tijd**: {analysis.get('preferred_times', '')}\n📍 **Locatie**: {analysis.get('location_preference', '')}\n\nNu kunnen we verder met de planning!"
+            send_text_with_duplicate_check(cid, confirmation_msg)
+            
+            # Show action menu
+            show_prefill_action_menu_after_confirmation(cid, contact_id, lang)
+            return
+        else:
+            # If AI analysis failed, ask for clarification
+            send_text_with_duplicate_check(cid, "❓ Ik begrijp je voorkeuren niet helemaal. Kun je het duidelijker omschrijven?")
+            return
+    
+    # Handle prefill action menu selections
+    if conv_attrs.get("pending_intent") == "prefill_action":
+        print(f"🎯 Handling prefill action menu selection")
+        if msg_content == "plan_all_lessons" or msg_content == t("prefill_action_all_lessons", lang):
+            print(f"📅 All lessons planning requested from prefill")
+            # Set flag to indicate premium service (all lessons)
+            set_conv_attrs(cid, {"premium_service": True, "planning_profile": "premium"})
+            start_planning_flow(cid, contact_id, lang)
+            return
+        elif msg_content == "plan_trial_lesson" or msg_content == t("prefill_action_trial_first", lang):
+            print(f"📅 Trial lesson planning requested from prefill")
+            start_planning_flow(cid, contact_id, lang)
+            return
+        elif msg_content == "urgent_session" or msg_content == t("prefill_action_urgent_session", lang):
+            print(f"🚨 Urgent 2-hour session requested from prefill")
+            # Set urgent session flag and start planning with immediate payment
+            set_conv_attrs(cid, {"urgent_session": True, "session_duration": 120})
+            start_planning_flow(cid, contact_id, lang)
+            return
+        elif msg_content == "go_to_main_menu" or msg_content == t("prefill_action_main_menu", lang):
+            print(f"📋 Main menu requested from prefill")
+            show_segment_menu(cid, contact_id, segment, lang)
+            return
+        elif msg_content == "handoff" or msg_content == t("prefill_action_handoff", lang):
+            print(f"👨‍🏫 Handoff requested from prefill")
+            send_handoff_message(cid, t("handoff_teacher", lang))
+            return
+        else:
+            print(f"❓ Unknown prefill action: '{msg_content}'")
+            return
+    
+    # Handle info menu selections
+    if conv_attrs.get("pending_intent") == "info_menu":
+        print(f"📄 Handling info menu selection")
+        handle_info_menu_selection(cid, contact_id, msg_content, lang)
+        return
+    
+    # Handle info follow-up menu selections
+    if conv_attrs.get("pending_intent") == "info_follow_up":
+        print(f"📄 Handling info follow-up menu selection")
+        if msg_content == "plan_lesson" or msg_content == t("menu_option_plan_lesson", lang):
+            print(f"📅 Lesson planning requested from info follow-up")
+            start_planning_flow(cid, contact_id, lang)
+            return
+        elif msg_content == "trial_lesson" or msg_content == t("menu_option_trial_lesson", lang):
+            print(f"🎯 Trial lesson planning requested from info follow-up")
+            start_planning_flow(cid, contact_id, lang)
+            return
+        elif msg_content == "more_info" or msg_content == t("menu_more_info", lang):
+            print(f"📖 More info requested from info follow-up")
+            show_detailed_info_menu(cid, lang)
+            return
+        elif msg_content == "handoff" or msg_content == t("menu_option_handoff", lang):
+            print(f"👨‍🏫 Handoff requested from info follow-up")
+            send_handoff_message(cid, t("handoff_teacher", lang))
+            return
+        elif msg_content == "back_to_main" or msg_content == t("menu_back_to_main", lang):
+            print(f"⬅️ Back to main menu requested from info follow-up")
+            show_segment_menu(cid, contact_id, segment, lang)
+            return
+        else:
+            print(f"❓ Unknown info follow-up action: '{msg_content}'")
+            return
+    
+    # Handle post-trial action menu selections
+    if conv_attrs.get("pending_intent") == "post_trial_action":
+        print(f"🎯 Handling post-trial action menu selection")
+        if msg_content == "plan_all_lessons" or msg_content == t("post_trial_plan_all_lessons", lang):
+            print(f"📅 All lessons planning requested after trial")
+            # Set flag to indicate premium service (all lessons)
+            set_conv_attrs(cid, {"premium_service": True, "planning_profile": "premium"})
+            start_planning_flow(cid, contact_id, lang)
+            return
+        elif msg_content == "plan_single_lesson" or msg_content == t("post_trial_plan_single_lesson", lang):
+            print(f"📅 Single lesson planning requested after trial")
+            start_planning_flow(cid, contact_id, lang)
+            return
+        elif msg_content == "go_to_main_menu" or msg_content == t("post_trial_main_menu", lang):
+            print(f"📋 Main menu requested after trial")
+            show_segment_menu(cid, contact_id, segment, lang)
+            return
+        elif msg_content == "handoff" or msg_content == t("post_trial_handoff", lang):
+            print(f"👨‍🏫 Handoff requested after trial")
+            send_handoff_message(cid, t("handoff_teacher", lang))
+            return
+        else:
+            print(f"❓ Unknown post-trial action: '{msg_content}'")
+            return
+    
+    # Handle lesson planning (trial for new customers, regular for existing)
+    if (msg_content.lower() in ["plan_lesson", "les inplannen", "1"] or 
+        "📅" in msg_content or 
+        "🎯" in msg_content or
+        "🎯 proefles inplannen" in msg_content.lower() or
+        "🎯 schedule trial lesson" in msg_content.lower() or
+        "🎯 gratis proefles" in msg_content.lower() or
+        "🎯 free trial lesson" in msg_content.lower()):
+        print(f"📅 Lesson planning requested")
+        start_planning_flow(cid, contact_id, lang)
+        return
+    
+    # Handle info request
+    if (msg_content.lower() in ["info", "informatie", "2"] or 
+        "ℹ️" in msg_content or
+        "ℹ️ informatie" in msg_content.lower() or
+        "ℹ️ information" in msg_content.lower()):
+        print(f"ℹ️ Info requested")
+        show_info_menu(cid, lang)
+        return
+    
+    # Handle same preferences (existing/returning)
+    if (msg_content.lower() in ["same_preferences", "zelfde vak/voorkeuren", "old_preferences", "plannen met oude voorkeuren"] or 
+        "📅" in msg_content or
+        "📅 zelfde vak/voorkeuren" in msg_content.lower() or
+        "📅 same subject/preferences" in msg_content.lower() or
+        "📅 plannen met oude voorkeuren" in msg_content.lower() or
+        "📅 plan with old preferences" in msg_content.lower()):
+        print(f"📅 Same preferences - quick planning")
+        set_conv_attrs(cid, {"planning_profile": segment})
+        suggest_available_slots(cid, segment, lang)
+        return
+    
+    # Handle different/new intake
+    if (msg_content.lower() in ["different", "iets anders", "new_intake", "intake opnieuw doen"] or 
+        "🆕" in msg_content or
+        "🆕 iets anders" in msg_content.lower() or
+        "🆕 something else" in msg_content.lower() or
+        "🆕 intake opnieuw doen" in msg_content.lower() or
+        "🆕 do intake again" in msg_content.lower()):
+        print(f"🆕 Different preferences - starting intake")
+        start_intake_flow(cid, contact_id, lang)
+        return
+    
+    # Handle handoff
+    if (msg_content.lower() in ["handoff", "stephen spreken", "3"] or 
+        "👨‍🏫" in msg_content or
+        "👨‍🏫 stephen spreken" in msg_content.lower() or
+        "👨‍🏫 speak to stephen" in msg_content.lower()):
+        print(f"👨‍🏫 Handoff to Stephen requested")
+        send_handoff_message(cid, t("handoff_teacher", lang))
+        return
+    
+    # If no valid menu option, show the menu again
+    print(f"❓ Unknown menu option: '{msg_content}' - showing help menu")
+    show_segment_menu(cid, contact_id, segment, lang)
+    
+def is_existing_customer(contact_attrs):
+    """Check if contact is an existing customer (student or parent)"""
+    return (contact_attrs.get("is_student") or 
+            contact_attrs.get("is_parent") or
+            contact_attrs.get("trial_lesson_completed") or
+            contact_attrs.get("has_paid_lesson") or
+            contact_attrs.get("lesson_booked") or
+            contact_attrs.get("segment") == "existing" or
+            contact_attrs.get("intake_completed") or
+            contact_attrs.get("customer_status") == "active")
+
+def has_completed_intake(conv_attrs):
+    """Check if conversation has completed intake"""
+    return conv_attrs.get("intake_completed", False) or conv_attrs.get("has_completed_intake", False)
+
+def start_planning_flow(cid, contact_id, lang):
+    """Start planning flow - determines if trial or regular lesson"""
+    contact_attrs = get_contact_attrs(contact_id)
+    conv_attrs = get_conv_attrs(cid)
+    
+    # Detect current segment
+    current_segment = detect_segment(contact_id)
+    
+    # Check if this is a premium service request (all lessons)
+    is_premium = conv_attrs.get("premium_service", False)
+    
+    # Check if this is an urgent session request
+    is_urgent = conv_attrs.get("urgent_session", False)
+    
+    if is_urgent:
+        print(f"🚨 Urgent 2-hour session requested - direct planning with payment")
+        set_conv_attrs(cid, {
+            "planning_profile": current_segment,
+            "lesson_type": "urgent",
+            "urgent_session": True,
+            "session_duration": 120
+        })
+        send_text_with_duplicate_check(cid, t("planning_urgent_session", lang))
+        suggest_available_slots(cid, current_segment, lang)
+        return
+    
+    if is_premium:
+        print(f"💎 Premium service requested - planning all lessons")
+        set_conv_attrs(cid, {
+            "planning_profile": "premium",
+            "lesson_type": "premium",
+            "premium_service": True
+        })
+        send_text_with_duplicate_check(cid, t("planning_premium_service", lang))
+        suggest_available_slots(cid, "premium", lang)
+        return
+    
+    # Check if this is a new customer who just completed intake for a trial lesson
+    has_completed_trial = contact_attrs.get("trial_lesson_completed", False)
+    has_completed_intake_flag = contact_attrs.get("has_completed_intake", False) or contact_attrs.get("intake_completed", False)
+    
+    # New customer with completed intake but no trial lesson yet = trial lesson
+    if has_completed_intake_flag and not has_completed_trial:
+        print(f"🎯 New customer with completed intake - planning trial lesson")
+        set_conv_attrs(cid, {
+            "planning_profile": current_segment,
+            "lesson_type": "trial"
+        })
+        send_text_with_duplicate_check(cid, t("planning_trial_lesson_intro", lang))
+        
+        # Ask for lesson mode (online vs fysiek) for trial lessons
+        ask_trial_lesson_mode(cid, contact_id, lang)
+        return
+    elif is_existing_customer(contact_attrs):
+        print(f"📅 Existing customer - planning regular lesson")
+        # Check if existing customer has completed trial lesson
+        has_completed_trial = contact_attrs.get("trial_lesson_completed", False)
+        
+        if has_completed_trial:
+            # Existing customer who completed trial - show post-trial menu
+            print(f"🎯 Existing customer with completed trial - showing post-trial menu")
+            show_post_trial_menu(cid, contact_id, lang)
+            return
+        else:
+            # Existing customer without trial - direct planning
+            set_conv_attrs(cid, {
+                "planning_profile": current_segment,
+                "lesson_type": "regular"
+            })
+            send_text_with_duplicate_check(cid, t("planning_regular_lesson", lang))
+            
+            # Check if user has preferences, if not ask for them
+            if not conv_attrs.get("user_preferences"):
+                ask_for_preferences_and_suggest_slots(cid, current_segment, lang)
+            else:
+                suggest_available_slots(cid, current_segment, lang)
+    else:
+        print(f"🎯 New customer - starting intake for free trial lesson")
+        # New customer gets intake flow for free trial lesson
+        # Check if we have confirmed prefill information
+        # Check if we have prefill information that can be used
+        if conv_attrs.get("learner_name") and conv_attrs.get("school_level"):
+            print(f"✅ Found prefill information - using for trial lesson")
+            set_conv_attrs(cid, {
+                "lesson_type": "trial",
+                "use_prefill": True,  # Flag to use prefill info
+                "planning_profile": current_segment
+            })
+            send_text_with_duplicate_check(cid, t("planning_trial_lesson_intro", lang))
+            # Ask for lesson mode (online vs fysiek) for trial lessons
+            ask_trial_lesson_mode(cid, contact_id, lang)
+        else:
+            print(f"🔄 No prefill information - starting intake flow")
+            set_conv_attrs(cid, {
+                "lesson_type": "trial",
+                "has_been_prefilled": False,  # Clear prefill flag to start fresh
+                "prefill_processed_for_message": "",  # Clear prefill tracking
+                "prefill_confirmation_sent": False  # Clear confirmation flag
+            })
+            start_intake_flow(cid, contact_id, lang)
+            return
+
+def ask_trial_lesson_mode(cid, contact_id, lang):
+    """Ask user for trial lesson mode (online vs fysiek)"""
+    print(f"📱 Asking for trial lesson mode")
+    
+    # Set conversation state to wait for mode selection
+    set_conv_attrs(cid, {
+        "pending_intent": "trial_lesson_mode_selection"
+    })
+    
+    # Send mode selection question with input select
+    mode_options = [
+        (t("trial_lesson_online", lang), "online"),
+        (t("trial_lesson_fysiek", lang), "fysiek")
+    ]
+    
+    send_input_select_only(cid, t("trial_lesson_mode_question", lang), mode_options)
+
+def handle_trial_lesson_mode_selection(cid, contact_id, msg_content, lang):
+    """Handle trial lesson mode selection"""
+    print(f"📱 Trial lesson mode selection: '{msg_content}'")
+    
+    if msg_content == "online":
+        mode_display = t("trial_lesson_online", lang)
+        lesson_mode = "online"
+        print(f"💻 User selected online trial lesson")
+    elif msg_content == "fysiek":
+        mode_display = t("trial_lesson_fysiek", lang)
+        lesson_mode = "fysiek"
+        print(f"🏫 User selected fysiek trial lesson (Science Park only)")
+    else:
+        # Invalid selection
+        print(f"⚠️ Invalid mode selection: '{msg_content}'")
+        send_text_with_duplicate_check(cid, t("error_invalid_selection", lang))
+        ask_trial_lesson_mode(cid, contact_id, lang)
+        return
+    
+    # Store the lesson mode
+    conv_attrs = get_conv_attrs(cid)
+    current_segment = conv_attrs.get("planning_profile", "new")
+    
+    set_conv_attrs(cid, {
+        "lesson_mode": lesson_mode,
+        "pending_intent": "planning"
+    })
+    
+    # Update contact attributes
+    contact_attrs = get_contact_attrs(contact_id)
+    contact_attrs["lesson_mode"] = lesson_mode
+    set_contact_attrs(contact_id, contact_attrs)
+    
+    # Confirm mode selection
+    confirmation_msg = t("trial_lesson_mode_confirmed", lang, mode=mode_display)
+    send_text_with_duplicate_check(cid, confirmation_msg)
+    
+    # Check if user has preferences, if not ask for them
+    if not conv_attrs.get("user_preferences"):
+        ask_for_preferences_and_suggest_slots(cid, current_segment, lang)
+    else:
+        suggest_available_slots(cid, current_segment, lang)
+
+def start_intake_flow(cid, contact_id, lang):
+    """Start the intake flow with prefill support"""
+    print(f"📋 Starting intake flow for Conv:{cid}")
+    
+    conv_attrs = get_conv_attrs(cid)
+    contact_attrs = get_contact_attrs(contact_id)
+    
+    # Check if we should use prefill information
+    lesson_type = conv_attrs.get("lesson_type", "")
+    use_prefill = conv_attrs.get("use_prefill", False)
+    
+    if lesson_type == "trial" and use_prefill:
+        print(f"✅ Trial lesson with confirmed prefill - using prefill to skip steps")
+        # Keep prefill information to skip steps
+        # Don't clear anything - we want to use the confirmed prefill info
+    elif lesson_type == "trial":
+        print(f"🎯 Trial lesson requested - checking for prefill data")
+        # Check if we have prefill data that should be preserved
+        if conv_attrs.get("learner_name") and conv_attrs.get("school_level"):
+            print(f"✅ Found prefill data - preserving for trial lesson")
+            # Keep prefill data but mark as not confirmed yet
+            set_conv_attrs(cid, {
+                "has_been_prefilled": True,
+                "prefill_processed_for_message": "",
+                "prefill_confirmation_sent": False,
+                "use_prefill": True  # Use prefill data
+            })
+        else:
+            print(f"🔄 No prefill data found - starting fresh intake")
+            # Clear any prefill information to start fresh
+            set_conv_attrs(cid, {
+                "has_been_prefilled": False,
+                "prefill_processed_for_message": "",
+                "prefill_confirmation_sent": False,
+                "learner_name": "",
+                "school_level": "",
+                "topic_primary": "",
+                "topic_secondary": "",
+                "goals": "",
+                "preferred_times": "",
+                "lesson_mode": "",
+                "toolset": "",
+                "for_who": "",
+                "relationship_to_learner": "",
+                "contact_name": "",
+                "location_preference": ""
+            })
+            # Also clear contact attributes
+            set_contact_attrs(contact_id, {
+                "learner_name": "",
+                "school_level": "",
+                "topic_primary": "",
+                "topic_secondary": "",
+                "goals": "",
+                "preferred_times": "",
+                "lesson_mode": "",
+                "toolset": "",
+                "for_who": "",
+                "relationship_to_learner": "",
+                "contact_name": "",
+                "location_preference": ""
+            })
+        # Refresh attributes after clearing
+    conv_attrs = get_conv_attrs(cid)
+    contact_attrs = get_contact_attrs(contact_id)
+    
+    # Check what's already prefilled (check both conversation and contact attributes)
+    prefilled_steps = []
+    
+    # Basic information
+    if conv_attrs.get("for_who") or contact_attrs.get("for_who"):
+        prefilled_steps.append("for_who")
+    if conv_attrs.get("relationship_to_learner") or contact_attrs.get("relationship_to_learner"):
+        prefilled_steps.append("relationship")
+    if conv_attrs.get("is_adult") is not None or contact_attrs.get("is_adult") is not None:
+        prefilled_steps.append("age_check")
+    if conv_attrs.get("learner_name") or contact_attrs.get("learner_name"):
+        prefilled_steps.append("learner_name")
+    
+    # Academic information
+    if conv_attrs.get("school_level") or contact_attrs.get("school_level"):
+        prefilled_steps.append("level")
+    if conv_attrs.get("topic_primary") or contact_attrs.get("topic_primary"):
+        prefilled_steps.append("subject")
+    if conv_attrs.get("goals") or contact_attrs.get("goals"):
+        prefilled_steps.append("goals")
+    
+    # Preferences
+    if conv_attrs.get("preferred_times") or contact_attrs.get("preferred_times"):
+        prefilled_steps.append("preferred_times")
+    if conv_attrs.get("lesson_mode") or contact_attrs.get("lesson_mode"):
+        prefilled_steps.append("mode")
+    # referral_source is removed from intake process
+    
+    # Toolset is only relevant for programming subjects
+    topic_primary = conv_attrs.get("topic_primary") or contact_attrs.get("topic_primary")
+    if topic_primary in ["programming", "python", "coding"] and (conv_attrs.get("toolset") or contact_attrs.get("toolset")):
+        prefilled_steps.append("toolset")
+    
+    # Additional information (optional but useful)
+    if conv_attrs.get("location_preference") or contact_attrs.get("location_preference"):
+        prefilled_steps.append("location_preference")
+    
+    print(f"📋 Prefilled steps: {prefilled_steps}")
+    
+    # Determine the first step to ask
+    if "for_who" not in prefilled_steps:
+        first_step = "for_who"
+    elif "relationship" not in prefilled_steps and conv_attrs.get("for_who") == "other":
+        # Only ask relationship if for_who is "other" (not for self/child)
+        first_step = "relationship"
+    elif "age_check" not in prefilled_steps:
+        first_step = "age_check"
+    elif "learner_name" not in prefilled_steps:
+        # Always ask for name unless already provided
+        first_step = "learner_name"
+    elif "level" not in prefilled_steps:
+        first_step = "level"
+    elif "subject" not in prefilled_steps:
+        first_step = "subject"
+    elif "goals" not in prefilled_steps:
+        first_step = "goals"
+    elif "preferred_times" not in prefilled_steps:
+        first_step = "preferred_times"
+    elif "mode" not in prefilled_steps:
+        first_step = "mode"
+    elif "toolset" not in prefilled_steps and (conv_attrs.get("topic_primary") or contact_attrs.get("topic_primary")) in ["programming", "python", "coding"]:
+        first_step = "toolset"
+    # Note: location_preference is optional and doesn't block intake completion
+    # Note: toolset is only relevant for programming subjects
+    else:
+        # All steps are prefilled, complete intake
+        set_conv_attrs(cid, {
+            "intake_completed": True,
+            "trial_status": "completed",
+            "pending_intent": "planning"
+        })
+        start_planning_flow(cid, contact_id, lang)
+        return
+    
+    # Start with the first missing step
+    set_conv_attrs(cid, {
+        "pending_intent": "intake",
+        "intake_step": first_step,
+        "trial_status": "scheduled"
+    })
+    
+    # Send the appropriate question
+    if first_step == "for_who":
+        send_input_select_only(cid, t("intake_for_who", lang), [
+            (t("intake_option_self", lang), "self"),
+            (t("intake_option_other", lang), "other")
+        ])
+    elif first_step == "age_check":
+        send_input_select_only(cid, t("intake_age_check", lang), [
+            ("✅ Ja", "yes"),
+            ("❌ Nee", "no")
+        ])
+    elif first_step == "learner_name":
+        # Personalize the name question based on for_who
+        for_who = conv_attrs.get("for_who") or contact_attrs.get("for_who")
+        if for_who == "self":
+            # Ask for their own name
+            send_text_with_duplicate_check(cid, "Wat is jouw naam?")
+        else:
+            # Ask for the learner's name
+            send_text_with_duplicate_check(cid, t("intake_learner_name", lang))
+    elif first_step == "level":
+        send_input_select_only(cid, t("intake_level", lang), [
+            ("Basisschool", "po"),
+            ("VMBO", "vmbo"),
+            ("HAVO", "havo"),
+            ("VWO", "vwo"),
+            ("MBO", "mbo"),
+            ("Universiteit (WO)", "university_wo"),
+            ("Universiteit (HBO)", "university_hbo"),
+            ("Volwassenenonderwijs", "adult")
+        ])
+    elif first_step == "subject":
+        send_input_select_only(cid, t("intake_subject", lang), [
+            ("Wiskunde", "math"),
+            ("Statistiek", "stats"),
+            ("Engels", "english"),
+            ("Programmeren", "programming"),
+            ("Natuurkunde", "science"),
+            ("Scheikunde", "chemistry"),
+            ("Anders", "other")
+        ])
+    elif first_step == "goals":
+        send_text_with_duplicate_check(cid, t("intake_goals", lang))
+    elif first_step == "toolset":
+        send_input_select_only(cid, "Welke tools gebruik je graag?", [
+            ("Geen specifieke tools", "none"),
+            ("Python", "python"),
+            ("Excel", "excel"),
+            ("SPSS", "spss"),
+            ("R", "r"),
+            ("Anders", "other")
+        ])
+    elif first_step == "preferred_times":
+        send_text_with_duplicate_check(cid, t("intake_preferred_times", lang))
+    elif first_step == "mode":
+        send_input_select_only(cid, t("intake_mode", lang), [
+            ("💻 Online", "online"),
+            ("🏠 Fysiek", "in_person"),
+            ("🔀 Hybride", "hybrid")
+        ])
+
+def handle_intake_step(cid, contact_id, msg_content, lang):
+    """Handle intake flow steps"""
+    conv_attrs = get_conv_attrs(cid)
+    step = conv_attrs.get("intake_step")
+    
+    if step == "for_who":
+        if msg_content.lower() in ["self", "voor mezelf", "1"] or "👤" in msg_content:
+            set_conv_attrs(cid, {
+                "pending_intent": "intake", 
+                "intake_step": "age_check",
+                "for_who": "self"
+            })
+            send_input_select_only(cid, t("intake_age_check", lang), [
+                ("✅ Ja", "yes"),
+                ("❌ Nee", "no")
+            ])
+        elif msg_content.lower() in ["other", "voor iemand anders", "2"] or "👥" in msg_content:
+            set_conv_attrs(cid, {
+                "pending_intent": "intake", 
+                "intake_step": "relationship",
+                "for_who": "other"
+            })
+            send_input_select_only(cid, t("intake_relationship", lang), [
+                (t("intake_relationship_parent", lang), "parent"),
+                (t("intake_relationship_family", lang), "family"),
+                (t("intake_relationship_teacher", lang), "teacher"),
+                (t("intake_relationship_other", lang), "other")
+            ])
+    
+    elif step == "age_check":
+        print(f"🔍 Age check step - received: '{msg_content}'")
+        # Check for various ways to say yes
+        if (msg_content.lower() in ["yes", "ja", "1", "ja.", "yes."] or 
+            "✅" in msg_content or 
+            msg_content.strip().lower() in ["ja", "yes"]):
+            print(f"✅ Age check: Adult confirmed")
+            set_contact_attrs(contact_id, {"is_adult": True})
+            set_conv_attrs(cid, {"is_adult": True})
+            print(f"[DEBUG] Age check: Starting step-by-step intake")
+            
+            # Check if learner name is already available from prefill
+            conv_attrs = get_conv_attrs(cid)
+            contact_attrs = get_contact_attrs(contact_id)
+            learner_name = conv_attrs.get("learner_name") or contact_attrs.get("learner_name")
+            
+            if learner_name:
+                print(f"✅ Learner name already available: {learner_name}")
+                
+                # If this is for themselves, update the contact name
+                for_who = conv_attrs.get("for_who", "self")
+                if for_who == "self":
+                    set_contact_attrs(contact_id, {"name": learner_name})
+                    set_contact_attrs(contact_id, {"is_student": True})
+                    print(f"✅ Updated contact name to: {learner_name}")
+                
+                # Skip learner name step and go directly to level
+                set_conv_attrs(cid, {
+                    "pending_intent": "intake",
+                    "intake_step": "level"
+                })
+                send_input_select_only(cid, t("intake_level", lang), [
+                    ("Basisschool", "po"),
+                    ("VMBO", "vmbo"),
+                    ("HAVO", "havo"),
+                    ("VWO", "vwo"),
+                    ("MBO", "mbo"),
+                    ("Universiteit (WO)", "university_wo"),
+                    ("Universiteit (HBO)", "university_hbo"),
+                    ("Volwassenenonderwijs", "adult")
+                ])
+            else:
+                # Start step-by-step intake for consistency
+                set_conv_attrs(cid, {
+                    "pending_intent": "intake",
+                    "intake_step": "learner_name"
+                })
+                send_text_with_duplicate_check(cid, t("intake_learner_name", lang))
+        # Check for various ways to say no
+        elif (msg_content.lower() in ["no", "nee", "2", "nee.", "no."] or 
+              "❌" in msg_content or 
+              msg_content.strip().lower() in ["nee", "no"]):
+            print(f"❌ Age check: Minor confirmed")
+            set_contact_attrs(contact_id, {"is_adult": False})
+            set_conv_attrs(cid, {"is_adult": False, "pending_intent": "intake", "intake_step": "guardian_name"})
+            send_text_with_duplicate_check(cid, t("intake_guardian_info", lang))
+        else:
+            print(f"❓ Age check: Unknown response '{msg_content}' - asking again")
+            send_input_select_only(cid, t("intake_age_check", lang), [
+                ("✅ Ja", "yes"),
+                ("❌ Nee", "no")
+            ])
+    
+    elif step == "relationship":
+        # Save the relationship in contact attributes
+        if msg_content == "parent":
+            set_contact_attrs(contact_id, {"is_parent": True})
+        elif msg_content == "teacher":
+            set_contact_attrs(contact_id, {"is_teacher": True})
+        else:
+            set_contact_attrs(contact_id, {"relationship_type": msg_content})
+        
+        set_conv_attrs(cid, {
+            "pending_intent": "intake",
+            "relationship_to_learner": msg_content,
+            "intake_step": "child_info"
+        })
+        print(f"✅ Saved relationship: {msg_content}")
+        send_text_with_duplicate_check(cid, t("intake_child_info", lang))
+    
+    elif step == "guardian_name":
+        set_conv_attrs(cid, {
+            "pending_intent": "intake",
+            "guardian_name": msg_content,
+            "intake_step": "guardian_phone"
+        })
+        send_text_with_duplicate_check(cid, t("intake_guardian_phone", lang))
+    
+    elif step == "guardian_phone":
+        set_conv_attrs(cid, {
+            "pending_intent": "intake",
+            "guardian_phone": msg_content,
+            "intake_step": "child_info"
+        })
+        send_text_with_duplicate_check(cid, t("intake_child_info", lang))
+    
+    elif step == "child_info":
+        # Save the learner name
+        set_conv_attrs(cid, {
+            "pending_intent": "intake",
+            "learner_name": msg_content,
+            "intake_step": "level"
+        })
+        print(f"✅ Saved learner name: {msg_content}")
+        print(f"[DEBUG] Intake: child_info ingevuld, door naar level. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
+        send_input_select_only(cid, t("intake_level", lang), [
+            ("Basisschool", "po"),
+            ("VMBO", "vmbo"),
+            ("HAVO", "havo"),
+            ("VWO", "vwo"),
+            ("MBO", "mbo"),
+            ("Universiteit (WO)", "university_wo"),
+            ("Universiteit (HBO)", "university_hbo"),
+            ("Volwassenenonderwijs", "adult")
+        ])
+    
+
+    
+    elif step == "learner_name":
+        # Check if this is for themselves or someone else
+        conv_attrs = get_conv_attrs(cid)
+        for_who = conv_attrs.get("for_who", "self")  # Default to self if not set
+        
+        if for_who == "self":
+            # Update the contact's own name
+            set_contact_attrs(contact_id, {"name": msg_content})
+            set_contact_attrs(contact_id, {"is_student": True})
+            print(f"✅ Updated contact name to: {msg_content}")
+        else:
+            # This is for someone else, save the learner name
+            set_conv_attrs(cid, {"learner_name": msg_content})
+            print(f"✅ Saved learner name: {msg_content}")
+        
+        set_conv_attrs(cid, {
+            "pending_intent": "intake",
+            "intake_step": "level"
+        })
+        print(f"[DEBUG] Intake: learner_name ingevuld, door naar level. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
+        send_input_select_only(cid, t("intake_level", lang), [
+            ("Basisschool", "po"),
+            ("VMBO", "vmbo"),
+            ("HAVO", "havo"),
+            ("VWO", "vwo"),
+            ("MBO", "mbo"),
+            ("Universiteit (WO)", "university_wo"),
+            ("Universiteit (HBO)", "university_hbo"),
+            ("Volwassenenonderwijs", "adult")
+        ])
+    
+    elif step == "level":
+        level_mapping = {
+            "po": "audience:po",
+            "vmbo": "audience:vmbo",
+            "havo": "audience:havo",
+            "vwo": "audience:vwo",
+            "mbo": "audience:mbo",
+            "university_wo": "audience:university:wo",
+            "university_hbo": "audience:university:hbo",
+            "adult": "audience:adult"
+        }
+        set_contact_attrs(contact_id, {"school_level": msg_content})
+        add_conv_labels(cid, [level_mapping.get(msg_content, "audience:adult")])
+        set_conv_attrs(cid, {"pending_intent": "intake", "intake_step": "subject"})
+        print(f"[DEBUG] Intake: level ingevuld, door naar subject. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
+        send_input_select_only(cid, t("intake_subject", lang), [
+            ("Wiskunde", "math"),
+            ("Statistiek", "stats"),
+            ("Engels", "english"),
+            ("Programmeren", "programming"),
+            ("Natuurkunde", "science"),
+            ("Scheikunde", "chemistry"),
+            ("Anders", "other")
+        ])
+    
+    elif step == "subject":
+        if msg_content.lower() != "other":
+            # Convert simple values back to subject: format for labels
+            subject_mapping = {
+                "math": "subject:math",
+                "stats": "subject:stats", 
+                "english": "subject:english",
+                "programming": "subject:programming",
+                "science": "subject:science",
+                "chemistry": "subject:chemistry"
+            }
+            label_value = subject_mapping.get(msg_content, msg_content)
+            add_conv_labels(cid, [label_value])
+            # Store primary topic for lesson planning
+            set_conv_attrs(cid, {"topic_primary": msg_content})
+        
+        # Check if we need to ask for specific program
+        if msg_content == "math" or msg_content == "stats":
+            set_conv_attrs(cid, {"pending_intent": "intake", "intake_step": "program"})
+            send_input_select_only(cid, "Welk specifiek programma?", [
+                ("Geen specifiek programma", "none"),
+                ("MBO Rekenen 2F", "mbo_rekenen_2f"),
+                ("MBO Rekenen 3F", "mbo_rekenen_3f"),
+                ("IB Math SL", "ib_math_sl"),
+                ("IB Math HL", "ib_math_hl"),
+                ("Cambridge", "cambridge")
+            ])
+        else:
+            # Check if goals are already available from prefill
+            conv_attrs = get_conv_attrs(cid)
+            contact_attrs = get_contact_attrs(contact_id)
+            goals = conv_attrs.get("goals") or contact_attrs.get("goals")
+            
+            if goals:
+                print(f"✅ Goals already available from prefill: {goals}")
+                # Skip goals step and go directly to toolset
+                set_conv_attrs(cid, {
+                    "pending_intent": "intake",
+                    "intake_step": "toolset"
+                })
+                send_input_select_only(cid, "Welke tools gebruik je graag?", [
+                    ("Geen specifieke tools", "none"),
+                    ("Python", "python"),
+                    ("Excel", "excel"),
+                    ("SPSS", "spss"),
+                    ("R", "r"),
+                    ("Anders", "other")
+                ])
+            else:
+                set_conv_attrs(cid, {"pending_intent": "intake", "intake_step": "goals"})
+                print(f"[DEBUG] Intake: subject ingevuld, door naar goals. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
+                send_text_with_duplicate_check(cid, t("intake_goals", lang))
+    
+    elif step == "program":
+        set_conv_attrs(cid, {
+            "program": msg_content,
+            "pending_intent": "intake"
+        })
+        
+        # Check if goals are already available from prefill
+        conv_attrs = get_conv_attrs(cid)
+        contact_attrs = get_contact_attrs(contact_id)
+        goals = conv_attrs.get("goals") or contact_attrs.get("goals")
+        
+        if goals:
+            print(f"✅ Goals already available from prefill: {goals}")
+            # Skip goals step and go directly to toolset
+            set_conv_attrs(cid, {
+                "pending_intent": "intake",
+                "intake_step": "toolset"
+            })
+            send_input_select_only(cid, "Welke tools gebruik je graag?", [
+                ("Geen specifieke tools", "none"),
+                ("Python", "python"),
+                ("Excel", "excel"),
+                ("SPSS", "spss"),
+                ("R", "r"),
+                ("Anders", "other")
+            ])
+        else:
+            set_conv_attrs(cid, {"pending_intent": "intake", "intake_step": "goals"})
+            print(f"[DEBUG] Intake: program ingevuld, door naar goals. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
+            send_text_with_duplicate_check(cid, t("intake_goals", lang))
+    
+    elif step == "goals":
+        set_conv_attrs(cid, {
+            "pending_intent": "intake",
+            "goals": msg_content,  # Store actual goals, not topic_secondary
+            "intake_step": "toolset"
+        })
+        print(f"[DEBUG] Intake: goals ingevuld, door naar toolset. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
+        send_input_select_only(cid, "Welke tools gebruik je graag?", [
+            ("Geen specifieke tools", "none"),
+            ("Python", "python"),
+            ("Excel", "excel"),
+            ("SPSS", "spss"),
+            ("R", "r"),
+            ("Anders", "other")
+        ])
+    
+    elif step == "toolset":
+        set_conv_attrs(cid, {
+            "toolset": msg_content,
+            "pending_intent": "intake",
+            "intake_step": "preferred_times"
+        })
+        print(f"[DEBUG] Intake: toolset ingevuld, door naar preferred_times. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
+        send_text_with_duplicate_check(cid, t("intake_preferred_times", lang))
+    
+    elif step == "preferred_times":
+        set_conv_attrs(cid, {
+            "pending_intent": "intake",
+            "preferred_times": msg_content,
+            "intake_step": "mode"
+        })
+        print(f"[DEBUG] Intake: preferred_times ingevuld, door naar mode. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
+        send_input_select_only(cid, t("intake_mode", lang), [
+            ("💻 Online", "online"),
+            ("🏠 Fysiek", "in_person"),
+            ("🔀 Hybride", "hybrid")
+        ])
+    
+    elif step == "mode":
+        # Handle emoji-based mode selection
+        if "💻" in msg_content:
+            msg_content = "online"
+        elif "🏠" in msg_content:
+            msg_content = "in_person"
+        elif "🔀" in msg_content:
+            msg_content = "hybrid"
+            
+        set_conv_attrs(cid, {
+            "intake_completed": True,
+            "trial_status": "completed",
+            "pending_intent": "planning",
+            "lesson_mode": msg_content
+        })
+        print(f"[DEBUG] Intake: mode ingevuld, intake afgerond. pending_intent={get_conv_attrs(cid).get('pending_intent')}, intake_step={get_conv_attrs(cid).get('intake_step')}")
+        
+        # Set planning profile based on segment
+        contact_attrs = get_contact_attrs(contact_id)
+        segment = contact_attrs.get("segment", "new")
+        set_conv_attrs(cid, {"planning_profile": segment})
+        
+        # Suggest available slots
+        suggest_available_slots(cid, segment, lang)
+
+def ask_for_preferences_and_suggest_slots(cid, profile_name, lang):
+    """Ask user for preferences and suggest slots based on OpenAI analysis"""
+    print(f"🤔 Asking for preferences for profile: {profile_name}")
+    
+    # Ask user for preferences
+    preference_text = t("ask_for_preferences", lang)
+    send_text_with_duplicate_check(cid, preference_text)
+    
+    # Set conversation state to wait for preferences
+    set_conv_attrs(cid, {
+        "waiting_for_preferences": True,
+        "planning_profile": profile_name
+    })
+
+def suggest_available_slots(cid, profile_name, lang):
+    """Suggest available slots"""
+    print(f"📅 Suggesting slots for profile: {profile_name}")
+    conv_attrs = get_conv_attrs(cid)
+    lesson_type = conv_attrs.get("lesson_type", "trial")
+    lesson_mode = conv_attrs.get("lesson_mode", "online")
+    
+    # For fysiek lessons, only show Science Park slots
+    if lesson_mode == "fysiek":
+        print(f"🏫 Fysiek lesson requested - filtering for Science Park only")
+        # Set location preference to Science Park for fysiek lessons
+        set_conv_attrs(cid, {"location_preference": "Science Park"})
+    
+    slots = suggest_slots(cid, profile_name)
+    
+    if not slots:
+        print(f"⚠️ No available slots found for {profile_name}")
+        
+        # Check if this is a trial lesson and show specific message
+        if lesson_type == "trial":
+            send_text_with_duplicate_check(cid, t("no_trial_slots_available", lang))
+        else:
+            send_text_with_duplicate_check(cid, t("no_slots_available", lang))
+        return
+    
+    print(f"✅ Found {len(slots)} available slots")
+    
+    # Create quick reply options
+    options = []
+    for slot in slots:
+        options.append((slot["label"], slot["start"]))
+        print(f"📅 Slot option: '{slot['label']}' -> '{slot['start']}'")
+    
+    options.append((t("planning_more_options", lang), "more_options"))
+    print(f"📅 More options: '{t('planning_more_options', lang)}' -> 'more_options'")
+    
+    # Set pending intent to planning so we can handle slot selections
+    set_conv_attrs(cid, {"pending_intent": "planning"})
+    
+    # Determine lesson text based on type
+    if lesson_type == "premium":
+        lesson_text = t("planning_premium_slots", lang)
+    elif lesson_type == "trial":
+        lesson_text = t("planning_trial_slots", lang)
+    else:
+        lesson_text = t("planning_regular_slots", lang)
+    
+    print(f"📅 Sending {len(options)} options with text: '{lesson_text}'")
+    send_input_select_only(cid, lesson_text, options)
+
+def process_corrections_and_reconfirm(cid, contact_id, corrections_text, lang):
+    """Process user corrections and ask for reconfirmation"""
+    print(f"🔧 Processing corrections: {corrections_text}")
+    
+    # Analyze corrections with OpenAI
+    analysis = analyze_first_message_with_openai(corrections_text, cid)
+    
+    if not analysis:
+        print(f"⚠️ Failed to analyze corrections - asking for manual input")
+        send_text_with_duplicate_check(cid, t("correction_analysis_failed", lang))
+        return
+    
+    # Update conversation attributes with corrected information
+    conv_attrs = get_conv_attrs(cid)
+    updated_info = {}
+    
+    # Map OpenAI analysis to conversation attributes
+    if analysis.get("learner_name"):
+        updated_info["learner_name"] = analysis["learner_name"]
+    if analysis.get("school_level"):
+        updated_info["school_level"] = analysis["school_level"]
+    if analysis.get("topic_primary"):
+        updated_info["topic_primary"] = analysis["topic_primary"]
+    if analysis.get("topic_secondary"):
+        updated_info["topic_secondary"] = analysis["topic_secondary"]
+    if analysis.get("goals"):
+        updated_info["goals"] = analysis["goals"]
+    if analysis.get("for_who"):
+        updated_info["for_who"] = analysis["for_who"]
+    if analysis.get("contact_name"):
+        updated_info["contact_name"] = analysis["contact_name"]
+    if analysis.get("is_adult"):
+        updated_info["is_adult"] = analysis["is_adult"]
+    if analysis.get("relationship_to_learner"):
+        updated_info["relationship_to_learner"] = analysis["relationship_to_learner"]
+    
+    # Update conversation attributes
+    conv_attrs.update(updated_info)
+    set_conv_attrs(cid, conv_attrs)
+    
+    print(f"✅ Updated with corrections: {list(updated_info.keys())}")
+    
+    # Show corrected information for confirmation
+    show_prefill_summary_with_corrections(cid, contact_id, lang, updated_info)
+
+def show_prefill_summary_with_corrections(cid, contact_id, lang, updated_info):
+    """Show corrected prefill information for confirmation"""
+    print(f"📋 Showing corrected prefill summary")
+    
+    # Get current conversation attributes
+    conv_attrs = get_conv_attrs(cid)
+    
+    # Build summary text with corrections highlighted
+    summary_parts = []
+    summary_parts.append(t("prefill_corrected_summary_title", lang))
+    summary_parts.append("")
+    
+    # Show corrected information
+    if updated_info.get("learner_name"):
+        summary_parts.append(f"👤 {t('prefill_learner_name', lang)}: {updated_info['learner_name']}")
+    if updated_info.get("school_level"):
+        school_level_display = get_school_level_display(updated_info["school_level"], lang)
+        summary_parts.append(f"🎓 {t('prefill_school_level', lang)}: {school_level_display}")
+    if updated_info.get("topic_primary"):
+        summary_parts.append(f"📚 {t('prefill_topic_primary', lang)}: {updated_info['topic_primary']}")
+    if updated_info.get("topic_secondary"):
+        summary_parts.append(f"📖 {t('prefill_topic_secondary', lang)}: {updated_info['topic_secondary']}")
+    if updated_info.get("goals"):
+        summary_parts.append(f"🎯 {t('prefill_goals', lang)}: {updated_info['goals']}")
+    if updated_info.get("for_who"):
+        for_who_display = t(f"prefill_for_who_{updated_info['for_who']}", lang)
+        summary_parts.append(f"👥 {t('prefill_for_who', lang)}: {for_who_display}")
+    
+    summary_parts.append("")
+    summary_parts.append(t("prefill_corrected_confirmation_prompt", lang))
+    
+    # Create input select options for confirmation
+    options = [
+        (t("prefill_confirm_yes", lang), "confirm_yes"),
+        (t("prefill_confirm_no", lang), "confirm_no")
+    ]
+    
+    # Send combined message with text and input select menu
+    summary_text = "\n".join(summary_parts)
+    send_input_select_only(cid, summary_text, options)
+    
+    # Set conversation state for confirmation
+    set_conv_attrs(cid, {
+        "waiting_for_corrections": False,
+        "waiting_for_corrected_confirmation": True,
+        "corrected_info": updated_info,
+        "pending_intent": "prefill_confirmation"
+    })
+
+def handle_corrected_prefill_confirmation(cid, contact_id, msg_content, lang):
+    """Handle confirmation of corrected prefill information"""
+    print(f"🤖 Corrected prefill confirmation: '{msg_content}'")
+    
+    # Check for input select responses first
+    if msg_content == "confirm_yes":
+        print(f"✅ User confirmed corrected prefill information via input select")
+        handle_prefill_confirmation_yes(cid, contact_id, lang)
+        return
+    elif msg_content == "confirm_no":
+        print(f"❌ User denied corrected prefill information via input select")
+        handle_prefill_confirmation_no(cid, contact_id, lang)
+        return
+    
+    # Check user's text response (fallback)
+    confirm_words = ["ja", "klopt", "correct", "yes", "✅", "ja dat klopt", "dat klopt", "klopt helemaal", "ja helemaal", "correct", "juist", "precies", "inderdaad"]
+    deny_words = ["nee", "niet", "fout", "no", "❌", "nee dat klopt niet", "dat klopt niet", "niet correct", "fout", "verkeerd", "deels", "sommige", "partially", "🤔", "deels correct", "sommige kloppen", "niet alles"]
+    
+    msg_lower = msg_content.lower().strip()
+    
+    if any(word in msg_lower for word in confirm_words):
+        print(f"✅ User confirmed corrected prefill information")
+        
+        # Get corrected information
+        conv_attrs = get_conv_attrs(cid)
+        corrected_info = conv_attrs.get("corrected_info", {})
+        
+        # Apply corrected information to contact attributes
+        if corrected_info:
+            current_contact_attrs = get_contact_attrs(contact_id)
+            current_contact_attrs.update(corrected_info)
+            current_contact_attrs["has_completed_intake"] = True
+            set_contact_attrs(contact_id, current_contact_attrs)
+            print(f"✅ Applied corrected info to contact")
+        
+        # Clear correction state and proceed with normal flow
+        set_conv_attrs(cid, {
+            "waiting_for_corrected_confirmation": False,
+            "corrected_info": None,
+            "prefill_confirmation_sent": True,
+            "use_prefill": True
+        })
+        
+        # Show action menu
+        show_prefill_action_menu_after_confirmation(cid, contact_id, lang)
+        
+    elif any(word in msg_lower for word in deny_words):
+        print(f"❌ User still indicates information is incorrect")
+        
+        # Check correction count
+        conv_attrs = get_conv_attrs(cid)
+        correction_count = conv_attrs.get("prefill_correction_count", 0)
+        
+        if correction_count >= 2:
+            # After 2 correction attempts, disable bot and handoff to Stephen
+            print(f"🚫 Maximum correction attempts reached ({correction_count}) - disabling bot")
+            
+            # Disable bot for this conversation
+            set_conv_attrs(cid, {
+                "bot_disabled": True,
+                "bot_disabled_reason": "max_correction_attempts",
+                "bot_disabled_time": datetime.now(TZ).isoformat()
+            })
+            
+            # Send handoff message
+            handoff_text = t("handoff_max_corrections", lang)
+            send_handoff_message(cid, handoff_text)
+            
+        else:
+            # Ask for more corrections
+            correction_text = t("ask_for_more_corrections", lang)
+            send_text_with_duplicate_check(cid, correction_text)
+            
+            # Set state to wait for more corrections
+            set_conv_attrs(cid, {
+                "waiting_for_corrections": True,
+                "waiting_for_corrected_confirmation": False,
+                "corrected_info": None
+            })
+    
+    else:
+        # Unclear response
+        unclear_text = t("prefill_unclear_response", lang)
+        send_text_with_duplicate_check(cid, unclear_text)
+
+def handle_prefill_confirmation_yes(cid, contact_id, lang):
+    """Handle positive confirmation of corrected prefill information"""
+    print(f"✅ User confirmed corrected prefill information")
+    
+    # Get corrected information
+    conv_attrs = get_conv_attrs(cid)
+    corrected_info = conv_attrs.get("corrected_info", {})
+    
+    # Apply corrected information to contact attributes
+    if corrected_info:
+        current_contact_attrs = get_contact_attrs(contact_id)
+        current_contact_attrs.update(corrected_info)
+        current_contact_attrs["has_completed_intake"] = True
+        set_contact_attrs(contact_id, current_contact_attrs)
+        print(f"✅ Applied corrected info to contact")
+    
+    # Clear correction state and proceed with normal flow
+    set_conv_attrs(cid, {
+        "waiting_for_corrected_confirmation": False,
+        "corrected_info": None,
+        "prefill_confirmation_sent": True,
+        "use_prefill": True,
+        "pending_intent": None
+    })
+    
+    # Show action menu
+    show_prefill_action_menu_after_confirmation(cid, contact_id, lang)
+
+def handle_prefill_confirmation_no(cid, contact_id, lang):
+    """Handle negative confirmation of corrected prefill information"""
+    print(f"❌ User still indicates information is incorrect")
+    
+    # Check correction count
+    conv_attrs = get_conv_attrs(cid)
+    correction_count = conv_attrs.get("prefill_correction_count", 0)
+    
+    if correction_count >= 2:
+        # After 2 correction attempts, disable bot and handoff to Stephen
+        print(f"🚫 Maximum correction attempts reached ({correction_count}) - disabling bot")
+        
+        # Disable bot for this conversation
+        set_conv_attrs(cid, {
+            "bot_disabled": True,
+            "bot_disabled_reason": "max_correction_attempts",
+            "bot_disabled_time": datetime.now(TZ).isoformat(),
+            "pending_intent": None
+        })
+        
+        # Send handoff message
+        handoff_text = t("handoff_max_corrections", lang)
+        send_handoff_message(cid, handoff_text)
+        
+    else:
+        # Ask for more corrections
+        correction_text = t("ask_for_more_corrections", lang)
+        send_text_with_duplicate_check(cid, correction_text)
+        
+        # Set state to wait for more corrections
+        set_conv_attrs(cid, {
+            "waiting_for_corrections": True,
+            "waiting_for_corrected_confirmation": False,
+            "corrected_info": None,
+            "pending_intent": None
+        })
+
+def process_preferences_and_suggest_slots(cid, preferences_text, lang):
+    """Process user preferences with AI and suggest real calendar slots"""
+    print(f"🤖 Processing preferences: {preferences_text}")
+    
+    # Analyze preferences with OpenAI to extract time preferences
+    analysis = analyze_preferences_with_openai(preferences_text, cid)
+    
+    # Store preferences in conversation attributes
+    set_conv_attrs(cid, {
+        "preferred_days": analysis.get("preferred_days", []),
+        "preferred_times": analysis.get("preferred_times", []),
+        "user_preferences": preferences_text,
+        "waiting_for_preferences": False
+    })
+    
+    # Get real calendar slots based on preferences
+    conv_attrs = get_conv_attrs(cid)
+    profile_name = conv_attrs.get("planning_profile", "new")
+    lesson_type = conv_attrs.get("lesson_type", "trial")
+    
+    # Convert AI analysis to preferred times string
+    preferred_times_parts = []
+    
+    # Add preferred days
+    if analysis.get("preferred_days"):
+        preferred_times_parts.extend(analysis["preferred_days"])
+    
+    # Add preferred times
+    if analysis.get("preferred_times"):
+        preferred_times_parts.extend(analysis["preferred_times"])
+    
+    # Combine into single string for calendar integration
+    preferred_times_str = " ".join(preferred_times_parts)
+    set_conv_attrs(cid, {"preferred_times": preferred_times_str})
+    
+    print(f"📅 Using preferences: {preferred_times_str}")
+    
+    # Get available slots from real calendar
+    try:
+        from calendar_integration import get_available_slots
+        
+        now = datetime.now(TZ)
+        start_date = now + timedelta(days=1)
+        end_date = now + timedelta(days=14)
+        
+        # Parse preferred times for calendar
+        preferred_time_list = []
+        if preferred_times_str:
+            # Extract specific times
+            import re
+            time_pattern = r'\b(\d{1,2}):?(\d{2})?\b'
+            times = re.findall(time_pattern, preferred_times_str)
+            for hour, minute in times:
+                if minute:
+                    preferred_time_list.append(f"{hour.zfill(2)}:{minute}")
+                else:
+                    preferred_time_list.append(f"{hour.zfill(2)}:00")
+            
+            # Add general time preferences
+            if "avond" in preferred_times_str or "evening" in preferred_times_str:
+                preferred_time_list.extend(["17:00", "18:00", "19:00"])
+            if "middag" in preferred_times_str or "afternoon" in preferred_times_str:
+                preferred_time_list.extend(["14:00", "15:00", "16:00"])
+            if "ochtend" in preferred_times_str or "morning" in preferred_times_str:
+                preferred_time_list.extend(["09:00", "10:00", "11:00"])
+        
+        # Get real calendar slots
+        available_slots = get_available_slots(
+            start_date=start_date,
+            end_date=end_date,
+            preferred_times=preferred_time_list if preferred_time_list else None,
+            lesson_type=lesson_type
+        )
+        
+        if available_slots:
+            # Create quick reply options from real calendar
+            options = []
+            for slot in available_slots[:8]:  # Limit to 8 slots
+                options.append((slot["label"], slot["start_iso"]))
+                print(f"📅 Real calendar slot: '{slot['label']}'")
+            
+            options.append((t("planning_more_options", lang), "more_options"))
+            
+            # Set pending intent to planning
+            set_conv_attrs(cid, {"pending_intent": "planning"})
+            
+            # Get appropriate text
+            if lesson_type == "premium":
+                lesson_text = t("planning_premium_slots_real", lang)
+            elif lesson_type == "trial":
+                lesson_text = t("planning_trial_slots_real", lang)
+            else:
+                lesson_text = t("planning_regular_slots_real", lang)
+            
+            print(f"📅 Sending {len(options)} real calendar options")
+            send_input_select_only(cid, lesson_text, options)
+            return
+            
+    except Exception as e:
+        print(f"❌ Error getting real calendar slots: {e}")
+    
+    # Fallback to default slot suggestion
+    print(f"⚠️ Using fallback slot suggestion")
+    suggest_available_slots(cid, profile_name, lang)
+
+def handle_planning_selection(cid, contact_id, msg_content, lang):
+    """Handle planning slot selection"""
+    print(f"🔍 Planning selection: '{msg_content}'")
+    print(f"🔍 Planning selection type: {type(msg_content)}")
+    print(f"🔍 Planning selection length: {len(msg_content) if msg_content else 0}")
+    
+    if msg_content == "more_options" or msg_content == "Meer opties":
+        # Suggest more options (extend time horizon)
+        conv_attrs = get_conv_attrs(cid)
+        profile_name = conv_attrs.get("planning_profile", "new")
+        suggest_available_slots(cid, profile_name, lang)
+        return
+    
+    # Check if this is a slot selection (format: "2025-08-05T12:00:00+02:00" or "Wed 13 Aug 14:00–15:00")
+    if re.match(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}', msg_content):
+        # Direct ISO timestamp format
+        iso_timestamp = msg_content
+    elif re.match(r'[A-Za-z]{3} \d{1,2} [A-Za-z]{3} \d{2}:\d{2}–\d{2}:\d{2}', msg_content):
+        # Format: "Wed 13 Aug 14:00–15:00" - extract start time
+        try:
+            # Parse the readable format to get start time
+            # Example: "Wed 13 Aug 14:00–15:00" -> extract "13 Aug 14:00"
+            match = re.match(r'[A-Za-z]{3} (\d{1,2}) ([A-Za-z]{3}) (\d{2}:\d{2})–\d{2}:\d{2}', msg_content)
+            if match:
+                day = match.group(1)
+                month = match.group(2)
+                time = match.group(3)
+                
+                # Convert month name to number
+                month_map = {
+                    'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
+                    'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
+                    'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
+                }
+                month_num = month_map.get(month, '08')  # Default to August
+                
+                # Create ISO timestamp for current year
+                current_year = datetime.now().year
+                iso_timestamp = f"{current_year}-{month_num}-{day.zfill(2)}T{time}:00+02:00"
+                print(f"🔍 Converted '{msg_content}' to ISO timestamp: {iso_timestamp}")
+            else:
+                print(f"⚠️ Could not parse readable time format: '{msg_content}'")
+                send_text_with_duplicate_check(cid, t("error_invalid_time", lang))
+                return
+        except Exception as e:
+            print(f"❌ Error parsing readable time format: {e}")
+            send_text_with_duplicate_check(cid, t("error_time_processing", lang))
+            return
+    else:
+        # Invalid input - provide helpful response
+        print(f"⚠️ Invalid planning selection: '{msg_content}'")
+        conv_attrs = get_conv_attrs(cid)
+        profile_name = conv_attrs.get("planning_profile", "new")
+        
+        # Resend available slots with explanation
+        send_text_with_duplicate_check(cid, t("planning_invalid_selection", lang))
+        suggest_available_slots(cid, profile_name, lang)
+        return
+    
+    # Book the slot using the ISO timestamp
+    conv_attrs = get_conv_attrs(cid)
+    learner_name = conv_attrs.get("learner_name", "Student")
+    lesson_type = conv_attrs.get("lesson_type", "trial")
+    lesson_mode = conv_attrs.get("lesson_mode", "online")
+    is_urgent = conv_attrs.get("urgent_session", False)
+    
+    # Calculate end time based on lesson type
+    try:
+        start_dt = datetime.fromisoformat(iso_timestamp.replace('Z', '+00:00'))
+        
+        if is_urgent:
+            # 2-hour session for urgent bookings
+            end_dt = start_dt + timedelta(minutes=120)
+            lesson_title = f"Stephen's Privélessen — Spoed Sessie"
+            lesson_description = f"Spoed 2-uurs sessie voor {learner_name}"
+        elif lesson_type == "trial":
+            # 30-minute session for trial lessons
+            end_dt = start_dt + timedelta(minutes=30)
+            lesson_title = f"Stephen's Privélessen — Proefles"
+            if lesson_mode == "fysiek":
+                lesson_description = f"Proefles voor {learner_name} (Fysiek op Science Park)"
+            else:
+                lesson_description = f"Proefles voor {learner_name} (Online)"
+        else:
+            # 1-hour session for regular bookings
+            end_dt = start_dt + timedelta(minutes=60)
+            lesson_title = f"Stephen's Privélessen — Les"
+            if lesson_mode == "fysiek":
+                lesson_description = f"Les voor {learner_name} (Fysiek op Science Park)"
+            else:
+                lesson_description = f"Les voor {learner_name} (Online)"
+        
+        end_time = end_dt.isoformat()
+        
+        # Create a readable slot description
+        slot_description = f"{start_dt.strftime('%A %d %B %H:%M')} - {end_dt.strftime('%H:%M')}"
+        
+        print(f"📅 Booking slot: {slot_description} (type: {lesson_type}, urgent: {is_urgent})")
+        
+        # Create tentative booking
+        event = book_slot(
+            cid,
+            iso_timestamp,
+            end_time,
+            lesson_title,
+            lesson_description
+        )
+        
+        if event:
+            if is_urgent:
+                # For urgent sessions, create payment link immediately
+                print(f"🚨 Urgent session booked - creating payment link")
+                contact_attrs = get_contact_attrs(contact_id)
+                segment = contact_attrs.get("segment", "new")
+                
+                # Create payment link for 2-hour session (€120)
+                payment_link = create_payment_link(
+                    segment=segment,
+                    minutes=120,
+                    order_id=f"urgent_{cid}_{int(time.time())}",
+                    conversation_id=cid,
+                    student_name=learner_name,
+                    service="urgent_session",
+                    audience="secondary_under_20",
+                    program="none"
+                )
+                
+                if payment_link:
+                    confirmation_msg = f"✅ {t('urgent_session_booked', lang, slot=slot_description, payment_link=payment_link)}"
+                    send_text_with_duplicate_check(cid, confirmation_msg)
+                else:
+                    confirmation_msg = f"✅ {t('urgent_session_booked_no_payment', lang, slot=slot_description)}"
+                    send_text_with_duplicate_check(cid, confirmation_msg)
+            else:
+                # For regular trial lessons, just confirm the booking
+                # Email request will be handled in the lesson type check below
+                confirmation_msg = f"✅ {t('trial_lesson_booked', lang, slot=slot_description)}"
+                send_text_with_duplicate_check(cid, confirmation_msg)
+        else:
+            send_text_with_duplicate_check(cid, t("error_planning_failed", lang))
+            return
+            
+    except Exception as e:
+        print(f"❌ Error parsing slot time: {e}")
+        send_text_with_duplicate_check(cid, t("error_time_processing", lang))
+        return
+    
+    # Check lesson type and handle accordingly
+    lesson_type = conv_attrs.get("lesson_type", "trial")
+    
+    if lesson_type == "trial":
+        # This is a trial lesson, no payment needed
+        # Mark contact as having completed intake and trial lesson
+        set_contact_attrs(contact_id, {
+            "has_completed_intake": True,
+            "trial_lesson_completed": True,
+            "lesson_booked": True,
+            "customer_since": datetime.now(TZ).isoformat()
+        })
+        set_conv_attrs(cid, {"pending_intent": "ask_email"})
+        
+        # Ask for email for invoice purposes
+        email_request_msg = f"✅ Perfect! Je proefles is ingepland op {slot_description}.\n\n{t('email_request', lang)}"
+        send_text_with_duplicate_check(cid, email_request_msg)
+        
+        print(f"📧 Email request sent - waiting for email address")
+    elif lesson_type == "regular":
+        # This is a regular lesson, create payment link immediately
+        print(f"📅 Regular lesson booked - creating payment link")
+        create_payment_request(cid, contact_id, lang)
+    else:
+        # Default to trial lesson behavior
+        print(f"⚠️ Unknown lesson type '{lesson_type}' - treating as trial lesson")
+        set_contact_attrs(contact_id, {
+            "has_completed_intake": True,
+            "trial_lesson_completed": True,
+            "lesson_booked": True,
+            "customer_since": datetime.now(TZ).isoformat()
+        })
+        set_conv_attrs(cid, {"pending_intent": "ask_email"})
+        
+        # Ask for email for invoice purposes
+        email_request_msg = f"✅ Perfect! Je proefles is ingepland op {slot_description}.\n\n{t('email_request', lang)}"
+        send_text_with_duplicate_check(cid, email_request_msg)
+        
+        print(f"📧 Email request sent - waiting for email address")
+
+def handle_email_request(cid, contact_id, msg_content, lang):
+    """Handle email request for trial lesson invoice"""
+    print(f"📧 Email request: '{msg_content}'")
+    
+    # Smart email extraction
+    import re
+    
+    # Email regex pattern
+    email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    
+    # Find email in message
+    email_match = re.search(email_pattern, msg_content)
+    
+    if email_match:
+        # Valid email found
+        email = email_match.group(0).strip()
+        
+        # Store email in contact attributes
+        set_contact_attrs(contact_id, {"email": email})
+        
+        # Mark contact as existing customer after email confirmation
+        # This completes the intake loop - they are now existing customers
+        set_contact_attrs(contact_id, {
+            "segment": "existing",  # Mark as existing customer
+            "intake_completed": True,  # Mark intake as completed
+            "customer_status": "active"  # Mark as active customer
+        })
+        
+        # Send confirmation and show next steps
+        confirmation_msg = f"📧 {t('email_thanks', lang, email=email)}\n\n{t('email_confirmation', lang)}"
+        send_text_with_duplicate_check(cid, confirmation_msg)
+        
+        # Mark conversation as complete and show main menu
+        set_conv_attrs(cid, {
+            "pending_intent": "",
+            "trial_booking_complete": True,
+            "trial_booking_time": datetime.now(TZ).isoformat()
+        })
+        
+        # Show main menu to allow further interaction
+        show_info_menu(cid, lang)
+        
+        print(f"✅ Trial lesson booking complete - showing main menu")
+        
+        print(f"✅ Email extracted and stored: {email}")
+    else:
+        # No valid email found
+        error_msg = t("email_invalid", lang)
+        send_text_with_duplicate_check(cid, error_msg)
+        print(f"❌ No valid email found in: {msg_content}")
+        
+        # Keep pending_intent as "ask_email" so user can try again
+
+def check_trial_booking_time_and_show_menu(cid, contact_id, lang):
+    """Check if enough time has passed since trial booking to show post-trial menu"""
+    conv_attrs = get_conv_attrs(cid)
+    contact_attrs = get_contact_attrs(contact_id)
+    
+    # Check if trial booking is complete
+    if not conv_attrs.get("trial_booking_complete"):
+        return False
+    
+    # Check if trial lesson time has passed
+    trial_booking_time = conv_attrs.get("trial_booking_time")
+    if not trial_booking_time:
+        return False
+    
+    try:
+        # Parse the booking time
+        booking_dt = datetime.fromisoformat(trial_booking_time.replace('Z', '+00:00'))
+        current_dt = datetime.now(TZ)
+        
+        # Calculate time difference
+        time_diff = current_dt - booking_dt
+        hours_passed = time_diff.total_seconds() / 3600
+        
+        print(f"⏰ Trial booking time: {booking_dt}, Current time: {current_dt}, Hours passed: {hours_passed:.1f}")
+        
+        # Only show menu if at least 6 hours have passed
+        if hours_passed >= 6:
+            print(f"✅ 6+ hours passed since trial booking - showing post-trial menu")
+            show_post_trial_menu(cid, contact_id, lang)
+            return True
+        else:
+            print(f"⏳ Only {hours_passed:.1f} hours passed - post-trial menu not ready yet")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Error checking trial booking time: {e}")
+        return False
+
+def show_post_trial_menu(cid, contact_id, lang):
+    """Show menu after trial lesson completion"""
+    print(f"🎯 Showing post-trial menu in {lang}")
+    
+    # Send post-trial message
+    send_text_with_duplicate_check(cid, t("post_trial_message", lang))
+    
+    # Show menu with options
+    menu_title = t("post_trial_menu_title", lang)
+    menu_options = [
+        (t("post_trial_plan_all_lessons", lang), "plan_all_lessons"),
+        (t("post_trial_plan_single_lesson", lang), "plan_single_lesson"),
+        (t("post_trial_main_menu", lang), "go_to_main_menu"),
+        (t("post_trial_handoff", lang), "handoff")
+    ]
+    
+    try:
+        set_conv_attrs(cid, {"pending_intent": "post_trial_action"})
+    except Exception as e:
+        print(f"⚠️ SSL error setting pending_intent: {e}")
+    
+    result = send_input_select_only(cid, menu_title, menu_options)
+    print(f"🎯 Post-trial menu send result: {result}")
+
+def create_payment_request(cid, contact_id, lang):
+    """Create payment request"""
+    conv_attrs = get_conv_attrs(cid)
+    contact_attrs = get_contact_attrs(contact_id)
+    
+    # Generate order ID
+    order_id = f"SPL-{datetime.now().strftime('%Y%m%d')}-{cid:04d}"
+    set_conv_attrs(cid, {"order_id": order_id})
+    
+    # Create payment link
+    payment_link = create_payment_link(
+        contact_attrs.get("segment", "new"),
+        60,  # minutes
+        order_id,
+        cid,
+        conv_attrs.get("learner_name", "Student"),
+        "1on1",
+        contact_attrs.get("school_level", "adult"),
+        conv_attrs.get("program", "none")
+    )
+    
+    # Add payment labels and status
+    add_conv_labels(cid, ["status:awaiting_pay"])
+    set_conv_attrs(cid, {"payment_status": "pending"})
+    if contact_attrs.get("segment") == "weekend":
+        add_conv_labels(cid, ["price_custom"])
+    
+    # Send payment link
+    send_text_with_duplicate_check(cid, t("payment_link", lang, link=payment_link))
+    set_conv_attrs(cid, {"pending_intent": ""})
+
+# Stripe webhook handler
+@app.post("/webhook/payments")
+def stripe_webhook():
+    """Handle Stripe webhook events"""
+    payload = request.get_data()
+    signature = request.headers.get('Stripe-Signature')
+    
+    if not verify_stripe_webhook(payload, signature):
+        return "Unauthorized", 401
+    
+    event = request.get_json()
+    event_type = event.get("type")
+    
+    if event_type == "checkout.session.completed":
+        handle_payment_success(event)
+    elif event_type == "payment_intent.succeeded":
+        handle_payment_success(event)
+    
+    return "OK", 200
+
+def handle_payment_success(event):
+    """Handle successful payment"""
+    # Extract conversation ID from metadata
+    metadata = event.get("data", {}).get("object", {}).get("metadata", {})
+    conversation_id = metadata.get("chatwoot_conversation_id")
+    order_id = metadata.get("order_id")
+    
+    if not conversation_id:
+        return
+    
+    # Get contact ID from conversation
+    conv_url = f"{CW}/api/v1/accounts/{ACC}/conversations/{conversation_id}"
+    headers = {"api_access_token": ADMIN_TOK}
+    
+    try:
+        conv_response = requests.get(conv_url, headers=headers)
+        if conv_response.status_code == 200:
+            conv_data = conv_response.json()
+            contact_id = conv_data.get("contact_inbox", {}).get("contact_id")
+            
+            if contact_id:
+                # Mark contact as having paid for a lesson
+                set_contact_attrs(contact_id, {
+                    "has_paid_lesson": True,
+                    "has_completed_intake": True,
+                    "lesson_booked": True,
+                    "customer_since": datetime.now(TZ).isoformat()
+                })
+    except:
+        pass
+    
+    # Update conversation labels and payment status
+    remove_conv_labels(conversation_id, ["status:awaiting_pay"])
+    add_conv_labels(conversation_id, ["payment:paid", "status:booked"])
+    set_conv_attrs(conversation_id, {"payment_status": "paid"})
+    
+    # Add note with payment details
+    amount = event.get("data", {}).get("object", {}).get("amount_total", 0)
+    currency = event.get("data", {}).get("object", {}).get("currency", "eur")
+    
+    note_text = f"Payment received: {amount/100} {currency.upper()}\nOrder ID: {order_id}"
+    
+    # Add note to conversation
+    url = f"{CW}/api/v1/accounts/{ACC}/conversations/{conversation_id}/notes"
+    headers = {
+        "api_access_token": ADMIN_TOK,
+        "Content-Type": "application/json"
+    }
+    data = {"content": note_text}
+    
+    try:
+        requests.post(url, headers=headers, json=data)
+    except:
+        pass
+
+def handle_faq_request(cid, contact_id, msg_content, lang):
+    """Handle FAQ requests and provide relevant answers"""
+    print(f"📚 FAQ request: '{msg_content}'")
+    
+    # Common FAQ keywords and their corresponding FAQ numbers
+    faq_keywords = {
+        # Main FAQ keywords
+        "inspiratie": 1, "inspiration": 1, "waarom": 1, "why": 1,
+        "aanpak": 2, "approach": 2, "methoden": 2, "methods": 2,
+        "uniek": 3, "unique": 3, "verschil": 3, "difference": 3,
+        "leerstijlen": 4, "learning styles": 4, "niveaus": 4, "levels": 4,
+        "resultaten": 5, "results": 5, "successen": 5, "success": 5,
+        "organisatie": 6, "organization": 6, "online": 6, "fysiek": 6,
+        "kosten": 7, "costs": 7, "prijzen": 7, "prices": 7, "tarieven": 7,
+        "aanmelden": 8, "sign up": 8, "registreren": 8, "register": 8,
+        "betaling": 9, "payment": 9, "factuur": 9, "invoice": 9,
+        "proefles": 10, "trial": 10, "gratis": 10, "free": 10
+    }
+    
+    # Check if the message contains FAQ keywords
+    msg_lower = msg_content.lower()
+    matched_faq = None
+    
+    for keyword, faq_number in faq_keywords.items():
+        if keyword in msg_lower:
+            matched_faq = faq_number
+            break
+    
+    if matched_faq:
+        # Get the FAQ answer
+        answer_key = f"faq_{matched_faq}_answer"
+        answer = t(answer_key, lang)
+        
+        # Send the FAQ answer
+        send_text_with_duplicate_check(cid, answer)
+        return True
+    
+    # If no specific FAQ matched, offer general FAQ help
+    faq_help_msg = t("faq_general_help", lang)
+    send_text_with_duplicate_check(cid, faq_help_msg)
+    return False
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000, debug=True) 

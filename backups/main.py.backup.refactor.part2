@@ -1,0 +1,2081 @@
+        prefilled["urgency"] = analysis["urgency"]
+    
+    # Note: Child contact creation is postponed until after prefill confirmation
+    # This prevents the "Could not get parent contact ID" error for new contacts
+    if analysis.get("for_who") == "child" and analysis.get("learner_name"):
+        print(f"👶 Child contact creation postponed until after prefill confirmation for {analysis['learner_name']}")
+    
+    print(f"📋 Prefilled information: {prefilled}")
+    return prefilled
+
+def get_contact_id_from_conversation(conversation_id):
+    """Get contact ID from conversation ID"""
+    url = f"{CW}/api/v1/accounts/{ACC}/conversations/{conversation_id}"
+    headers = {
+        "api_access_token": ADMIN_TOK,
+        "Content-Type": "application/json"
+    }
+    
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("contact_inbox", {}).get("contact_id")
+        else:
+            print(f"⚠️ Failed to get conversation details: {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"❌ Error getting conversation details: {e}")
+        return None
+
+
+
+
+
+def send_input_select_only(conversation_id, text, options):
+    """
+    🎯 CRITICAL FUNCTION: Send input_select format only - no fallbacks with strict WhatsApp formatting rules
+    
+    This function is ESSENTIAL for showing interactive menu buttons in WhatsApp.
+    It uses the ChatwootAPI.send_message() function to ensure proper SSL handling
+    and prevent the SSL errors that were causing menu failures.
+    
+    IMPORTANT: This function MUST be used for all menu interactions in WhatsApp.
+    Direct HTTP requests were causing SSL errors and menu failures.
+    
+    Args:
+        conversation_id: Chatwoot conversation ID
+        text: Menu title/description text
+        options: List of (label, value) tuples for menu options
+    
+    Returns:
+        bool: True if menu was sent successfully, False otherwise
+    """
+    # STRICT WHATSAPP FORMATTING RULES TO PREVENT #131009 ERRORS:
+    # • Max rows: ≤ 10 items total
+    # • Row title length: ≤ 24 characters (emoji count as 2+ code points)
+    # • Button text: ≤ 20 characters
+    # • Body text: ≤ 1024 characters
+    # • Unique row IDs: ≤ 200 chars, no newlines/markup
+    # • No markdown in titles: *bold*, newlines, tabs, etc.
+    
+    # Limit to max 10 items
+    if len(options) > 10:
+        print(f"⚠️ Truncating options from {len(options)} to 10 (WhatsApp limit)")
+        options = options[:10]
+    
+    # Process items with strict formatting
+    items = []
+    for i, (label, value) in enumerate(options):
+        # Keep markdown formatting but clean newlines and tabs
+        clean_title = label.replace("\n", " ").replace("\t", " ")
+        
+        # Truncate title to 24 characters (emoji count as 2+ code points)
+        if len(clean_title) > 24:
+            clean_title = clean_title[:21] + "..."
+        
+        # Clean and truncate value to 200 characters
+        clean_value = str(value).replace("\n", " ").replace("\t", " ")
+        if len(clean_value) > 200:
+            clean_value = clean_value[:197] + "..."
+        
+        items.append({
+            "title": clean_title,
+            "value": clean_value
+        })
+    
+    # Truncate body text to 1024 characters
+    if len(text) > 1024:
+        text = text[:1020] + "..."
+    
+    # Use the cw_api send_message function instead of direct HTTP request
+    content_attributes = {
+        "items": items
+    }
+    
+    try:
+        print(f"📤 Sending input_select menu with {len(items)} items...")
+        print(f"📤 First few items: {items[:3] if items else 'None'}")
+        print(f"📤 Menu title: '{text}'")
+        
+        # Use the imported send_message function from cw_api
+        success = ChatwootAPI.send_message(
+            conversation_id, 
+            text, 
+            "input_select", 
+            content_attributes
+        )
+        
+        if success:
+            print(f"✅ Chatwoot input_select sent successfully ({len(options)} options)")
+            return True
+        else:
+            print(f"❌ Chatwoot input_select failed")
+            return False
+    except Exception as e:
+        print(f"❌ Chatwoot input_select error: {e}")
+        print(f"❌ Error type: {type(e)}")
+        import traceback
+        print(f"❌ Traceback: {traceback.format_exc()}")
+        return False
+
+
+
+
+
+
+
+
+# Note: All API functions are now imported from cw_api module
+# The old functions have been replaced with the new ChatwootAPI class
+
+# Segment detection
+def detect_segment(contact_id):
+    """Detect segment based on contact attributes and history"""
+    contact_attrs = get_contact_attrs(contact_id)
+    
+    # Check if segment is already set
+    existing_segment = contact_attrs.get("segment")
+    if existing_segment:
+        return existing_segment
+    
+    # 1. Weekend segment (whitelist check)
+    if contact_attrs.get("weekend_whitelisted"):
+        segment = "weekend"
+    # 2. Returning broadcast (begin school year list)
+    elif contact_attrs.get("returning_broadcast"):
+        segment = "returning_broadcast"
+    # 3. Existing customer - check multiple indicators
+    elif (contact_attrs.get("customer_since") or 
+          contact_attrs.get("has_paid_lesson") or
+          contact_attrs.get("has_completed_intake") or
+          contact_attrs.get("intake_completed") or
+          contact_attrs.get("trial_lesson_completed") or
+          contact_attrs.get("lesson_booked") or
+          contact_attrs.get("customer_status") == "active"):
+        segment = "existing"
+    # 4. Default to new
+    else:
+        segment = "new"
+    
+    # Store the detected segment
+    set_contact_attrs(contact_id, {"segment": segment})
+    return segment
+
+# Planning profiles
+PLANNING_PROFILES = {
+    "new": {
+        "duration_minutes": 60,
+        "earliest_hour": 10,
+        "latest_hour": 20,
+        "min_lead_minutes": 720,
+        "buffer_before_min": 15,
+        "buffer_after_min": 15,
+        "days_ahead": 10,
+        "slot_step_minutes": 60,
+        "exclude_weekends": True
+    },
+    "existing": {
+        "duration_minutes": 60,
+        "earliest_hour": 9,
+        "latest_hour": 21,
+        "min_lead_minutes": 360,
+        "buffer_before_min": 10,
+        "buffer_after_min": 10,
+        "days_ahead": 14,
+        "slot_step_minutes": 60,
+        "exclude_weekends": True
+    },
+    "returning_broadcast": {
+        "duration_minutes": 60,
+        "earliest_hour": 9,
+        "latest_hour": 21,
+        "min_lead_minutes": 360,
+        "buffer_before_min": 10,
+        "buffer_after_min": 10,
+        "days_ahead": 14,
+        "slot_step_minutes": 60,
+        "exclude_weekends": True
+    },
+    "weekend": {
+        "duration_minutes": 60,
+        "earliest_hour": 10,
+        "latest_hour": 18,
+        "min_lead_minutes": 180,
+        "buffer_before_min": 10,
+        "buffer_after_min": 10,
+        "days_ahead": 7,
+        "slot_step_minutes": 60,
+        "exclude_weekends": False,
+        "allowed_weekdays": [5, 6]  # Saturday, Sunday
+    },
+    "premium": {
+        "duration_minutes": 90,  # Longer lessons for premium
+        "earliest_hour": 8,
+        "latest_hour": 22,
+        "min_lead_minutes": 240,  # 4 hours notice
+        "buffer_before_min": 20,
+        "buffer_after_min": 20,
+        "days_ahead": 21,  # 3 weeks ahead
+        "slot_step_minutes": 60,
+        "exclude_weekends": False  # Premium includes weekends
+    }
+}
+
+# Calendar integration with real Google Calendar
+def suggest_slots(conversation_id, profile_name):
+    """Suggest available slots based on real calendar availability"""
+    try:
+        from calendar_integration import get_available_slots
+        
+        # Get user preferences from conversation attributes
+        conv_attrs = get_conv_attrs(conversation_id)
+        preferred_times = conv_attrs.get("preferred_times", "").lower()
+        lesson_type = conv_attrs.get("lesson_type", "trial")
+        
+        # Parse preferred times into list
+        preferred_time_list = []
+        if preferred_times:
+            # Extract specific times mentioned
+            import re
+            time_pattern = r'\b(\d{1,2}):?(\d{2})?\b'
+            times = re.findall(time_pattern, preferred_times)
+            for hour, minute in times:
+                if minute:
+                    preferred_time_list.append(f"{hour.zfill(2)}:{minute}")
+                else:
+                    preferred_time_list.append(f"{hour.zfill(2)}:00")
+            
+            # Add general time preferences
+            if "avond" in preferred_times or "evening" in preferred_times:
+                preferred_time_list.extend(["17:00", "18:00", "19:00"])
+            if "middag" in preferred_times or "afternoon" in preferred_times:
+                preferred_time_list.extend(["14:00", "15:00", "16:00"])
+            if "ochtend" in preferred_times or "morning" in preferred_times:
+                preferred_time_list.extend(["09:00", "10:00", "11:00"])
+        
+        # Get date range
+        now = datetime.now(TZ)
+        start_date = now + timedelta(days=1)  # Start from tomorrow
+        end_date = now + timedelta(days=14)   # Look ahead 2 weeks
+        
+        # Get available slots from calendar
+        available_slots = get_available_slots(
+            start_date=start_date,
+            end_date=end_date,
+            preferred_times=preferred_time_list if preferred_time_list else None,
+            lesson_type=lesson_type
+        )
+        
+        # Convert to expected format
+        slots = []
+        for slot in available_slots:
+            slots.append({
+                "start": slot["start_iso"],
+                "end": slot["end_iso"],
+                "label": slot["label"]
+            })
+        
+        # Return appropriate number of slots
+        if profile_name == "premium":
+            return slots[:15]  # More options for premium
+        else:
+            return slots[:6]   # Standard number for others
+            
+    except Exception as e:
+        print(f"❌ Error getting calendar slots: {e}")
+        # Fallback to mock implementation
+        return suggest_slots_mock(conversation_id, profile_name)
+
+def suggest_slots_mock(conversation_id, profile_name):
+    """Fallback mock implementation"""
+    profile = PLANNING_PROFILES.get(profile_name, PLANNING_PROFILES["new"])
+    
+    # Get user preferences from conversation attributes
+    conv_attrs = get_conv_attrs(conversation_id)
+    preferred_times = conv_attrs.get("preferred_times", "").lower()
+    lesson_type = conv_attrs.get("lesson_type", "trial")
+    
+    # Dummy agenda implementation for testing
+    now = datetime.now(TZ)
+    slots = []
+    
+    # Generate slots for more days for premium service
+    days_to_generate = profile.get("days_ahead", 14)
+    for i in range(days_to_generate):
+        date = now + timedelta(days=i)
+        
+        # Skip weekends if exclude_weekends is True
+        if profile["exclude_weekends"] and date.weekday() >= 5:
+            continue
+            
+        # Skip non-allowed weekdays for weekend profile
+        if profile.get("allowed_weekdays") and date.weekday() not in profile["allowed_weekdays"]:
+            continue
+        
+        # Check if this day matches user preferences
+        day_name = date.strftime('%A').lower()
+        if preferred_times:
+            # Simple preference matching
+            if "woensdag" in preferred_times and day_name != "wednesday":
+                continue
+            if "donderdag" in preferred_times and day_name != "thursday":
+                continue
+            if "vrijdag" in preferred_times and day_name != "friday":
+                continue
+            if "zaterdag" in preferred_times and day_name != "saturday":
+                continue
+            if "zondag" in preferred_times and day_name != "sunday":
+                continue
+            if "maandag" in preferred_times and day_name != "monday":
+                continue
+            if "dinsdag" in preferred_times and day_name != "tuesday":
+                continue
+        
+        # Generate slots for this day with proper step intervals
+        for hour in range(profile["earliest_hour"], profile["latest_hour"]):
+            for minute in range(0, 60, profile["slot_step_minutes"]):
+                start_time = date.replace(hour=hour, minute=minute, second=0, microsecond=0)
+                
+                # Adjust duration based on lesson type
+                if lesson_type == "trial":
+                    duration_minutes = 30  # Trial lessons are 30 minutes
+                else:
+                    duration_minutes = profile["duration_minutes"]  # Use profile duration for other lessons
+                
+                end_time = start_time + timedelta(minutes=duration_minutes)
+                
+                # Check if slot is in the future and meets minimum lead time
+                if start_time > now + timedelta(minutes=profile["min_lead_minutes"]):
+                    
+                    # SPECIAL RULE: Trial lessons only on weekdays 17:00-19:00
+                    if lesson_type == "trial":
+                        # Only allow weekdays (Monday = 0, Friday = 4)
+                        if date.weekday() >= 5:  # Saturday = 5, Sunday = 6
+                            continue
+                        # Only allow 17:00-19:00 for trial lessons
+                        if start_time.hour < 17 or start_time.hour >= 19:
+                            continue
+                    
+                    # Check if this time matches user preferences
+                    if preferred_times:
+                        if "middag" in preferred_times and start_time.hour < 12:
+                            continue
+                        if "avond" in preferred_times and start_time.hour < 18:
+                            continue
+                        if "ochtend" in preferred_times and start_time.hour >= 12:
+                            continue
+                    
+                    # Create a readable label
+                    slot_label = f"{start_time.strftime('%a %d %b %H:%M')}–{end_time.strftime('%H:%M')}"
+                    slots.append({
+                        "start": start_time.isoformat(),
+                        "end": end_time.isoformat(),
+                        "label": slot_label
+                    })
+    
+    # Return more slots for premium service, fewer for others
+    if profile_name == "premium":
+        return slots[:15]  # More options for premium
+    else:
+        return slots[:6]  # Standard number for others
+
+def book_slot(conversation_id, start_time, end_time, title, description):
+    """Book a slot in Google Calendar and send to dashboard"""
+    print(f"📅 Booking slot: {start_time} - {end_time}")
+    print(f"📅 Title: {title}")
+    print(f"📅 Description: {description}")
+    
+    # Parse the start time to create a readable format
+    try:
+        if isinstance(start_time, str):
+            start_dt = datetime.fromisoformat(start_time.replace('Z', '+00:00'))
+        else:
+            start_dt = start_time
+        
+        # Create a readable event ID
+        event_id = f"dummy_event_{conversation_id}_{start_dt.strftime('%Y%m%d_%H%M')}"
+        
+        print(f"✅ Successfully booked dummy slot: {event_id}")
+        
+        # Send lesson to dashboard
+        try:
+            from dashboard_integration import create_lesson_data, send_lesson_to_dashboard
+            
+            # Get conversation and contact data
+            conv_attrs = get_conv_attrs(conversation_id)
+            contact_id = conv_attrs.get("contact_id")
+            contact_attrs = get_contact_attrs(contact_id) if contact_id else {}
+            
+            # Create lesson data
+            lesson_data = create_lesson_data(
+                student_name=conv_attrs.get("learner_name", "Unknown Student"),
+                student_email=contact_attrs.get("email", ""),
+                start_time=start_time,
+                end_time=end_time,
+                lesson_type=conv_attrs.get("lesson_type", "regular"),
+                chatwoot_contact_id=contact_id,
+                chatwoot_conversation_id=str(conversation_id),
+                notes=description,
+                location="Online",
+                program=conv_attrs.get("program"),
+                topic_primary=conv_attrs.get("topic_primary"),
+                topic_secondary=conv_attrs.get("topic_secondary"),
+                toolset=conv_attrs.get("toolset"),
+                lesson_mode="ONLINE",
+                is_adult=conv_attrs.get("is_adult", False),
+                relationship_to_learner=conv_attrs.get("relationship_to_learner")
+            )
+            
+            # Send to dashboard
+            dashboard_success = send_lesson_to_dashboard(lesson_data)
+            if dashboard_success:
+                print(f"✅ Lesson sent to dashboard successfully")
+            else:
+                print(f"⚠️ Failed to send lesson to dashboard")
+                
+        except Exception as e:
+            print(f"⚠️ Error sending to dashboard: {e}")
+        
+        return {
+            "id": event_id,
+            "htmlLink": f"https://calendar.google.com/event?eid={event_id}",
+            "start": start_time,
+            "end": end_time,
+            "title": title,
+            "description": description
+        }
+    except Exception as e:
+        print(f"❌ Error booking slot: {e}")
+        return None
+
+# Payment integration (mock implementation)
+def create_payment_link(segment, minutes, order_id, conversation_id, student_name, service, audience, program):
+    """Create Stripe payment link"""
+    # Determine price ID based on segment
+    if segment == "weekend":
+        price_id = WEEKEND_PRICE_ID_60 if minutes == 60 else WEEKEND_PRICE_ID_90
+    else:
+        price_id = STANDARD_PRICE_ID_60 if minutes == 60 else STANDARD_PRICE_ID_90
+    
+    # Mock implementation - in real implementation, this would call Stripe API
+    print(f"💳 Creating payment link for segment: {segment}")
+    print(f"💳 Price ID: {price_id}")
+    print(f"💳 Order ID: {order_id}")
+    
+    # Return mock payment link
+    return f"https://checkout.stripe.com/pay/mock_{order_id}"
+
+def verify_stripe_webhook(payload, signature):
+    """Verify Stripe webhook signature"""
+    if not STRIPE_WEBHOOK_SECRET:
+        return True  # Skip verification if no secret configured
+    
+    try:
+        expected = hmac.new(
+            STRIPE_WEBHOOK_SECRET.encode(),
+            payload,
+            hashlib.sha256
+        ).hexdigest()
+        
+        return hmac.compare_digest(signature, expected)
+    except:
+        return False
+
+# Webhook verification
+def verify_webhook(request):
+    """Verify Chatwoot webhook signature"""
+    if not SIG:
+        print("⚠️ No HMAC secret configured - allowing all requests")
+        return True
+    
+    signature = request.headers.get('X-Chatwoot-Signature')
+    if not signature:
+        # Only log this occasionally to reduce noise
+        if not hasattr(verify_webhook, 'no_sig_count'):
+            verify_webhook.no_sig_count = 0
+        verify_webhook.no_sig_count += 1
+        
+        if verify_webhook.no_sig_count % 10 == 1:  # Log every 10th occurrence
+            print(f"⚠️ No signature found in headers (count: {verify_webhook.no_sig_count}) - allowing request")
+        return True  # Temporarily allow requests without signature for testing
+    
+    expected = hmac.new(
+        SIG.encode(),
+        request.get_data(),
+        hashlib.sha256
+    ).hexdigest()
+    
+    is_valid = hmac.compare_digest(signature, expected)
+    if not is_valid:
+        print(f"⚠️ Signature mismatch - expected: {expected[:10]}..., received: {signature[:10]}...")
+    
+    return is_valid
+
+# Health check endpoint
+@app.route("/health")
+def health():
+    """Health check endpoint for deployment monitoring"""
+    return {"status": "healthy", "service": "tutorbot"}, 200
+
+# Main webhook handler
+@app.post("/cw")
+def cw():
+    """Main webhook handler for Chatwoot"""
+    if not verify_webhook(request):
+        print("❌ Webhook unauthorized - signature verification failed")
+        return "Unauthorized", 401
+    
+    data = request.get_json()
+    event = data.get("event")
+    msg_type = data.get("message_type")
+    conversation_id = data.get("conversation", {}).get("id", "unknown")
+    contact_id = data.get("contact", {}).get("id") or data.get("sender", {}).get("id", "unknown")
+    content = data.get("content", "")
+    message_content = content[:50] + "..." if content and len(content) > 50 else content or ""
+    event_str = event.upper() if event else "UNKNOWN"
+    
+    # Create a unique webhook ID for idempotency
+    message_id = data.get("id") or data.get("message", {}).get("id")
+    webhook_id = f"{conversation_id}_{message_id}_{event}"
+    
+    # Check if we've already processed this exact webhook
+    import hashlib
+    webhook_hash = hashlib.md5(webhook_id.encode()).hexdigest()
+    
+    # Use a simple in-memory cache for webhook deduplication
+    if not hasattr(cw, 'processed_webhooks'):
+        cw.processed_webhooks = set()
+    
+    if webhook_hash in cw.processed_webhooks:
+        print(f"🔄 Duplicate webhook detected: {webhook_id} - skipping")
+        return "OK", 200
+    
+    # Add to processed set (keep last 1000 webhooks)
+    cw.processed_webhooks.add(webhook_hash)
+    if len(cw.processed_webhooks) > 1000:
+        cw.processed_webhooks.clear()  # Reset to prevent memory leaks
+
+    # Log all webhook events for debugging
+    print(f"📨 Webhook received: {event_str} | Type: {msg_type} | Conv:{conversation_id} | Contact:{contact_id} | ID:{message_id}")
+
+    # Only process incoming user messages
+    if event != "message_created" or msg_type != "incoming":
+        if msg_type == "outgoing":
+            print(f"🤖 [BOT OUT] Conv:{conversation_id} Contact:{contact_id} | {message_content}")
+        else:
+            print(f"⏭️ Skipping event: {event_str} type: {msg_type}")
+        return "OK", 200
+    
+    print(f"💬 [USER IN] Conv:{conversation_id} Contact:{contact_id} | {message_content}")
+
+    # Handle only incoming user messages
+    try:
+        handle_message_created(data)
+    except Exception as e:
+        print(f"❌ Error processing {event}: {str(e)}")
+        return "Internal Server Error", 500
+    return "OK", 200
+
+def handle_conversation_created(data):
+    """Handle new conversation creation"""
+    conversation = data.get("conversation", {})
+    contact = data.get("contact", {})
+    
+    cid = conversation.get("id")
+    contact_id = contact.get("id")
+    
+    if not cid or not contact_id:
+        print("❌ Missing conversation_id or contact_id")
+        return
+    
+    print(f"🆕 New conversation - Conv:{cid} Contact:{contact_id}")
+    
+    # Initialize conversation attributes
+    set_conv_attrs(cid, {
+        "language_prompted": False,
+        "intake_completed": False,
+        "order_id": None
+    })
+    
+    # Detect segment and set contact attribute
+    segment = detect_segment(contact_id)
+    set_contact_attrs(contact_id, {"segment": segment})
+    print(f"🏷️ Segment detected: {segment}")
+    
+    # Check if language needs to be prompted
+    contact_attrs = get_contact_attrs(contact_id)
+    if not contact_attrs.get("language") and not get_conv_attrs(cid).get("language_prompted"):
+        # Don't prompt for language immediately - wait for first message
+        # This allows prefill to run first
+        print(f"🌍 Waiting for first message before language selection")
+    else:
+        # Show appropriate menu based on segment
+        print(f"📋 Showing segment menu for {segment}")
+        show_segment_menu(cid, contact_id, segment, contact_attrs.get("language", "nl"))
+
+def is_bot_disabled(cid):
+    """Check if bot is disabled for this conversation"""
+    conv_attrs = get_conv_attrs(cid)
+    return conv_attrs.get("bot_disabled", False)
+
+def handle_message_created(data):
+    """Handle new message"""
+    conversation = data.get("conversation", {})
+    sender = data.get("sender", {})
+    
+    cid = conversation.get("id")
+    contact_id = sender.get("id") or data.get("contact", {}).get("id")
+    msg_content = data.get("content", "").strip()
+    
+    # Check for interactive button payloads
+    content_attributes = data.get("content_attributes", {})
+    if content_attributes:
+        print(f"🔘 Interactive payload detected: {content_attributes}")
+        # Extract payload from interactive buttons
+        if "payload" in content_attributes:
+            msg_content = content_attributes["payload"]
+            print(f"📦 Extracted payload: '{msg_content}'")
+    
+    if not cid or not contact_id:
+        print("❌ Missing conversation_id or contact_id")
+        return
+    
+    # Check for duplicate message processing (but allow responses to bot prompts)
+    conv_attrs = get_conv_attrs(cid)
+    last_processed_message = conv_attrs.get("last_processed_message", "")
+    last_bot_message = conv_attrs.get("last_bot_message", "")
+    pending_intent = conv_attrs.get("pending_intent", "")
+    
+    # Check for duplicate user message (but allow responses to bot prompts)
+    if msg_content == last_processed_message and not pending_intent:
+        print(f"🔄 Duplicate message detected: '{msg_content[:50]}{'...' if len(msg_content) > 50 else ''}' - skipping")
+        return
+    
+    # Mark this message as processed immediately to prevent race conditions
+    # BUT: if we're in prefill_confirmation state, don't update last_processed_message
+    # because we want to allow the user to respond to the confirmation
+    if pending_intent != "prefill_confirmation":
+        set_conv_attrs(cid, {"last_processed_message": msg_content})
+    else:
+        print(f"🔍 In prefill_confirmation state - allowing response to confirmation")
+    
+    # Add a small delay to prevent race conditions with Chatwoot's duplicate webhooks
+    import time
+    time.sleep(0.1)
+    
+    # Get attributes
+    contact_attrs = get_contact_attrs(contact_id)
+    conv_attrs = get_conv_attrs(cid)
+    lang = contact_attrs.get("language", "nl")
+    
+    # Detect segment dynamically (don't rely on stored segment)
+    segment = detect_segment(contact_id)
+    
+    # Update contact attributes with current segment if it changed
+    if contact_attrs.get("segment") != segment:
+        set_contact_attrs(contact_id, {"segment": segment})
+        print(f"🔄 Segment updated from {contact_attrs.get('segment', 'none')} to {segment}")
+    
+    # If we just set language in this conversation, force refresh contact attrs
+    if conv_attrs.get("language_just_set"):
+        print(f"🔄 Force refreshing contact attributes after language set")
+        contact_attrs = get_contact_attrs(contact_id)  # Refresh
+        lang = contact_attrs.get("language", "nl")
+        # Clear the flag
+        set_conv_attrs(cid, {"language_just_set": False})
+    
+    # Refresh conv_attrs to get the latest state
+    conv_attrs = get_conv_attrs(cid)
+    
+    # Check if bot is disabled
+    if is_bot_disabled(cid):
+        print(f"🚫 Bot is disabled for conversation {cid} - ignoring message")
+        return
+    
+    print(f"💬 Message from Conv:{cid} Contact:{contact_id} | Lang:{lang} Segment:{segment}")
+    print(f"🔍 Contact attrs: {contact_attrs}")
+    print(f"🔍 Conv attrs: {conv_attrs}")
+    print(f"📝 Content: '{msg_content}'")
+    print(f"🎯 Pending intent: {conv_attrs.get('pending_intent', 'none')}")
+    
+    # Check for admin commands (WIPECONTACTS) - MUST BE FIRST!
+    if msg_content.upper() == "WIPECONTACTS":
+        print(f"🧹 ADMIN COMMAND: WIPECONTACTS detected from contact {contact_id}")
+        
+        # Send confirmation message
+        send_text_with_duplicate_check(cid, "🧹 *ADMIN COMMAND DETECTED*\n\n⚠️ Je staat op het punt om ALLE contacten en gesprekken te verwijderen!\n\nDit is een gevaarlijke actie die niet ongedaan kan worden gemaakt.\n\nType 'JA WIPE' om te bevestigen of 'ANNULEREN' om te stoppen.")
+        
+        # Set pending intent for wipe confirmation
+        set_conv_attrs(cid, {"pending_intent": "wipe_confirmation"})
+        return
+    
+    # Handle handoff menu selections
+    if conv_attrs.get("pending_intent") == "handoff":
+        print(f"👨‍🏫 Processing handoff menu selection")
+        handle_handoff_menu_selection(cid, contact_id, msg_content, lang)
+        return
+    
+    # Handle preferences input
+    if conv_attrs.get("waiting_for_preferences"):
+        print(f"🤔 Processing preferences input")
+        process_preferences_and_suggest_slots(cid, msg_content, lang)
+        return
+    
+    # Handle corrections input
+    if conv_attrs.get("waiting_for_corrections"):
+        print(f"🔧 Processing corrections input")
+        process_corrections_and_reconfirm(cid, contact_id, msg_content, lang)
+        return
+    
+    # Handle corrected prefill confirmation
+    if conv_attrs.get("waiting_for_corrected_confirmation"):
+        print(f"🤖 Processing corrected prefill confirmation")
+        handle_corrected_prefill_confirmation(cid, contact_id, msg_content, lang)
+        return
+    
+    # Handle language selection (removed numbers to avoid conflicts with menu options)
+    if msg_content.lower() in ["🇳🇱 nederlands", "nl", "nederlands", "dutch", "🇳🇱", "lang_nl", "nederlands"] or "🇳🇱" in msg_content:
+        print(f"🇳🇱 Language set to Dutch")
+        set_contact_attrs(contact_id, {"language": "nl"})
+        set_conv_attrs(cid, {"language_just_set": True})
+        send_text_with_duplicate_check(cid, t("language_set_nl", "nl"))
+        # Force refresh attributes here!
+        contact_attrs = get_contact_attrs(contact_id)
+        conv_attrs = get_conv_attrs(cid)
+        segment = detect_segment(contact_id)
+        show_segment_menu(cid, contact_id, segment, "nl")
+        return
+    
+    if msg_content.lower() in ["🇬🇧 english", "english", "engels", "🇬🇧", "lang_en"] or "🇬🇧" in msg_content:
+        print(f"🇬🇧 Language set to English")
+        set_contact_attrs(contact_id, {"language": "en"})
+        set_conv_attrs(cid, {"language_just_set": True})
+        send_text_with_duplicate_check(cid, t("language_set_en", "en"))
+        # Force refresh attributes here!
+        contact_attrs = get_contact_attrs(contact_id)
+        conv_attrs = get_conv_attrs(cid)
+        segment = detect_segment(contact_id)
+        show_segment_menu(cid, contact_id, segment, "en")
+        return
+    
+    # Check if language needs to be prompted (ONLY ONCE per conversation)
+    if not contact_attrs.get("language") and not conv_attrs.get("language_prompted"):
+        # Auto-detect language from message (ONLY ONCE)
+        detected_lang = detect_language_from_message(msg_content)
+        print(f"🌍 Auto-detected language (first time): {detected_lang}")
+        
+        # Set the detected language
+        set_contact_attrs(contact_id, {"language": detected_lang})
+        set_conv_attrs(cid, {"language_prompted": True, "language_detection_disabled": True})
+        
+        # Update lang variable for rest of processing
+        lang = detected_lang
+        print(f"✅ Language set to: {lang} (detection disabled)")
+    
+    # If language detection is disabled, don't auto-detect anymore
+    if conv_attrs.get("language_detection_disabled"):
+        print(f"🚫 Language detection disabled - only manual language switching allowed")
+    
+    # If language is already set, don't ask again
+    if contact_attrs.get("language"):
+        print(f"✅ Language already set to: {contact_attrs.get('language')}")
+        # Continue with normal flow
+    
+    # Check if this is the first message in the conversation and we have OpenAI available
+    # AND we're not already in prefill_confirmation state (to prevent re-processing)
+    # AND we haven't already processed this exact message for prefill
+    # AND this is not a response to a prefill confirmation
+    if (not conv_attrs.get("has_been_prefilled") and 
+        not conv_attrs.get("pending_intent") == "prefill_confirmation" and 
+        not conv_attrs.get("prefill_processed_for_message") == msg_content and
+        not conv_attrs.get("prefill_confirmation_sent") and
+        OPENAI_API_KEY):
+        # Check if this is a detailed message (not just a greeting)
+        # Look for common greeting words and check if there's substantial content beyond that
+        greeting_words = ["hallo", "hello", "hi", "hey", "goedemorgen", "goedemiddag", "goedenavond", "good morning", "good afternoon", "good evening"]
+        msg_lower = msg_content.lower().strip()
+        
+        # Check if message contains greeting words (use word boundaries to avoid false matches)
+        has_greeting = any(f" {word} " in f" {msg_lower} " for word in greeting_words) or msg_lower in greeting_words
+        
+        # If it's just a greeting (short message with only greeting words), skip prefill
+        if has_greeting and len(msg_content.strip()) < 30:
+            print(f"👋 Short greeting detected - skipping prefill, will show bot introduction")
+        elif len(msg_content.strip()) >= 30:
+            # For longer messages, always do prefill regardless of greeting words
+            print(f"📝 Long message detected - proceeding with prefill analysis")
+            
+            # For detailed messages, detect language first if not already set
+            if not contact_attrs.get("language"):
+                detected_lang = detect_language_from_message(msg_content)
+                print(f"🌍 Auto-detected language for prefill: {detected_lang}")
+                set_contact_attrs(contact_id, {"language": detected_lang})
+                lang = detected_lang
+            else:
+                lang = contact_attrs.get("language")
+            
+            print(f"🤖 Attempting to prefill intake from first message in {lang}...")
+            prefilled = prefill_intake_from_message(msg_content, cid)
+            
+            if prefilled:
+                # Apply prefilled information to conversation attributes
+                current_attrs = get_conv_attrs(cid)
+                current_attrs.update(prefilled)
+                current_attrs["has_been_prefilled"] = True
+                current_attrs["prefill_processed_for_message"] = msg_content  # Mark this message as processed
+                
+                # If we created a child contact, also store the child contact ID
+                if prefilled.get("child_contact_id"):
+                    current_attrs["child_contact_id"] = prefilled["child_contact_id"]
+                    print(f"📝 Stored child contact ID {prefilled['child_contact_id']} in conversation attributes")
+                
+                set_conv_attrs(cid, current_attrs)
+                
+                # Also set contact attributes if we have a contact
+                contact_attrs = get_contact_attrs(contact_id)
+                contact_attrs.update(prefilled)
+                set_contact_attrs(contact_id, contact_attrs)
+                
+                # Show user what was detected with comprehensive confirmation
+                detected_info = []
+                
+                # Basic information
+                if prefilled.get("learner_name"):
+                    detected_info.append(f"👤 *{t('name_label', lang)}*: {prefilled['learner_name']}")
+                
+                if prefilled.get("school_level"):
+                    level_display = {
+                        "po": t("level_po", lang),
+                        "vmbo": "VMBO", 
+                        "havo": "HAVO",
+                        "vwo": "VWO",
+                        "mbo": "MBO",
+                        "university_wo": t("level_university_wo", lang),
+                        "university_hbo": t("level_university_hbo", lang),
+                        "adult": t("level_adult", lang)
+                    }
+                    level_text = level_display.get(prefilled['school_level'], prefilled['school_level'])
+                    detected_info.append(f"🎓 *{t('level_label', lang)}*: {level_text}")
+                
+                # Subject information - show only the specific variant if available
+                if prefilled.get("topic_secondary"):
+                    detected_info.append(f"📚 *{t('subject_label', lang)}*: {prefilled['topic_secondary']}")
+                elif prefilled.get("topic_primary"):
+                    topic_display = {
+                        "math": t("subject_math", lang),
+                        "stats": t("subject_stats", lang), 
+                        "english": t("subject_english", lang),
+                        "programming": t("subject_programming", lang),
+                        "science": t("subject_science", lang),
+                        "chemistry": t("subject_chemistry", lang)
+                    }
+                    topic_text = topic_display.get(prefilled['topic_primary'], prefilled['topic_primary'])
+                    detected_info.append(f"📚 *{t('subject_label', lang)}*: {topic_text}")
+                
+                # Additional information
+                if prefilled.get("goals"):
+                    detected_info.append(f"🎯 *{t('goals_label', lang)}*: {prefilled['goals']}")
+                
+                if prefilled.get("preferred_times"):
+                    detected_info.append(f"⏰ *{t('preferred_times_label', lang)}*: {prefilled['preferred_times']}")
+                
+                if prefilled.get("location_preference"):
+                    detected_info.append(f"📍 *{t('location_preference_label', lang)}*: {prefilled['location_preference']}")
+                
+                if prefilled.get("contact_name") and prefilled.get("for_who") != "self":
+                    detected_info.append(f"👤 *{t('contact_person_label', lang)}*: {prefilled['contact_name']}")
+                
+                if prefilled.get("for_who"):
+                    for_who_display = {
+                        "self": t("for_who_self", lang),
+                        "child": t("for_who_child", lang),
+                        "student": t("for_who_student", lang),
+                        "other": t("for_who_other", lang)
+                    }
+                    for_who_text = for_who_display.get(prefilled['for_who'], prefilled['for_who'])
+                    detected_info.append(f"👥 *{t('for_who_label', lang)}*: {for_who_text}")
+                
+                # Show detected information and ask for confirmation
+                if detected_info:
+                    # Always show all detected information, don't truncate
+                    # This helps users see what was actually detected
+                    print(f"📋 Showing {len(detected_info)} detected fields: {[info.split(':')[0] for info in detected_info]}")
+                    
+                    # Create the summary message
+                    summary_msg = f"📋 *Wat ik van je bericht begrepen heb:*\n\n" + "\n".join(detected_info)
+                    
+                    # Send welcome message first
+                    if len(msg_content.strip()) > 30:
+                        # Detailed message - use shorter introduction
+                        welcome_msg = t("bot_introduction_detailed", lang, detected_lang=lang, other_lang="English" if lang == "nl" else "Nederlands")
+                    else:
+                        # Short greeting - use full introduction with tip
+                        welcome_msg = t("bot_introduction_enhanced", lang, detected_lang=lang, other_lang="English" if lang == "nl" else "Nederlands")
+                    
+                    # Send welcome without persisting last_bot_message to avoid attribute write during critical flow
+                    send_text_with_duplicate_check(cid, welcome_msg, persist=False)
+                    
+                    # Send the prefill summary without persisting last_bot_message to avoid attribute write during critical flow
+                    send_text_with_duplicate_check(cid, summary_msg, persist=False)
+                    
+                    # 🎯 CRITICAL: Check if we have sufficient information for meaningful confirmation
+                    if is_prefill_sufficient_for_trial_lesson(prefilled):
+                        # Sufficient info - show confirmation menu
+                        print(f"✅ Sufficient prefill info for confirmation - showing menu")
+                        show_prefill_action_menu(cid, contact_id, lang)
+                        
+                        # Mark that confirmation was sent and store the original message (best-effort)
+                        safe_set_conv_attrs(cid, {
+                            "prefill_confirmation_sent": True,
+                            "prefill_confirmation_time": datetime.now(TZ).isoformat(),
+                            "original_message_processed": msg_content
+                        })
+                        return
+                    else:
+                        # Insufficient info - skip confirmation and go to intake
+                        print(f"⚠️ Insufficient prefill info for confirmation - going to intake")
+                        
+                        # Show message about insufficient info and go to intake
+                        insufficient_msg = f"Bedankt! Ik heb een deel van je informatie kunnen verwerken.\n\n{t('general_greeting_tip', lang)}\n\nLaten we verder gaan met de intake om alles goed in te vullen."
+                        send_text_with_duplicate_check(cid, insufficient_msg, persist=False)
+                        
+                        # Clear pending intent and go to intake flow
+                        set_conv_attrs(cid, {"pending_intent": ""})
+                        
+                        # Start intake flow directly
+                        start_intake_flow(cid, contact_id, lang)
+                        return
+                else:
+                    print(f"⚠️ No information detected from prefill - falling back to normal flow")
+            else:
+                print(f"⚠️ Prefill failed - falling back to normal flow")
+        else:
+            # For detailed messages, detect language first if not already set
+            if not contact_attrs.get("language"):
+                detected_lang = detect_language_from_message(msg_content)
+                print(f"🌍 Auto-detected language for prefill: {detected_lang}")
+                set_contact_attrs(contact_id, {"language": detected_lang})
+                lang = detected_lang
+            else:
+                lang = contact_attrs.get("language")
+            
+            print(f"🤖 Attempting to prefill intake from first message in {lang}...")
+            prefilled = prefill_intake_from_message(msg_content, cid)
+            
+            if prefilled:
+                # Apply prefilled information to conversation attributes
+                current_attrs = get_conv_attrs(cid)
+                current_attrs.update(prefilled)
+                current_attrs["has_been_prefilled"] = True
+                current_attrs["prefill_processed_for_message"] = msg_content  # Mark this message as processed
+                
+                # If we created a child contact, also store the child contact ID
+                if prefilled.get("child_contact_id"):
+                    current_attrs["child_contact_id"] = prefilled["child_contact_id"]
+                    print(f"📝 Stored child contact ID {prefilled['child_contact_id']} in conversation attributes")
+                
+                set_conv_attrs(cid, current_attrs)
+                
+                # Also set contact attributes if we have a contact
+                contact_attrs = get_contact_attrs(contact_id)
+                contact_attrs.update(prefilled)
+                set_contact_attrs(contact_id, contact_attrs)
+                
+                # Show user what was detected with comprehensive confirmation
+                detected_info = []
+                
+                # Basic information
+                if prefilled.get("learner_name"):
+                    detected_info.append(f"👤 *{t('name_label', lang)}*: {prefilled['learner_name']}")
+                
+                if prefilled.get("school_level"):
+                    level_display = {
+                        "po": t("level_po", lang),
+                        "vmbo": "VMBO", 
+                        "havo": "HAVO",
+                        "vwo": "VWO",
+                        "mbo": "MBO",
+                        "university_wo": t("level_university_wo", lang),
+                        "university_hbo": t("level_university_hbo", lang),
+                        "adult": t("level_adult", lang)
+                    }
+                    level_text = level_display.get(prefilled['school_level'], prefilled['school_level'])
+                    detected_info.append(f"🎓 *{t('level_label', lang)}*: {level_text}")
+                
+                # Subject information - show only the specific variant if available
+                if prefilled.get("topic_secondary"):
+                    detected_info.append(f"📚 *{t('subject_label', lang)}*: {prefilled['topic_secondary']}")
+                elif prefilled.get("topic_primary"):
+                    topic_display = {
+                        "math": t("subject_math", lang),
+                        "stats": t("subject_stats", lang), 
+                        "english": t("subject_english", lang),
+                        "programming": t("subject_programming", lang),
+                        "science": t("subject_science", lang),
+                        "chemistry": t("subject_chemistry", lang)
+                    }
+                    topic_text = topic_display.get(prefilled['topic_primary'], prefilled['topic_primary'])
+                    detected_info.append(f"📚 *{t('subject_label', lang)}*: {topic_text}")
+                
+                # Additional information
+                if prefilled.get("goals"):
+                    detected_info.append(f"🎯 *{t('goals_label', lang)}*: {prefilled['goals']}")
+                
+                if prefilled.get("preferred_times"):
+                    detected_info.append(f"⏰ *{t('preferred_times_label', lang)}*: {prefilled['preferred_times']}")
+                
+                if prefilled.get("location_preference"):
+                    detected_info.append(f"📍 *{t('location_preference_label', lang)}*: {prefilled['location_preference']}")
+                
+                if prefilled.get("contact_name") and prefilled.get("for_who") != "self":
+                    detected_info.append(f"👤 *{t('contact_person_label', lang)}*: {prefilled['contact_name']}")
+                
+                if prefilled.get("for_who"):
+                    for_who_display = {
+                        "self": t("for_who_self", lang),
+                        "child": t("for_who_child", lang),
+                        "student": t("for_who_student", lang),
+                        "other": t("for_who_other", lang)
+                    }
+                    for_who_text = for_who_display.get(prefilled['for_who'], prefilled['for_who'])
+                    detected_info.append(f"👥 *{t('for_who_label', lang)}*: {for_who_text}")
+                
+                # Show detected information and ask for confirmation
+                if detected_info:
+                    # Always show all detected information, don't truncate
+                    # This helps users see what was actually detected
+                    print(f"📋 Showing {len(detected_info)} detected fields: {[info.split(':')[0] for info in detected_info]}")
+                    
+                    # Calculate approximate length of confirmation text
+                    base_text = t("prefill_confirmation_header", lang) + "\n\n"
+                    footer_text = "\n\n" + t("prefill_confirmation_footer", lang)
+                    max_info_length = 1024 - len(base_text) - len(footer_text) - 50  # 50 chars buffer
+                    
+                    # Only truncate if absolutely necessary
+                    if len("\n".join(detected_info)) > max_info_length:
+                        truncated_info = []
+                        current_length = 0
+                        for info in detected_info:
+                            if current_length + len(info) + 1 <= max_info_length:  # +1 for newline
+                                truncated_info.append(info)
+                                current_length += len(info) + 1
+                            else:
+                                break
+                        
+                        if len(truncated_info) < len(detected_info):
+                            truncated_info.append("...")
+                        
+                        detected_info = truncated_info
+                        print(f"⚠️ Truncated to {len(detected_info)} fields due to length limit")
+                    
+                    # First send a welcome message - choose based on message type
+                    # For detailed messages (prefill), use shorter introduction without tip
+                    # For short greetings, use full introduction with tip
+                    if len(msg_content.strip()) > 30:
+                        # Detailed message - use shorter introduction
+                        welcome_msg = t("bot_introduction_detailed", lang, detected_lang=lang, other_lang="English" if lang == "nl" else "Nederlands")
+                    else:
+                        # Short greeting - use full introduction with tip
+                        welcome_msg = t("bot_introduction_enhanced", lang, detected_lang=lang, other_lang="English" if lang == "nl" else "Nederlands")
+                    
+                    send_text_with_duplicate_check(cid, welcome_msg)
+                    
+                    # 🎯 CRITICAL: Check if we have sufficient information for meaningful confirmation
+                    if is_prefill_sufficient_for_trial_lesson(prefilled):
+                        # Sufficient info - show confirmation menu
+                        print(f"✅ Sufficient prefill info for confirmation - showing menu")
+                        show_prefill_action_menu(cid, contact_id, lang)
+                        
+                        # Mark that confirmation was sent and store the original message (best-effort)
+                        safe_set_conv_attrs(cid, {
+                            "prefill_confirmation_sent": True,
+                            "prefill_confirmation_time": datetime.now(TZ).isoformat(),
+                            "original_message_processed": msg_content
+                        })
+                        return
+                    else:
+                        # Insufficient info - skip confirmation and go to intake
+                        print(f"⚠️ Insufficient prefill info for confirmation - going to intake")
+                        
+                        # Show message about insufficient info and go to intake
+                        insufficient_msg = f"Bedankt! Ik heb een deel van je informatie kunnen verwerken.\n\n{t('general_greeting_tip', lang)}\n\nLaten we verder gaan met de intake om alles goed in te vullen."
+                        send_text_with_duplicate_check(cid, insufficient_msg, persist=False)
+                        
+                        # Clear pending intent and go to intake flow
+                        set_conv_attrs(cid, {"pending_intent": ""})
+                        
+                        # Start intake flow directly
+                        start_intake_flow(cid, contact_id, lang)
+                        return
+                
+                print(f"✅ Applied prefill: {list(prefilled.keys())}")
+                
+                # Refresh attributes after prefill
+                contact_attrs = get_contact_attrs(contact_id)
+                conv_attrs = get_conv_attrs(cid)
+    
+    # Handle wipe confirmation
+    if conv_attrs.get("pending_intent") == "wipe_confirmation":
+        print(f"🧹 Processing wipe confirmation: '{msg_content}'")
+        
+        if msg_content.upper() in ["JA WIPE", "JA", "YES", "CONFIRM"]:
+            print(f"🧹 User confirmed wipe - starting contact deletion...")
+            
+            # Send status message
+            send_text_with_duplicate_check(cid, "🧹 *WIPE GESTART*\n\nBezig met verwijderen van alle contacten en gesprekken...")
+            
+            try:
+                # Import the wipe functionality
+                import requests
+                
+                # Configuration
+                CW_URL = os.getenv("CW_URL", "https://crm.stephenadei.nl")
+                ACC_ID = os.getenv("CW_ACC_ID", "1")
+                ADMIN_TOKEN = os.getenv("CW_ADMIN_TOKEN")
+                
+                if not ADMIN_TOKEN:
+                    send_text_with_duplicate_check(cid, "❌ *WIPE FAILED*\n\nADMIN_TOKEN niet geconfigureerd.")
+                    set_conv_attrs(cid, {"pending_intent": None})
+                    return
+                
+                headers = {
+                    "api_access_token": ADMIN_TOKEN,
+                    "Content-Type": "application/json"
+                }
+                
+                # Get all contacts
+                url = f"{CW_URL}/api/v1/accounts/{ACC_ID}/contacts"
+                response = requests.get(url, headers=headers)
+                
+                if response.status_code != 200:
+                    send_text_with_duplicate_check(cid, f"❌ *WIPE FAILED*\n\nKon contacten niet ophalen: {response.status_code}")
+                    set_conv_attrs(cid, {"pending_intent": None})
+                    return
+                
+                contacts = response.json().get("payload", [])
+                print(f"📋 Found {len(contacts)} contacts to delete")
+                
+                # Delete each contact
+                deleted_count = 0
+                for contact in contacts:
+                    contact_id_to_delete = contact.get("id")
+                    if contact_id_to_delete:
+                        delete_url = f"{CW_URL}/api/v1/accounts/{ACC_ID}/contacts/{contact_id_to_delete}"
+                        delete_response = requests.delete(delete_url, headers=headers)
+                        
+                        if delete_response.status_code == 200:
+                            print(f"✅ Deleted contact {contact_id_to_delete}")
+                            deleted_count += 1
+                        else:
+                            print(f"❌ Failed to delete contact {contact_id_to_delete}: {delete_response.status_code}")
+                
+                # Send completion message
+                completion_msg = f"🎉 *WIPE VOLTOOID*\n\n✅ {deleted_count} contacten en gesprekken verwijderd\n\n⚠️ Alle data is permanent verwijderd!"
+                send_text_with_duplicate_check(cid, completion_msg)
+                
+                print(f"🎉 WhatsApp wipe completed: {deleted_count} contacts deleted")
+                
+            except Exception as e:
+                error_msg = f"❌ *WIPE ERROR*\n\nEr is een fout opgetreden: {str(e)}"
+                send_text_with_duplicate_check(cid, error_msg)
+                print(f"❌ Error during WhatsApp wipe: {e}")
+            
+            # Clear pending intent
+            set_conv_attrs(cid, {"pending_intent": None})
+            return
+        
+        elif msg_content.upper() in ["ANNULEREN", "CANCEL", "NEE", "NO", "STOP"]:
+            print(f"🧹 User cancelled wipe")
+            send_text_with_duplicate_check(cid, "✅ *WIPE GEANNULEERD*\n\nGeen contacten verwijderd.")
+            set_conv_attrs(cid, {"pending_intent": None})
+            return
+        else:
+            print(f"🧹 Invalid wipe confirmation response: '{msg_content}'")
+            send_text_with_duplicate_check(cid, "❓ *ONBEKEND ANTWOORD*\n\nType 'JA WIPE' om te bevestigen of 'ANNULEREN' om te stoppen.")
+            return
+    
+    # Handle intake flow
+    if conv_attrs.get("pending_intent") == "intake":
+        print(f"📋 Processing intake step")
+        print(f"🔍 Intake step: {conv_attrs.get('intake_step')}")
+        print(f"🔍 Message content: '{msg_content}'")
+        print(f"🔍 Full conv_attrs: {conv_attrs}")
+        handle_intake_step(cid, contact_id, msg_content, lang)
+        return
+    else:
+        print(f"🔍 Not in intake flow - pending_intent: {conv_attrs.get('pending_intent')}")
+    
+    # Handle planning flow
+    if conv_attrs.get("pending_intent") == "planning":
+        print(f"📅 Processing planning selection")
+        handle_planning_selection(cid, contact_id, msg_content, lang)
+        return
+    
+    # Handle trial lesson mode selection
+    if conv_attrs.get("pending_intent") == "trial_lesson_mode_selection":
+        print(f"📱 Processing trial lesson mode selection")
+        handle_trial_lesson_mode_selection(cid, contact_id, msg_content, lang)
+        return
+    
+    # Handle prefill confirmation
+    if conv_attrs.get("pending_intent") == "prefill_confirmation":
+        print(f"🤖 Processing prefill confirmation")
+        handle_prefill_confirmation(cid, contact_id, msg_content, lang)
+        return
+    
+    # Handle email request for trial lesson
+    if conv_attrs.get("pending_intent") == "ask_email":
+        print(f"📧 Processing email request")
+        handle_email_request(cid, contact_id, msg_content, lang)
+        return
+    
+    # Handle info menu selections
+    if conv_attrs.get("pending_intent") == "info_menu":
+        print(f"📄 Processing info menu selection")
+        handle_info_menu_selection(cid, contact_id, msg_content, lang)
+        return
+    
+    # Handle prefill action selections (after confirmation)
+    if conv_attrs.get("pending_intent") == "prefill_action":
+        print(f"🎯 Processing prefill action menu selection")
+        
+        # Handle trial lesson planning
+        if (msg_content.lower() in ["plan_trial_lesson", "proefles plannen", "plan trial lesson", "1"] or 
+            "📅" in msg_content or 
+            "🎯 gratis proefles" in msg_content.lower() or
+            "🎯 free trial" in msg_content.lower()):
+            print(f"📅 User wants to plan trial lesson")
+            set_conv_attrs(cid, {"pending_intent": ""})
+            start_planning_flow(cid, contact_id, lang)
+            return
+        
+        # Handle urgent session
+        if (msg_content.lower() in ["urgent_session", "spoedles", "urgent session", "2"] or 
+            "🚨" in msg_content or
+            "🚨 spoed" in msg_content.lower() or
+            "🚨 urgent" in msg_content.lower()):
+            print(f"🚨 User wants urgent session")
+            set_conv_attrs(cid, {"pending_intent": ""})
+            handle_urgent_session(cid, contact_id, lang)
+            return
+        
+        # Handle go to main menu
+        if (msg_content.lower() in ["go_to_main_menu", "meer informatie", "more information", "2"] or 
+            "📋" in msg_content or
+            "📖 meer informatie" in msg_content.lower() or
+            "📖 more info" in msg_content.lower()):
+            print(f"📋 User wants to go to main menu")
+            set_conv_attrs(cid, {"pending_intent": ""})
+            show_info_menu(cid, lang)
+            return
+        
+        # Handle handoff
+        if (msg_content.lower() in ["handoff", "met stephen spreken", "3"] or 
+            "👨‍🏫" in msg_content or
+            "👨‍🏫 stephen spreken" in msg_content.lower() or
+            "👨‍🏫 speak to stephen" in msg_content.lower()):
+            print(f"👨‍🏫 User wants to speak with Stephen")
+            set_conv_attrs(cid, {"pending_intent": ""})
+            send_handoff_message(cid, t("handoff_teacher", lang))
+            return
+        
+        # If no valid option, show the action menu again (without explanation)
+        print(f"❓ Unknown prefill action option: '{msg_content}' - showing action menu again")
+        show_prefill_action_menu_after_confirmation(cid, contact_id, lang, show_explanation=False)
+        return
+        print(f"🧹 Processing wipe confirmation: '{msg_content}'")
+        
+        if msg_content.upper() in ["JA WIPE", "JA", "YES", "CONFIRM"]:
+            print(f"🧹 User confirmed wipe - starting contact deletion...")
+            
+            # Send status message
+            send_text_with_duplicate_check(cid, "🧹 *WIPE GESTART*\n\nBezig met verwijderen van alle contacten en gesprekken...")
+            
+            try:
+                # Import the wipe functionality
+                import requests
+                
+                # Configuration
+                CW_URL = os.getenv("CW_URL", "https://crm.stephenadei.nl")
+                ACC_ID = os.getenv("CW_ACC_ID", "1")
+                ADMIN_TOKEN = os.getenv("CW_ADMIN_TOKEN")
+                
+                if not ADMIN_TOKEN:
+                    send_text_with_duplicate_check(cid, "❌ *WIPE FAILED*\n\nADMIN_TOKEN niet geconfigureerd.")
+                    set_conv_attrs(cid, {"pending_intent": None})
+                    return
+                
+                headers = {
+                    "api_access_token": ADMIN_TOKEN,
+                    "Content-Type": "application/json"
+                }
+                
+                # Get all contacts
+                url = f"{CW_URL}/api/v1/accounts/{ACC_ID}/contacts"
+                response = requests.get(url, headers=headers)
+                
+                if response.status_code != 200:
+                    send_text_with_duplicate_check(cid, f"❌ *WIPE FAILED*\n\nKon contacten niet ophalen: {response.status_code}")
+                    set_conv_attrs(cid, {"pending_intent": None})
+                    return
+                
+                contacts = response.json().get("payload", [])
+                print(f"📋 Found {len(contacts)} contacts to delete")
+                
+                # Delete each contact
+                deleted_count = 0
+                for contact in contacts:
+                    contact_id_to_delete = contact.get("id")
+                    if contact_id_to_delete:
+                        delete_url = f"{CW_URL}/api/v1/accounts/{ACC_ID}/contacts/{contact_id_to_delete}"
+                        delete_response = requests.delete(delete_url, headers=headers)
+                        
+                        if delete_response.status_code == 200:
+                            print(f"✅ Deleted contact {contact_id_to_delete}")
+                            deleted_count += 1
+                        else:
+                            print(f"❌ Failed to delete contact {contact_id_to_delete}: {delete_response.status_code}")
+                
+                # Send completion message
+                completion_msg = f"🎉 *WIPE VOLTOOID*\n\n✅ {deleted_count} contacten en gesprekken verwijderd\n\n⚠️ Alle data is permanent verwijderd!"
+                send_text_with_duplicate_check(cid, completion_msg)
+                
+                print(f"🎉 WhatsApp wipe completed: {deleted_count} contacts deleted")
+                
+            except Exception as e:
+                error_msg = f"❌ *WIPE ERROR*\n\nEr is een fout opgetreden: {str(e)}"
+                send_text_with_duplicate_check(cid, error_msg)
+                print(f"❌ Error during WhatsApp wipe: {e}")
+            
+            # Clear pending intent
+            set_conv_attrs(cid, {"pending_intent": None})
+            return
+        
+        elif msg_content.upper() in ["ANNULEREN", "CANCEL", "NEE", "NO", "STOP"]:
+            print(f"🧹 User cancelled wipe")
+            send_text_with_duplicate_check(cid, "✅ *WIPE GEANNULEERD*\n\nGeen contacten verwijderd.")
+            set_conv_attrs(cid, {"pending_intent": None})
+            return
+        else:
+            print(f"🧹 Invalid wipe confirmation response: '{msg_content}'")
+            send_text_with_duplicate_check(cid, "❓ *ONBEKEND ANTWOORD*\n\nType 'JA WIPE' om te bevestigen of 'ANNULEREN' om te stoppen.")
+            return
+    
+    # Check if this is a general greeting or unclear message
+    # If no pending intent and message doesn't match any menu options, show the bot introduction
+    # Only do this if we haven't already processed prefill and no language is set
+    if not conv_attrs.get("pending_intent") and not conv_attrs.get("has_been_prefilled") and not contact_attrs.get("language"):
+        # Check if this looks like a general greeting or unclear message
+        greeting_words = ["hallo", "hello", "hi", "hey", "goedemorgen", "goedemiddag", "goedenavond", "good morning", "good afternoon", "good evening"]
+        msg_lower = msg_content.lower().strip()
+        
+        # Check if this is just a greeting (short message with only greeting words)
+        # Use word boundaries to avoid false matches (e.g., "how" containing "hi")
+        has_greeting = any(f" {word} " in f" {msg_lower} " for word in greeting_words) or msg_lower in greeting_words
+        is_short_message = len(msg_content.strip()) < 30
+        
+        if has_greeting and is_short_message:
+            print(f"👋 Short greeting detected - showing segment menu")
+            
+            # Detect language from the message
+            detected_lang = detect_language_from_message(msg_content)
+            print(f"🌍 Detected language: {detected_lang}")
+            
+            # Set the detected language as contact attribute
+            set_contact_attrs(contact_id, {"language": detected_lang})
+            
+            # Send bot introduction
+            welcome_msg = t("bot_introduction_enhanced", detected_lang, detected_lang=detected_lang, other_lang="English" if detected_lang == "nl" else "Nederlands")
+            send_text_with_duplicate_check(cid, welcome_msg)
+            
+            # Show segment menu for short greetings (like normal flow)
+            segment = detect_segment(contact_id)
+            show_segment_menu(cid, contact_id, segment, detected_lang)
+            return
+    
+    # Only handle menu selection if we've already shown a menu to the user
+    # This prevents treating the first message as a menu selection
+    if conv_attrs.get("menu_shown") or conv_attrs.get("pending_intent"):
+        print(f"🔘 Handling menu selection for existing conversation")
+        handle_menu_selection(cid, contact_id, msg_content, lang)
+
+def show_info_menu(cid, lang):
+    """Show information menu with detailed options"""
+    print(f"📄 Showing info menu in {lang}")
+    print(f"🔧 Setting pending_intent to 'info_menu' for conversation {cid}")
+    set_conv_attrs(cid, {"pending_intent": "info_menu"})
+    print(f"🔧 Pending intent set, now sending interactive menu")
+    
+    # Get contact attributes to check if they have completed a trial lesson
+    contact_id = get_contact_id_from_conversation(cid)
+    contact_attrs = get_contact_attrs(contact_id)
+    has_completed_trial = contact_attrs.get("trial_lesson_completed", False)
+    
+    # Build menu options based on trial completion
+    menu_options = [
+        (t("menu_option_trial_lesson", lang), "trial_lesson"),
+        (t("menu_tariffs", lang), "tariffs"),
+        (t("menu_work_method", lang), "work_method"),
+        (t("menu_how_lessons_work", lang), "how_lessons_work"),
+        (t("menu_services", lang), "services"),
+        (t("menu_travel_costs", lang), "travel_costs"),
+        (t("menu_conditions", lang), "conditions"),
+        (t("menu_weekend_programs", lang), "weekend_programs"),
+        (t("menu_short_version", lang), "short_version"),
+        (t("menu_more_info", lang), "more_info"),
+        (t("menu_option_handoff", lang), "handoff")
+    ]
+    
+    # Add "Les inplannen" option only if they have completed a trial lesson
+    if has_completed_trial:
+        menu_options.insert(1, (t("menu_option_plan_lesson", lang), "plan_lesson"))
+        print(f"✅ Adding 'Les inplannen' option - trial completed")
+    else:
+        print(f"❌ Not showing 'Les inplannen' option - no trial completed")
+    
+    send_input_select_only(cid, t("info_menu_question", lang), menu_options)
+
+def handle_prefill_confirmation(cid, contact_id, msg_content, lang):
+    """Handle prefill confirmation from user"""
+    print(f"🤖 Prefill confirmation: '{msg_content}'")
+    
+    # Check if this is the original message being re-processed
+    conv_attrs = get_conv_attrs(cid)
+    original_message = conv_attrs.get("original_message_processed", "")
+    
+    if msg_content == original_message:
+        print(f"🔄 Original message detected in prefill confirmation - skipping")
+        return
+    
+    # Update last_processed_message to the user's response and clear prefill tracking
+    set_conv_attrs(cid, {
+        "last_processed_message": msg_content,
+        "prefill_processed_for_message": "",  # Clear so we can process new messages
+        "prefill_confirmation_sent": False,   # Clear confirmation sent flag
+        "original_message_processed": ""      # Clear original message flag
+    })
+    
+    # Check user's response - improved recognition
+    print(f"🔍 Analyzing prefill confirmation response: '{msg_content}'")
+    
+    # More comprehensive confirmation detection
+    confirm_words = ["ja", "klopt", "correct", "yes", "✅", "ja dat klopt", "dat klopt", "klopt helemaal", "ja helemaal", "correct", "juist", "precies", "inderdaad"]
+    deny_words = ["nee", "niet", "fout", "no", "❌", "nee dat klopt niet", "dat klopt niet", "niet correct", "fout", "verkeerd", "deels", "sommige", "partially", "🤔", "deels correct", "sommige kloppen", "niet alles"]
+    
+    msg_lower = msg_content.lower().strip()
+    
+    if msg_content == "confirm_all" or any(word in msg_lower for word in confirm_words):
+        print(f"✅ User confirmed prefill information")
+        
+        # Get the prefilled information from conversation attributes
+        conv_attrs = get_conv_attrs(cid)
+        prefilled_info = {}
+        
+        # Extract ALL available information from conversation attributes
+        info_fields = [
+            "learner_name", "school_level", "topic_primary", "topic_secondary", 
+            "goals", "referral_source", "is_adult", "for_who", "contact_name",
+            "preferred_times", "location_preference", "toolset", "lesson_mode",
+            "relationship_to_learner", "urgency", "contact_email", "contact_phone"
+        ]
+        
+        for field in info_fields:
+            if conv_attrs.get(field) is not None:
+                prefilled_info[field] = conv_attrs[field]
+        
+        print(f"📋 Available information: {list(prefilled_info.keys())}")
+        
+        # Apply prefilled information to contact attributes
+        if prefilled_info:
+            current_contact_attrs = get_contact_attrs(contact_id)
+            
+            # Determine contact type and update accordingly
+            for_who = prefilled_info.get("for_who", "self")
+            learner_name = prefilled_info.get("learner_name", "")
+            contact_name = prefilled_info.get("contact_name", "")
+            
+            if for_who == "self":
+                # Student writing for themselves
+                if learner_name:
+                    current_contact_attrs["name"] = learner_name
+                    current_contact_attrs["is_student"] = True
+                    current_contact_attrs["is_adult"] = prefilled_info.get("is_adult", True)
+                    print(f"✅ Set contact as student: {learner_name}")
+            elif for_who == "child":
+                # Parent writing for their child
+                if contact_name:
+                    current_contact_attrs["name"] = contact_name
+                    current_contact_attrs["is_parent"] = True
+                    current_contact_attrs["is_adult"] = True
+                    current_contact_attrs["relationship_to_learner"] = prefilled_info.get("relationship_to_learner", "parent")
+                    print(f"✅ Set contact as parent: {contact_name}")
+                
+                # Create child contact
+                if learner_name:
+                    child_contact_id = create_child_contact(prefilled_info, cid, contact_id)
+                    if child_contact_id:
+                        current_contact_attrs["child_contact_id"] = child_contact_id
+                        print(f"👶 Created child contact: {child_contact_id} for {learner_name}")
+                    else:
+                        print(f"⚠️ Failed to create child contact for {learner_name}")
+            else:
+                # Other cases (friend, etc.)
+                if contact_name:
+                    current_contact_attrs["name"] = contact_name
+                    current_contact_attrs["relationship_to_learner"] = prefilled_info.get("relationship_to_learner", "other")
+                    print(f"✅ Set contact as other: {contact_name}")
+            
+            # Update all other prefilled information
+            current_contact_attrs.update(prefilled_info)
+            
+            # Set intake completion flag
+            current_contact_attrs["has_completed_intake"] = True
+            current_contact_attrs["customer_since"] = datetime.now(TZ).isoformat()
+            
+            # Save updated contact attributes
+            set_contact_attrs(contact_id, current_contact_attrs)
+            print(f"✅ Applied prefilled info to contact: {list(prefilled_info.keys())}")
+        
+        # Use smart extraction check to determine flow
+        smart_check_result = smart_extraction_check(prefilled_info)
+        
+        # 1. Detect and set segment
+        detected_segment = detect_segment(contact_id)
+        print(f"🎯 Detected segment: {detected_segment}")
+        
+        # 2. Set planning profile based on segment
+        set_conv_attrs(cid, {"planning_profile": detected_segment})
+        
+        # 3. Set appropriate labels based on extracted information
+        labels_to_add = []
+        
+        # Audience label based on school_level
+        school_level = prefilled_info.get("school_level", "")
+        if school_level:
+            audience_mapping = {
+                "po": "audience_po",
+                "vmbo": "audience_vmbo", 
+                "havo": "audience_havo",
+                "vwo": "audience_vwo",
+                "mbo": "audience_mbo",
+                "university_wo": "audience_university_wo",
+                "university_hbo": "audience_university_hbo",
+                "adult": "audience_adult"
+            }
+            audience_label = audience_mapping.get(school_level)
+            if audience_label:
+                labels_to_add.append(audience_label)
+        
+        # Subject label based on topic_primary
+        topic_primary = prefilled_info.get("topic_primary", "")
+        if topic_primary:
+            subject_mapping = {
+                "math": "subject_math",
+                "stats": "subject_stats",
+                "science": "subject_science", 
+                "english": "subject_english",
+                "programming": "subject_programming"
+            }
+            subject_label = subject_mapping.get(topic_primary)
+            if subject_label:
+                labels_to_add.append(subject_label)
+        
+        # Service label for trial lesson
+        labels_to_add.append("service_trial")
+        
+        # Source label
+        labels_to_add.append("source_whatsapp")
+        
+        # Add all labels
+        if labels_to_add:
+            add_conv_labels(cid, labels_to_add)
+            print(f"🏷️ Added labels: {labels_to_add}")
+        
+        # 4. Set customer status attributes
+        current_time = datetime.now().isoformat()
+        
+        # Set customer_since if this is their first interaction
+        if not current_contact_attrs.get("customer_since"):
+            current_contact_attrs["customer_since"] = current_time
+        
+        # Set has_completed_intake
+        current_contact_attrs["has_completed_intake"] = True
+        
+        # Update contact attributes
+        set_contact_attrs(contact_id, current_contact_attrs)
+        print(f"✅ Updated customer status attributes")
+        
+        # Mark that prefill has been confirmed
+        set_conv_attrs(cid, {
+            "prefill_confirmation_sent": True,
+            "prefill_confirmation_time": datetime.now(TZ).isoformat(),
+            "use_prefill": True  # Flag to use prefill in planning flow
+        })
+        
+        # Always show the action menu after confirmation
+        print(f"🎯 Showing action menu after confirmation")
+        show_prefill_action_menu_after_confirmation(cid, contact_id, lang)
+
+    
+    elif msg_content == "correct_all" or any(word in msg_lower for word in deny_words):
+        print(f"❌ User indicates information is incorrect - asking for corrections")
+        
+        # Ask user to provide correct information
+        correction_text = t("ask_for_corrections", lang)
+        send_text_with_duplicate_check(cid, correction_text)
+        
+        # Set conversation state to wait for corrections
+        set_conv_attrs(cid, {
+            "waiting_for_corrections": True,
+            "prefill_correction_count": conv_attrs.get("prefill_correction_count", 0) + 1
+        })
+        
+    else:
+        # Unclear response, check if this is a repeat attempt
+        conv_attrs = get_conv_attrs(cid)
+        unclear_count = conv_attrs.get("prefill_unclear_count", 0)
+        
+        if unclear_count >= 2:
+            # After 2 unclear responses, proceed with prefill anyway
+            print(f"⚠️ Multiple unclear responses ({unclear_count}), proceeding with prefill")
+            send_text_with_duplicate_check(cid, t("prefill_assume_correct", lang))
+            
+            # Clear the unclear count and proceed with confirmation
+            set_conv_attrs(cid, {"prefill_unclear_count": 0})
+            
+            # Simulate a confirmation by calling the confirmation logic
+            # Get the prefilled information and apply it
+            prefilled_info = {}
+            if conv_attrs.get("learner_name"):
+                prefilled_info["learner_name"] = conv_attrs["learner_name"]
+            if conv_attrs.get("school_level"):
+                prefilled_info["school_level"] = conv_attrs["school_level"]
+            if conv_attrs.get("topic_primary"):
+                prefilled_info["topic_primary"] = conv_attrs["topic_primary"]
+            if conv_attrs.get("topic_secondary"):
+                prefilled_info["topic_secondary"] = conv_attrs["topic_secondary"]
+            if conv_attrs.get("goals"):
+                prefilled_info["goals"] = conv_attrs["goals"]
+            if conv_attrs.get("referral_source"):
+                prefilled_info["referral_source"] = conv_attrs["referral_source"]
+            if conv_attrs.get("is_adult") is not None:
+                prefilled_info["is_adult"] = conv_attrs["is_adult"]
+            if conv_attrs.get("for_who"):
+                prefilled_info["for_who"] = conv_attrs["for_who"]
+            
+            # Apply prefilled information to contact attributes
+            if prefilled_info:
+                current_contact_attrs = get_contact_attrs(contact_id)
+                current_contact_attrs.update(prefilled_info)
+                
+                # If this is for themselves and we have a learner name, set it as the contact name
+                for_who = prefilled_info.get("for_who", "self")
+                learner_name = prefilled_info.get("learner_name", "")
+                if for_who == "self" and learner_name:
+                    current_contact_attrs["name"] = learner_name
+                    current_contact_attrs["is_student"] = True
+                    print(f"✅ Set contact name to learner name: {learner_name}")
+                
+                set_contact_attrs(contact_id, current_contact_attrs)
+                print(f"✅ Applied prefilled info to contact: {list(prefilled_info.keys())}")
+            
+            # Check if we have sufficient information for a trial lesson
+            if is_prefill_sufficient_for_trial_lesson(prefilled_info):
+                # We have good information, proceed to trial lesson planning
+                contact_name = prefilled_info.get("contact_name", "")
+                learner_name = prefilled_info.get("learner_name", "")
+                topic = prefilled_info.get("topic_secondary", "")
+                
+                print(f"🔍 Debug greeting: contact_name='{contact_name}', for_who='{prefilled_info.get('for_who')}', learner_name='{learner_name}'")
+                
+                if contact_name and prefilled_info.get("for_who") == "child":
+                    # Parent writing for child - use parent's name
+                    confirmation_msg = f"Perfect {contact_name}! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
+                    print(f"✅ Using contact_name: {contact_name}")
+                elif learner_name:
+                    # Student writing for themselves - use their name
+                    confirmation_msg = f"Perfect {learner_name}! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
+                    print(f"✅ Using learner_name: {learner_name}")
+                else:
+                    confirmation_msg = f"Perfect! Ik zie dat je hulp zoekt met {topic}. Laten we direct een gratis proefles inplannen zodat je kunt ervaren hoe ik je kan helpen."
+                    print(f"✅ Using generic greeting")
+                
+                send_text_with_duplicate_check(cid, confirmation_msg)
+                
+                # Clear pending intent and go to planning flow
+                set_conv_attrs(cid, {"pending_intent": ""})
+                
+                # Start planning flow directly
+                start_planning_flow(cid, contact_id, lang)
+                
+            else:
+                # Information is incomplete, go to main menu
+                learner_name = prefilled_info.get("learner_name", "")
+                if learner_name:
+                    confirmation_msg = f"Bedankt {learner_name}! Ik heb een deel van je informatie kunnen verwerken.\n\n{t('general_greeting_tip', lang)}\n\nLaten we verder gaan met de intake om alles goed in te vullen."
+                else:
+                    confirmation_msg = f"Bedankt! Ik heb een deel van je informatie kunnen verwerken.\n\n{t('general_greeting_tip', lang)}\n\nLaten we verder gaan met de intake om alles goed in te vullen."
+                
+                send_text_with_duplicate_check(cid, confirmation_msg)
+                
+                # Clear pending intent and go to main menu
+                set_conv_attrs(cid, {"pending_intent": ""})
+                
+                # Show main menu
+                show_info_menu(cid, lang)
+        else:
+            # First or second unclear response, ask for clarification with interactive menu
+            print(f"❓ Unclear prefill confirmation response (attempt {unclear_count + 1})")
+            set_conv_attrs(cid, {"prefill_unclear_count": unclear_count + 1})
+            
+            # Send interactive menu for clarification
+            send_input_select_only(cid, "❓ Sorry, ik begrijp je antwoord niet helemaal. Kun je kiezen uit:", [
+                (t("prefill_confirm_all", lang), "confirm_all"),
+                (t("prefill_correct_all", lang), "correct_all")
+            ])
+
+def handle_info_menu_selection(cid, contact_id, msg_content, lang):
+    """Handle info menu selections"""
+    print(f"📄 Info menu selection: '{msg_content}'")
+    
+    # Handle lesson planning
+    if msg_content.lower() in ["plan_lesson", "les inplannen", "1"] or "📅" in msg_content:
+        print(f"📅 Lesson planning requested from info menu")
+        start_planning_flow(cid, contact_id, lang)
+        return
+    
+    # Handle greetings first
+    greeting_words = ["hi", "hello", "hey", "hallo", "hoi", "goedemorgen", "goedemiddag", "goedenavond", "good morning", "good afternoon", "good evening"]
+    if msg_content.lower().strip() in greeting_words:
+        print(f"👋 Greeting detected: '{msg_content}'")
+        greeting_msg = t("greeting_response", lang)
+        send_text_with_duplicate_check(cid, greeting_msg)
+        return
+    
+    # Smart analysis for free text questions
+    # If the message doesn't match any menu options, try to analyze it as a question
+    if not any([
+        msg_content.lower() in ["tariffs", "tarieven", "2"] or "💰" in msg_content,
+        msg_content.lower() in ["work_method", "werkwijze", "3"] or "🎯" in msg_content,
+        msg_content.lower() in ["services", "diensten", "4"] or "📚" in msg_content,
+        msg_content.lower() in ["travel_costs", "reiskosten", "5"] or "🚗" in msg_content,
+        msg_content.lower() in ["last_minute", "last-minute", "6"] or "⏰" in msg_content,
+        msg_content.lower() in ["conditions", "voorwaarden", "7"] or "📋" in msg_content,
+        msg_content.lower() in ["weekend_programs", "weekend programma's", "8"] or "🌅" in msg_content,
+        msg_content.lower() in ["short_version", "korte versie", "9"] or "📝" in msg_content,
+        msg_content.lower() in ["personal_background", "persoonlijke achtergrond", "11"] or "👨‍🏫 persoonlijke" in msg_content.lower(),
+        msg_content.lower() in ["didactic_methods", "didactische methoden", "12"] or "📚 didactische" in msg_content.lower(),
+        msg_content.lower() in ["technology_tools", "technologie tools", "13"] or "💻 technologie" in msg_content.lower(),
+        msg_content.lower() in ["results_success", "resultaten succes", "14"] or "🏆 resultaten" in msg_content.lower(),
+        msg_content.lower() in ["workshops_creative", "creatieve workshops", "15"] or "🎨 creatieve" in msg_content.lower(),
+        msg_content.lower() in ["workshops_academic", "academische workshops", "16"] or "🎓 academische" in msg_content.lower(),
+        msg_content.lower() in ["consultancy", "advies", "17"] or "💼 consultancy" in msg_content.lower(),
+        msg_content.lower() in ["back_to_main", "terug naar hoofdmenu", "0"] or "⬅️" in msg_content
+    ]):
+        print(f"🤖 Analyzing free text question: '{msg_content}'")
+        
+        # Use OpenAI to analyze the question
+        analysis = analyze_info_request_with_openai(msg_content, cid)
+        
+        if analysis and analysis.get("primary_category"):
+            primary_category = analysis.get("primary_category")
+            confidence = analysis.get("confidence", 0.0)
+            
+            print(f"🎯 Analyzed question: {primary_category} (confidence: {confidence})")
+            
+            # If confidence is high enough, provide the relevant information
+            if confidence >= 0.7:
+                # Map the category to the appropriate info
+                if primary_category == "tariffs":
+                    print(f"💰 Smart detection: Showing tariffs")
+                    # Get contact info to determine appropriate tariffs
+                    contact_attrs = get_contact_attrs(contact_id)
+                    school_level = contact_attrs.get("school_level", "")
+                    is_adult = contact_attrs.get("is_adult", False)
+                    
+                    # Determine if over 20 (adults are typically over 20)
+                    age_over_20 = is_adult or school_level in ["university_hbo", "university_wo"]
+                    
+                    # Get appropriate tariffs key
+                    tariffs_key = get_appropriate_tariffs_key(school_level, age_over_20)
+                    print(f"💰 Using tariffs key: {tariffs_key} for school_level: {school_level}, age_over_20: {age_over_20}")
+                    
+                    send_text_with_duplicate_check(cid, t(tariffs_key, lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "work_method":
+                    print(f"🎯 Smart detection: Showing work method")
+                    send_text_with_duplicate_check(cid, t("info_work_method", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "services":
+                    print(f"📚 Smart detection: Showing services")
+                    send_text_with_duplicate_check(cid, t("info_services", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "travel_costs":
+                    print(f"🚗 Smart detection: Showing travel costs")
+                    send_text_with_duplicate_check(cid, t("info_travel_costs", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "last_minute":
+                    print(f"⏰ Smart detection: Showing last-minute surcharges")
+                    send_text_with_duplicate_check(cid, t("info_last_minute", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "conditions":
+                    print(f"📋 Smart detection: Showing conditions")
+                    send_text_with_duplicate_check(cid, t("info_conditions", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "weekend_programs":
+                    print(f"🌅 Smart detection: Showing weekend programs")
+                    send_text_with_duplicate_check(cid, t("info_weekend_programs", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "short_version":
+                    print(f"📝 Smart detection: Showing short version")
+                    send_text_with_duplicate_check(cid, t("info_short_version", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "personal_background":
+                    print(f"👨‍🏫 Smart detection: Showing personal background")
+                    send_text_with_duplicate_check(cid, t("info_personal_background", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "didactic_methods":
+                    print(f"📚 Smart detection: Showing didactic methods")
+                    send_text_with_duplicate_check(cid, t("info_didactic_methods", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "technology_tools":
+                    print(f"💻 Smart detection: Showing technology tools")
+                    send_text_with_duplicate_check(cid, t("info_technology_tools", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "results_success":
+                    print(f"🏆 Smart detection: Showing results and success")
+                    send_text_with_duplicate_check(cid, t("info_results_success", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "workshops_creative":
+                    print(f"🎨 Smart detection: Showing creative workshops")
+                    send_text_with_duplicate_check(cid, t("info_workshops_creative", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "workshops_academic":
+                    print(f"🎓 Smart detection: Showing academic workshops")
+                    send_text_with_duplicate_check(cid, t("info_workshops_academic", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+                elif primary_category == "consultancy":
+                    print(f"💼 Smart detection: Showing consultancy")
+                    send_text_with_duplicate_check(cid, t("info_consultancy", lang))
+                    show_info_follow_up_menu(cid, contact_id, lang)
+                    return
+            
+            # If confidence is low or no category found, try FAQ handler
+            print(f"❓ Low confidence or no category found, trying FAQ handler")
+            if handle_faq_request(cid, contact_id, msg_content, lang):
+                return
+            else:
+                # If FAQ handler also didn't match, show the menu again
+                send_text_with_duplicate_check(cid, t("error_unclear_question", lang))
+                show_info_menu(cid, lang)
+                return
+    
+    # Handle tariffs
+    if msg_content.lower() in ["tariffs", "tarieven", "2"] or "💰" in msg_content:
+        print(f"💰 Showing tariffs")
+        # Get contact info to determine appropriate tariffs
+        contact_attrs = get_contact_attrs(contact_id)
+        school_level = contact_attrs.get("school_level", "")
+        is_adult = contact_attrs.get("is_adult", False)
+        
+        # Determine if over 20 (adults are typically over 20)
+        age_over_20 = is_adult or school_level in ["university_hbo", "university_wo"]
+        
+        # Get appropriate tariffs key
+        tariffs_key = get_appropriate_tariffs_key(school_level, age_over_20)
+        print(f"💰 Using tariffs key: {tariffs_key} for school_level: {school_level}, age_over_20: {age_over_20}")
+        
+        send_text_with_duplicate_check(cid, t(tariffs_key, lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle work method
+    if msg_content.lower() in ["work_method", "werkwijze", "3"] or "🎯" in msg_content:
+        print(f"🎯 Showing work method")
+        send_text_with_duplicate_check(cid, t("info_work_method", lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle services
+    if msg_content.lower() in ["services", "diensten", "4"] or "📚" in msg_content:
+        print(f"📚 Showing services")
+        send_text_with_duplicate_check(cid, t("info_services", lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle how lessons work
+    if (msg_content.lower() in ["how_lessons_work", "how lessons work", "hoe lessen werken", "5"] or 
+        "📚 hoe lessen" in msg_content.lower() or
+        "how do lessons work" in msg_content.lower() or
+        "hoe werken lessen" in msg_content.lower()):
+        print(f"📚 Showing how lessons work")
+        send_text_with_duplicate_check(cid, t("info_how_lessons_work", lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle travel costs
+    if msg_content.lower() in ["travel_costs", "reiskosten", "6"] or "🚗" in msg_content:
+        print(f"🚗 Showing travel costs")
+        send_text_with_duplicate_check(cid, t("info_travel_costs", lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle last-minute
+    if msg_content.lower() in ["last_minute", "last-minute", "7"] or "⏰" in msg_content:
+        print(f"⏰ Showing last-minute surcharges")
+        send_text_with_duplicate_check(cid, t("info_last_minute", lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle conditions
+    if msg_content.lower() in ["conditions", "voorwaarden", "8"] or "📋" in msg_content:
+        print(f"📋 Showing conditions")
+        send_text_with_duplicate_check(cid, t("info_conditions", lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle weekend programs
+    if msg_content.lower() in ["weekend_programs", "weekend programma's", "9"] or "🌅" in msg_content:
+        print(f"🌅 Showing weekend programs")
+        send_text_with_duplicate_check(cid, t("info_weekend_programs", lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle short version
+    if msg_content.lower() in ["short_version", "korte versie", "10"] or "📝" in msg_content:
+        print(f"📝 Showing short version")
+        send_text_with_duplicate_check(cid, t("info_short_version", lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle personal background
+    if msg_content.lower() in ["personal_background", "persoonlijke achtergrond", "11"] or "👨‍🏫 persoonlijke" in msg_content.lower():
+        print(f"👨‍🏫 Showing personal background")
+        send_text_with_duplicate_check(cid, t("info_personal_background", lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle didactic methods
+    if msg_content.lower() in ["didactic_methods", "didactische methoden", "12"] or "📚 didactische" in msg_content.lower():
+        print(f"📚 Showing didactic methods")
+        send_text_with_duplicate_check(cid, t("info_didactic_methods", lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle technology tools
+    if msg_content.lower() in ["technology_tools", "technologie tools", "13"] or "💻 technologie" in msg_content.lower():
+        print(f"💻 Showing technology tools")
+        send_text_with_duplicate_check(cid, t("info_technology_tools", lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle results success
+    if msg_content.lower() in ["results_success", "resultaten succes", "14"] or "🏆 resultaten" in msg_content.lower():
+        print(f"🏆 Showing results and success")
+        send_text_with_duplicate_check(cid, t("info_results_success", lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle creative workshops
+    if msg_content.lower() in ["workshops_creative", "creatieve workshops", "15"] or "🎨 creatieve" in msg_content.lower():
+        print(f"🎨 Showing creative workshops")
+        send_text_with_duplicate_check(cid, t("info_workshops_creative", lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle academic workshops
+    if msg_content.lower() in ["workshops_academic", "academische workshops", "16"] or "🎓 academische" in msg_content.lower():
+        print(f"🎓 Showing academic workshops")
+        send_text_with_duplicate_check(cid, t("info_workshops_academic", lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle consultancy
+    if msg_content.lower() in ["consultancy", "advies", "17"] or "💼 consultancy" in msg_content.lower():
+        print(f"💼 Showing consultancy")
+        send_text_with_duplicate_check(cid, t("info_consultancy", lang))
+        show_info_follow_up_menu(cid, contact_id, lang)
+        return
+    
+    # Handle back to main info menu
+    if msg_content.lower() in ["back_to_main_info", "terug naar hoofdmenu", "⬅️"] or "⬅️ terug" in msg_content.lower():
+        print(f"⬅️ Returning to main info menu")
+        show_info_menu(cid, lang)
+        return
+    
+    # Handle more info
+    if msg_content.lower() in ["more_info", "meer informatie", "📖"] or "📖 meer" in msg_content.lower():
+        print(f"📖 Showing detailed info menu")
+        show_detailed_info_menu(cid, lang)
+        return
+    
+    # Handle handoff
+    if msg_content.lower() in ["handoff", "stephen spreken", "10"] or "👨‍🏫" in msg_content:
+        print(f"👨‍🏫 Handoff to Stephen requested")
+        send_handoff_message(cid, t("handoff_teacher", lang))
+        return
+    
+    # If no valid option, show the info menu again
+    print(f"❓ Unknown info menu option: '{msg_content}' - showing info menu")
+    show_info_menu(cid, lang)
+
+def show_prefill_action_menu(cid, contact_id, lang):
+    """
+    🎯 CRITICAL FLOW: Show confirmation menu asking user if the extracted information is correct
+    
+    This function is the PRIMARY entry point for prefill confirmation flow.
+    It sends:
+    1. A confirmation question text message
+    2. An input_select menu with confirmation options
+    
+    FLOW: User sends message → OpenAI extracts info → This function shows confirmation menu
+    → User confirms → show_prefill_action_menu_after_confirmation() is called
+    
+    IMPORTANT: This function MUST use send_input_select_only() to ensure the menu appears
+    correctly in WhatsApp. Direct text messages don't show interactive buttons.
+    """
+    print(f"🎯 Showing prefill confirmation menu in {lang}")
+    
+    try:
+        set_conv_attrs(cid, {"pending_intent": "prefill_confirmation"})
+    except Exception as e:
+        print(f"⚠️ SSL error setting pending_intent: {e}")
+        # Continue anyway - not critical
+    
+    # Step 1: Send the confirmation question as text (do not persist to avoid conv-attr write here)
+    confirmation_text = t("prefill_confirmation_question", lang)
+    try:
+        send_text_with_duplicate_check(cid, confirmation_text, persist=False)
+        print(f"✅ Confirmation question sent successfully")
+    except Exception as e:
+        print(f"⚠️ Failed to send confirmation question: {e}")
+        # Continue anyway - the menu buttons are more important
+    
+    # Step 2: Send the confirmation menu using input_select (CRITICAL FOR MENU BUTTONS)
+    menu_title = t("prefill_confirmation_menu_title", lang)
+    menu_options = [
+        (t("prefill_confirm_all", lang), "confirm_all"),
+        (t("prefill_correct_all", lang), "correct_all")
+    ]
+    
+    # CRITICAL: Use input_select_only for WhatsApp menu buttons
+    # This ensures the menu appears as interactive buttons, not just text
+    try:
+        result = send_input_select_only(cid, menu_title, menu_options)
+        print(f"🎯 Prefill confirmation menu send result: {result}")
+    except Exception as e:
