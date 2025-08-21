@@ -99,19 +99,24 @@ class TestMessageHandling(unittest.TestCase):
         mock_post.assert_called_once()
     
     @patch('modules.utils.text_helpers.send_text_with_duplicate_check')
-    def test_send_handoff_message(self, mock_send_text):
+    @patch('modules.utils.text_helpers.assign_conversation')
+    def test_send_handoff_message(self, mock_assign, mock_send_text):
         """Test handoff message sending"""
-        # Mock successful message sending
+        # Mock successful message sending and assignment
         mock_send_text.return_value = True
+        mock_assign.return_value = True
         
         result = send_handoff_message(123, "Handoff message")
         self.assertTrue(result)
         mock_send_text.assert_called_with(123, "Handoff message")
+        mock_assign.assert_called_with(123, 1)  # Agent ID 1
         
         # Test failed message sending
         mock_send_text.return_value = False
         result = send_handoff_message(123, "Failed handoff message")
         self.assertFalse(result)
+        # Should not call assign_conversation if message sending failed
+        self.assertEqual(mock_assign.call_count, 1)  # Only called once in first test
 
 class TestMainImports(unittest.TestCase):
     """Test that main.py imports are working correctly"""

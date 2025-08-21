@@ -1441,9 +1441,12 @@ def send_handoff_message(conversation_id, text):
         success = send_text_with_duplicate_check(conversation_id, text)
         
         if success:
-            # Assign to human agent (this would need proper agent ID)
-            # For now, just change conversation status
-            print(f"🤝 Handing off conversation {conversation_id} to human agent")
+            # Assign to human agent (agent ID 1)
+            assign_success = assign_conversation(conversation_id, 1)
+            if assign_success:
+                print(f"🤝 Handing off conversation {conversation_id} to human agent (ID: 1)")
+            else:
+                print(f"⚠️ Failed to assign conversation {conversation_id} to human agent")
             
         return success
     except Exception as e:
