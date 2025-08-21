@@ -70,26 +70,23 @@ class TestTranslation(unittest.TestCase):
 class TestMessageHandling(unittest.TestCase):
     """Test message sending and handling functions"""
     
-    @patch('main.get_conv_attrs')
-    @patch('main.set_conv_attrs')
-    @patch('main.send_text')
-    def test_send_text_with_duplicate_check(self, mock_send_text, mock_set_conv_attrs, mock_get_conv_attrs):
-        """Test duplicate message detection"""
-        # Skip this test temporarily due to refactoring changes
-        self.skipTest("Skipping due to refactoring - function behavior changed")
+    @patch('modules.utils.text_helpers.ChatwootAPI')
+    def test_send_text_with_duplicate_check(self, mock_api_class):
+        """Test text message sending with duplicate check"""
+        # Mock the API
+        mock_api = Mock()
+        mock_api_class.return_value = mock_api
+        mock_api.send_message.return_value = True
         
-        # Mock conversation attributes
-        mock_get_conv_attrs.return_value = {"last_bot_message": "Previous message"}
-        mock_send_text.return_value = True
-        
-        # Test duplicate message
-        result = send_text_with_duplicate_check(123, "Previous message")
-        self.assertFalse(result)
-        
-        # Test new message
-        result = send_text_with_duplicate_check(123, "New message")
+        # Test successful message sending
+        result = send_text_with_duplicate_check(123, "Test message")
         self.assertTrue(result)
-        mock_send_text.assert_called_with(123, "New message")
+        mock_api.send_message.assert_called_with(123, "Test message")
+        
+        # Test failed message sending
+        mock_api.send_message.return_value = False
+        result = send_text_with_duplicate_check(123, "Failed message")
+        self.assertFalse(result)
     
     @patch('main.requests.post')
     def test_assign_conversation(self, mock_post):
@@ -101,22 +98,41 @@ class TestMessageHandling(unittest.TestCase):
         assign_conversation(123, 456)
         mock_post.assert_called_once()
     
-    @patch('main.requests.post')
-    @patch('main.add_conv_labels')
-    @patch('main.set_conv_attrs')
-    @patch('main.assign_conversation')
-    def test_send_handoff_message(self, mock_assign, mock_set_attrs, mock_add_labels, mock_post):
+    @patch('modules.utils.text_helpers.send_text_with_duplicate_check')
+    def test_send_handoff_message(self, mock_send_text):
         """Test handoff message sending"""
-        # Skip this test temporarily due to refactoring changes
-        self.skipTest("Skipping due to refactoring - function behavior changed")
-        
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_post.return_value = mock_response
+        # Mock successful message sending
+        mock_send_text.return_value = True
         
         result = send_handoff_message(123, "Handoff message")
         self.assertTrue(result)
-        mock_assign.assert_called_with(123, 2)
+        mock_send_text.assert_called_with(123, "Handoff message")
+        
+        # Test failed message sending
+        mock_send_text.return_value = False
+        result = send_handoff_message(123, "Failed handoff message")
+        self.assertFalse(result)
+
+class TestMainImports(unittest.TestCase):
+    """Test that main.py imports are working correctly"""
+    
+    def test_main_imports_working(self):
+        """Test that all main.py imports are accessible"""
+        # Test that key functions are available
+        self.assertTrue(callable(t))
+        self.assertTrue(callable(send_text_with_duplicate_check))
+        self.assertTrue(callable(assign_conversation))
+        self.assertTrue(callable(send_handoff_message))
+        self.assertTrue(callable(create_child_contact))
+        self.assertTrue(callable(suggest_slots))
+        self.assertTrue(callable(book_slot))
+        
+        # Test that PLANNING_PROFILES is a dictionary
+        self.assertIsInstance(PLANNING_PROFILES, dict)
+        self.assertIn("new", PLANNING_PROFILES)
+        self.assertIn("existing", PLANNING_PROFILES)
+        
+        print("✅ All main.py imports are working correctly")
 
 class TestOpenAIIntegration(unittest.TestCase):
     """Test OpenAI integration functions"""

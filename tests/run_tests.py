@@ -62,7 +62,7 @@ def run_specific_test_category(category, verbosity=2):
         'email': ['TestEmailAndPaymentHandling'],
         'integration': ['TestIntegrationScenarios'],
         'error': ['TestErrorHandling'],
-        'core': ['TestTranslation', 'TestMessageHandling', 'TestUtilityFunctions'],
+        'core': ['TestTranslation', 'TestMessageHandling', 'TestUtilityFunctions', 'TestMainImports'],
         'flow': ['TestIntakeFlow', 'TestMenuHandling', 'TestIntegrationScenarios'],
         'api': ['TestOpenAIIntegration', 'TestPaymentFunctionality', 'TestWebhookHandling', 'test_api_connection']
     }
