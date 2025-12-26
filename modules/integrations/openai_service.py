@@ -222,7 +222,7 @@ def analyze_first_message_with_openai(message: str, conversation_id: int = None,
     NOOIT "adult"!
     - **topic_primary**: String - Hoofdvak/onderwerp ("math", "stats", "english", "programming", "science", "chemistry", "other")
     - **topic_secondary**: String - Specifiek vak/onderwerp (bijv. "wiskunde B", "statistiek", "calculus")
-    - **goals**: String - Leerdoelen, deadlines of specifieke toetsen/examens (bijv. "eindexamen wiskunde B", "tentamen statistiek volgende week", "MBO-rekentoets")
+    - **goals**: String - Leerdoelen, deadlines of specifieke toetsen/examens. Zoek expliciet naar: eindexamen, tentamen, toets, examen, cijfer verbeteren, voorbereiding, deadline. Bijvoorbeeld: "eindexamen wiskunde B", "tentamen statistiek volgende week", "MBO-rekentoets", "cijfer van 5,2 naar hoger"
     - **preferred_times**: String - Voorkeur voor tijdstippen
     - **lesson_mode**: String - Lesmodus ("online", "in_person", "hybrid")
     - **toolset**: String - Tools die gebruikt worden ("none", "python", "excel", "spss", "r", "other")
@@ -297,7 +297,7 @@ def analyze_first_message_with_openai(message: str, conversation_id: int = None,
     
     Belangrijk: 
     - **topic_secondary** is het specifieke vak/onderwerp (bijv. "wiskunde B", "statistiek")
-    - **goals** zijn de leerdoelen, deadlines of toetsen/examens waar naartoe gewerkt wordt (bijv. "eindexamen wiskunde B", "tentamen volgende week")
+    - **goals** zijn de leerdoelen, deadlines of toetsen/examens waar naartoe gewerkt wordt. Kijk specifiek naar woorden zoals: eindexamen, tentamen, toets, examen, cijfer verbeteren, voorbereiding voor, deadline, complexere oefeningen, ervaring krijgen met. Bijvoorbeeld: "eindexamen wiskunde B", "tentamen volgende week", "ervaring met complexere oefeningen", "cijfer verbeteren van 5,2"
     - **contact_name** is de naam van degene die het bericht stuurt (niet de leerling)
     - **urgency** kan afgeleid worden uit woorden als "dringend", "spoed", "examen volgende week", etc.
     
@@ -417,7 +417,45 @@ def prefill_intake_from_message(message: str, conversation_id: int = None, send_
         return {}
     
     # Use the same analysis as first message
-    return analyze_first_message_with_openai(message, conversation_id, send_admin_warning_func)
+    result = analyze_first_message_with_openai(message, conversation_id, send_admin_warning_func)
+    
+    # Post-process to ensure goals are captured
+    if result and (not result.get("goals") or result.get("goals") == ""):
+        result["goals"] = extract_goals_fallback(message)
+        
+    return result
+
+def extract_goals_fallback(message: str) -> str:
+    """Fallback method to extract goals from message when OpenAI misses them"""
+    message_lower = message.lower()
+    goals_found = []
+    
+    # Check for specific goal indicators
+    if "eindexamen" in message_lower:
+        if "wiskunde" in message_lower:
+            goals_found.append("eindexamen wiskunde voorbereiding")
+        else:
+            goals_found.append("eindexamen voorbereiding")
+    
+    if "tentamen" in message_lower:
+        goals_found.append("tentamen voorbereiding")
+        
+    if "toets" in message_lower:
+        goals_found.append("toets voorbereiding")
+        
+    if "complex" in message_lower and "oefening" in message_lower:
+        goals_found.append("ervaring met complexere oefeningen")
+        
+    # Check for grade improvement
+    import re
+    grade_pattern = r'\d[,\.]\d'
+    if re.search(grade_pattern, message):
+        goals_found.append("cijfer verbeteren")
+        
+    if "ervaring" in message_lower and ("geen" in message_lower or "niet" in message_lower):
+        goals_found.append("meer ervaring opdoen")
+    
+    return ", ".join(goals_found) if goals_found else ""
 
 def interpret_slot_selection_with_openai(user_text: str, available_slots: list[Dict[str, Any]]) -> Dict[str, Any]:
     """

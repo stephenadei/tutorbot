@@ -7,8 +7,8 @@ I've successfully reorganized your TutorBot project structure to improve clarity
 ## 📁 New Project Structure
 
 ```
-/home/stephen/tutorbot/
-├── main.py                    # Core Flask application
+/home/stephen/projects/tutorbot/
+├── main.py                    # Core Flask application (delegates to modules)
 ├── requirements.txt           # Python dependencies
 ├── docker-compose.yml         # Docker configuration (stays in root)
 ├── Dockerfile                 # Docker image (stays in root)
@@ -17,6 +17,36 @@ I've successfully reorganized your TutorBot project structure to improve clarity
 ├── help.sh                    # Help script (stays in root for easy access)
 ├── test_prefill_overview.py   # Test prefill functionality
 ├── show_prefill_overview.py   # Show prefill overview
+├── modules/                   # 🆕 MODULAR ARCHITECTURE
+│   ├── __init__.py
+│   ├── core/                  # Core configuration
+│   │   ├── __init__.py
+│   │   └── config.py          # Centralized configuration
+│   ├── handlers/              # Business logic handlers
+│   │   ├── __init__.py
+│   │   ├── conversation.py    # Message handling
+│   │   ├── intake.py          # Prefill and intake flows
+│   │   ├── menu.py            # Menu systems
+│   │   ├── payment.py         # Payment processing
+│   │   ├── planning.py        # Lesson planning
+│   │   └── contact.py         # Contact management
+│   ├── utils/                 # Utility functions
+│   │   ├── __init__.py
+│   │   ├── cw_api.py          # Chatwoot API wrapper
+│   │   ├── text_helpers.py    # Text and messaging utilities
+│   │   ├── language.py        # Language detection
+│   │   ├── mapping.py         # Data mapping utilities
+│   │   ├── menu_guard.py      # Menu selection validation
+│   │   └── attribute_manager.py # Attribute management
+│   ├── routes/                # Flask route handlers
+│   │   ├── __init__.py
+│   │   ├── health.py          # Health check endpoints
+│   │   ├── webhook.py         # Chatwoot webhook routes
+│   │   └── stripe.py          # Stripe webhook routes
+│   └── integrations/          # External service integrations
+│       ├── __init__.py
+│       ├── openai_service.py  # OpenAI API integration
+│       └── calendar_integration.py # Google Calendar API
 ├── config/                    # Configuration files
 │   ├── contact_attributes.yaml
 │   ├── conversation_attributes.yaml
@@ -78,6 +108,13 @@ I've successfully reorganized your TutorBot project structure to improve clarity
 - **Created comprehensive documentation** in `scripts/README.md`
 - **Updated all script paths** in help.sh and documentation
 - **Fixed script dependencies** to work from new location
+
+### ✅ Modular Code Architecture  
+- **Moved core handlers** to `modules/handlers/` folder
+- **Centralized utilities** in `modules/utils/` folder
+- **Separated route handlers** to `modules/routes/` folder
+- **Created integration modules** in `modules/integrations/` folder
+- **Centralized configuration** in `modules/core/config.py`
 
 ### ✅ Docker Organization
 - **Kept Docker files in root** (as required by Docker conventions)

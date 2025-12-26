@@ -17,10 +17,10 @@ echo ""
 if [ ! -f "main.py" ]; then
     echo "❌ Error: This script must be run from the tutorbot directory!"
     echo "   Current directory: $(pwd)"
-    echo "   Expected: /home/stephen/tutorbot"
+    echo "   Expected: /home/stephen/projects/tutorbot"
     echo ""
     echo "💡 Solution:"
-    echo "   cd /home/stephen/tutorbot"
+    echo "   cd /home/stephen/projects/tutorbot"
     echo "   ./wipe.sh"
     exit 1
 fi

@@ -278,18 +278,26 @@ CW_HMAC_SECRET="your_hmac_secret"
 STRIPE_WEBHOOK_SECRET="whsec_your_stripe_secret"
 ```
 
-### **Webhook Endpoints**
+### **Webhook Endpoints** - Modular Route Architecture
 
 ```python
-# Chatwoot webhook
+# Chatwoot webhook - modules/routes/webhook.py
 @app.post("/cw")
 def cw():
-    # Main webhook handler
+    # Main webhook handler - delegates to modules/handlers/conversation.py
+    from modules.handlers.conversation import handle_message_created
+    # ... webhook processing logic
 
-# Stripe webhook
+# Stripe webhook - modules/routes/stripe.py  
 @app.post("/webhook/payments")
 def stripe_webhook():
-    # Payment webhook handler
+    # Payment webhook handler - delegates to modules/handlers/payment.py
+    from modules.handlers.payment import verify_stripe_webhook, handle_payment_success
+    # ... payment processing logic
+    
+# Route registration in main.py
+route_webhook.register(app)
+route_stripe.register(app)
 ```
 
 ## 📝 Troubleshooting

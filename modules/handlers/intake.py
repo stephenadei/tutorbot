@@ -15,7 +15,6 @@ from modules.utils.cw_api import (
 from modules.utils.text_helpers import (
     send_text_with_duplicate_check, t, send_admin_warning
 )
-from modules.handlers.planning import start_planning_flow
 from modules.utils.mapping import (
     map_school_level, map_topic, is_prefill_sufficient_for_trial_lesson
 )
@@ -27,9 +26,16 @@ from modules.integrations.openai_service import (
 from modules.utils.text_helpers import send_input_select_only, send_handoff_message, t, send_text_with_duplicate_check
 from modules.utils.menu_guard import match_menu_selection
 from modules.utils.mapping import get_appropriate_tariffs_key
-from modules.handlers.menu import show_info_menu
-from modules.handlers.planning import start_planning_flow
 from modules.utils.attribute_manager import update_contact_attrs, add_labels_safe, remove_labels_safe
+from modules.core.config import TZ
+from modules.handlers.contact import create_child_contact
+from modules.utils.mapping import detect_segment, smart_extraction_check, is_prefill_sufficient_for_trial_lesson
+from modules.utils.cw_api import add_conv_labels
+
+def _get_start_planning_flow():
+    """Get start_planning_flow function with runtime import to avoid circular dependency"""
+    from modules.handlers.planning import start_planning_flow
+    return start_planning_flow
 
 def start_intake_flow(cid, contact_id, lang):
     """Start the intake flow with choice between step-by-step and free text"""
@@ -82,6 +88,30 @@ def show_prefill_action_menu(cid, contact_id, lang):
     except Exception:
         pass
 
+    action_menu_title = t("prefill_action_menu_title", lang)
+    action_menu_options = [
+        (t("prefill_action_trial_first", lang), "plan_trial_lesson"),
+        (t("prefill_action_urgent_session", lang), "urgent_session"),
+        (t("prefill_action_main_menu", lang), "go_to_main_menu"),
+        (t("prefill_action_handoff", lang), "handoff"),
+    ]
+    send_input_select_only(cid, action_menu_title, action_menu_options)
+
+def show_prefill_action_menu_after_confirmation(cid, contact_id, lang, show_explanation=True):
+    """Show action menu after prefill confirmation - moved from main.py"""
+    print(f"📋 Showing prefill action menu after confirmation")
+    
+    # Set pending intent for prefill action
+    set_conv_attrs(cid, {"pending_intent": "prefill_action"})
+    
+    # Show explanation if requested
+    if show_explanation:
+        try:
+            send_text_with_duplicate_check(cid, t("prefill_action_menu_text", lang), persist=False)
+        except Exception:
+            pass
+    
+    # Show action menu
     action_menu_title = t("prefill_action_menu_title", lang)
     action_menu_options = [
         (t("prefill_action_trial_first", lang), "plan_trial_lesson"),
@@ -299,31 +329,31 @@ def handle_for_who_step(cid, contact_id, msg_content, lang):
     """Handle 'for who' step - moved from main.py"""
     print(f"📋 Processing 'for_who' step: '{msg_content}'")
     
-    # Map the response to for_who
-    for_who = None
-    if msg_content.lower() in ["mezelf", "mij", "ik", "zelf", "me", "myself"]:
-        for_who = "self"
-    elif msg_content.lower() in ["mijn kind", "mijn dochter", "mijn zoon", "kind", "dochter", "zoon", "my child", "my daughter", "my son"]:
-        for_who = "child"
-    elif msg_content.lower() in ["iemand anders", "ander", "other", "someone else"]:
-        for_who = "other"
+    # Use match_menu_selection to handle button values properly
+    option_values = ["self", "child", "other"]
+    matched_value = match_menu_selection(msg_content, option_values)
     
-    if for_who:
+    if matched_value:
         # Store the for_who value
-        set_conv_attrs(cid, {"for_who": for_who, "intake_step": "name"})
+        set_conv_attrs(cid, {"for_who": matched_value, "intake_step": "name"})
         
         # Ask for name with personalized message
-        if for_who == "self":
+        if matched_value == "self":
             name_question = t("intake_name_self", lang)
         else:
             name_question = t("intake_name_student", lang)
         
         send_text_with_duplicate_check(cid, name_question)
-        print(f"📋 Intake step: name (for_who: {for_who})")
+        print(f"📋 Intake step: name (for_who: {matched_value})")
     else:
-        # Invalid response, ask again
-        send_text_with_duplicate_check(cid, t("intake_for_who_invalid", lang))
-        print(f"❌ Invalid for_who response: '{msg_content}'")
+        # Invalid response, ask again with buttons
+        for_who_options = [
+            (t("intake_for_who_self", lang), "self"),
+            (t("intake_for_who_child", lang), "child"),
+            (t("intake_for_who_other", lang), "other")
+        ]
+        send_input_select_only(cid, t("intake_for_who", lang), for_who_options)
+        print(f"❌ Invalid for_who response: '{msg_content}' - showing buttons again")
 
 def handle_name_step(cid, contact_id, msg_content, lang):
     """Handle name step - moved from main.py"""
@@ -428,7 +458,7 @@ def handle_preferences_step(cid, contact_id, msg_content, lang):
         send_text_with_duplicate_check(cid, t("intake_completed", lang))
         
         # Show planning options
-        start_planning_flow(cid, contact_id, lang)
+        _get_start_planning_flow()(cid, contact_id, lang)
         
     except Exception as e:
         print(f"❌ Error analyzing preferences: {e}")
@@ -444,7 +474,7 @@ def handle_preferences_step(cid, contact_id, msg_content, lang):
         send_text_with_duplicate_check(cid, t("intake_completed_fallback", lang))
         
         # Show planning options
-        start_planning_flow(cid, contact_id, lang)
+        _get_start_planning_flow()(cid, contact_id, lang)
 
 # NOTE: Confirmation entrypoint is handled via show_prefill_confirmation_menu();
 # this module exposes show_prefill_action_menu (defined earlier) strictly for
@@ -625,16 +655,18 @@ def handle_prefill_action_selection(cid, contact_id, msg_content, lang):
 
     if selection in ("plan_trial_lesson", t("prefill_action_trial_first", lang).lower()):
         set_conv_attrs(cid, {"pending_intent": ""})
-        start_planning_flow(cid, contact_id, lang)
+        _get_start_planning_flow()(cid, contact_id, lang)
         return
 
     if selection in ("urgent_session", t("prefill_action_urgent_session", lang).lower()):
         set_conv_attrs(cid, {"urgent_session": True, "session_duration": 120, "pending_intent": ""})
-        start_planning_flow(cid, contact_id, lang)
+        _get_start_planning_flow()(cid, contact_id, lang)
         return
 
     if selection in ("go_to_main_menu", t("prefill_action_main_menu", lang).lower()):
         set_conv_attrs(cid, {"pending_intent": ""})
+        # Runtime import to avoid circular dependency
+        from modules.handlers.menu import show_info_menu
         show_info_menu(cid, lang)
         return
 
@@ -646,11 +678,11 @@ def handle_prefill_action_selection(cid, contact_id, msg_content, lang):
     # Fallback: keyword routing if platform sends label text instead of payload
     if "proefles" in raw or "trial" in raw:
         set_conv_attrs(cid, {"pending_intent": ""})
-        start_planning_flow(cid, contact_id, lang)
+        _get_start_planning_flow()(cid, contact_id, lang)
         return
     if "urgent" in raw or "spoed" in raw:
         set_conv_attrs(cid, {"urgent_session": True, "session_duration": 120, "pending_intent": ""})
-        start_planning_flow(cid, contact_id, lang)
+        _get_start_planning_flow()(cid, contact_id, lang)
         return
 
 def handle_prefill_confirmation_no(cid, contact_id, lang):
@@ -707,7 +739,7 @@ def handle_corrected_prefill_confirmation_yes(cid, contact_id, lang):
     send_text_with_duplicate_check(cid, t("prefill_corrected_confirmed", lang))
     
     # Show planning options
-    start_planning_flow(cid, contact_id, lang)
+    _get_start_planning_flow()(cid, contact_id, lang)
 
 def handle_corrected_prefill_confirmation_no(cid, contact_id, lang):
     """Handle corrected prefill confirmation no - moved from main.py"""
@@ -723,3 +755,51 @@ def handle_corrected_prefill_confirmation_no(cid, contact_id, lang):
     
     # Start normal intake flow
     start_intake_flow(cid, contact_id, lang)
+
+def process_corrections_and_reconfirm(cid, contact_id, corrections_text, lang):
+    """Process corrections and reconfirm - moved from main.py"""
+    print(f"📋 Processing corrections: '{corrections_text}'")
+    
+    try:
+        # Analyze corrections with OpenAI
+        corrected_info = analyze_preferences_with_openai(corrections_text, lang)
+        
+        # Store corrected info for confirmation
+        set_conv_attrs(cid, {
+            "corrected_prefill_info": corrected_info,
+            "pending_intent": "corrected_prefill_confirmation"
+        })
+        
+        # Show corrected summary
+        show_prefill_summary_with_corrections(cid, contact_id, lang, corrected_info)
+        
+    except Exception as e:
+        print(f"❌ Error processing corrections: {e}")
+        send_admin_warning(f"Error processing corrections: {e}")
+        
+        # Fallback - store corrections as raw text
+        set_conv_attrs(cid, {
+            "preferences": corrections_text,
+            "intake_completed": True,
+            "pending_intent": None
+        })
+        
+        send_text_with_duplicate_check(cid, t("intake_completed_fallback", lang))
+        _get_start_planning_flow()(cid, contact_id, lang)
+
+def show_prefill_summary_with_corrections(cid, contact_id, lang, corrected_info):
+    """Show prefill summary with corrections - moved from main.py"""
+    print(f"📋 Showing corrected prefill summary")
+    
+    # Format the corrected information
+    info_summary = format_prefill_info_summary(corrected_info, lang)
+    
+    # Send confirmation message
+    confirmation_msg = t("prefill_corrected_confirmation", lang).format(
+        info_summary=info_summary
+    )
+    
+    send_text_with_duplicate_check(cid, confirmation_msg)
+    
+    # Set pending intent for corrected confirmation
+    set_conv_attrs(cid, {"pending_intent": "corrected_prefill_confirmation"})

@@ -115,7 +115,7 @@ def main():
     if not check_tutorbot_status():
         print("❌ TutorBot is not running!")
         print("💡 Start it with:")
-        print("   cd /home/stephen/tutorbot")
+        print("   cd /home/stephen/projects/tutorbot")
         print("   export CW_URL='https://crm.stephenadei.nl'")
         print("   export CW_ACC_ID='1'")
         print("   export CW_ADMIN_TOKEN='your_admin_token_here'")

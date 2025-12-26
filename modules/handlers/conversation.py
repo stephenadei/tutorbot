@@ -27,14 +27,18 @@ from modules.handlers.intake import (
 from modules.handlers.menu import (
     handle_menu_selection,
     handle_info_menu_selection,
+    handle_info_follow_up_selection,
     handle_handoff_menu_selection,
     handle_faq_request,
+    handle_tariffs_follow_up_selection,
     show_main_menu
 )
 from modules.handlers.planning import (
     handle_planning_selection,
     handle_trial_lesson_mode_selection,
-    handle_email_request
+    handle_email_request,
+    handle_different_preference_request,
+    handle_new_time_preference
 )
 from modules.integrations.openai_service import prefill_intake_from_message
 
@@ -119,6 +123,12 @@ def handle_message_created(data: Dict[str, Any]):
         handle_planning_selection(cid, contact_id, content, lang)
         return
     
+    # Handle new time preference
+    if conv_attrs.get("pending_intent") == "new_time_preference":
+        print(f"📅 Processing new time preference")
+        handle_new_time_preference(cid, contact_id, content, lang)
+        return
+    
     # Handle trial lesson mode selection
     if conv_attrs.get("pending_intent") == "trial_lesson_mode_selection":
         print(f"📱 Processing trial lesson mode selection")
@@ -150,10 +160,22 @@ def handle_message_created(data: Dict[str, Any]):
         handle_prefill_action_selection(cid, contact_id, content, lang)
         return
     
+    # Handle tariffs follow-up selections
+    if conv_attrs.get("pending_intent") == "tariffs_follow_up":
+        print(f"💰 Processing tariffs follow-up selection")
+        handle_tariffs_follow_up_selection(cid, contact_id, content, lang)
+        return
+    
     # Handle info menu selections
     if conv_attrs.get("pending_intent") == "info_menu_selection":
         print(f"ℹ️ Processing info menu selection")
         handle_info_menu_selection(cid, contact_id, content, lang)
+        return
+    
+    # Handle info follow-up menu selections
+    if conv_attrs.get("pending_intent") == "info_follow_up":
+        print(f"📄 Processing info follow-up selection")
+        handle_info_follow_up_selection(cid, contact_id, content, lang)
         return
     
     # Handle handoff menu selections
@@ -328,7 +350,7 @@ def handle_message_created(data: Dict[str, Any]):
                         print(f"⚠️ Failed to send greeting message: {e}")
 
                     # Create the summary message
-                    summary_msg = f"📋 *Wat ik van je bericht begrepen heb:*\n\n" + "\n".join(detected_info)
+                    summary_msg = f"{t('prefill_confirmation_header', lang)}\n\n" + "\n".join(detected_info) + f"\n\n{t('prefill_confirmation_footer', lang)}"
                     
                     # Step 1: Send the summary as text first (do not persist to avoid conv-attr write here)
                     try:

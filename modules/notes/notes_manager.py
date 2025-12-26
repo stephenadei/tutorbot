@@ -6,7 +6,8 @@ for lesson notes and student documentation.
 """
 
 import os
-from datetime import datetime
+import tempfile
+from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
@@ -20,6 +21,15 @@ class NotesManager:
         self.drive_service = None
         self.lessons_folder_id = None
         self._initialize_drive_service()
+        
+        # Initialize MinIO client for read operations
+        try:
+            from modules.storage.minio_client import MinIOClient
+            self.minio_client = MinIOClient()
+            self.minio_bucket = "raw-notability"
+        except Exception as e:
+            print(f"⚠️  MinIO client not available: {e}")
+            self.minio_client = None
     
     def _initialize_drive_service(self):
         """Initialize Google Drive service"""
@@ -312,4 +322,144 @@ class NotesManager:
             
         except Exception as e:
             print(f"❌ Failed to backup Notability file: {e}")
+            return None
+    
+    # ============================================================================
+    # MinIO Read-Only Methods
+    # ============================================================================
+    
+    def list_notability_files(self, student_name: Optional[str] = None) -> List[Dict[str, Any]]:
+        """
+        List Notability files from MinIO data lake
+        
+        Args:
+            student_name: Optional student name to filter files (searches in object names)
+            
+        Returns:
+            List of file information dictionaries with keys:
+                - object_name: Full object name/path
+                - size: File size in bytes
+                - last_modified: Last modification timestamp
+                - etag: Object ETag
+        """
+        if not self.minio_client or not self.minio_client.client:
+            print("⚠️  MinIO client not available")
+            return []
+        
+        try:
+            # Ensure bucket exists
+            if not self.minio_client.ensure_bucket_exists(self.minio_bucket):
+                print(f"❌ Bucket {self.minio_bucket} does not exist")
+                return []
+            
+            # List objects with optional prefix filter
+            prefix = None
+            if student_name:
+                # Filter by student name in object path
+                # Assuming naming convention: student_name/... or .../student_name/...
+                prefix = student_name
+            
+            objects = self.minio_client.list_objects(self.minio_bucket, prefix=prefix)
+            
+            # If student_name provided, filter results more strictly
+            if student_name:
+                objects = [
+                    obj for obj in objects
+                    if student_name.lower() in obj["object_name"].lower()
+                ]
+            
+            return objects
+            
+        except Exception as e:
+            print(f"❌ Error listing Notability files: {e}")
+            return []
+    
+    def get_notability_file(self, object_name: str, 
+                           download_path: Optional[str] = None) -> Optional[str]:
+        """
+        Download a Notability file from MinIO
+        
+        Args:
+            object_name: Object name/path in the bucket
+            download_path: Optional local path to save the file.
+                          If None, saves to temporary directory.
+            
+        Returns:
+            Path to downloaded file if successful, None otherwise
+        """
+        if not self.minio_client or not self.minio_client.client:
+            print("⚠️  MinIO client not available")
+            return None
+        
+        try:
+            # Ensure bucket exists
+            if not self.minio_client.ensure_bucket_exists(self.minio_bucket):
+                print(f"❌ Bucket {self.minio_bucket} does not exist")
+                return None
+            
+            # Check if object exists
+            if not self.minio_client.object_exists(self.minio_bucket, object_name):
+                print(f"❌ Object {object_name} does not exist in bucket")
+                return None
+            
+            # Determine download path
+            if not download_path:
+                # Create temp file
+                temp_dir = tempfile.gettempdir()
+                filename = os.path.basename(object_name) or "notability_file"
+                download_path = os.path.join(temp_dir, filename)
+            
+            # Download file
+            success = self.minio_client.download_file(
+                self.minio_bucket,
+                object_name,
+                download_path
+            )
+            
+            if success:
+                return download_path
+            return None
+            
+        except Exception as e:
+            print(f"❌ Error downloading Notability file: {e}")
+            return None
+    
+    def get_notability_file_url(self, object_name: str,
+                               expires: timedelta = timedelta(hours=1)) -> Optional[str]:
+        """
+        Get a presigned URL for direct access to a Notability file
+        
+        Args:
+            object_name: Object name/path in the bucket
+            expires: Time until URL expires (default: 1 hour)
+            
+        Returns:
+            Presigned URL if successful, None otherwise
+        """
+        if not self.minio_client or not self.minio_client.client:
+            print("⚠️  MinIO client not available")
+            return None
+        
+        try:
+            # Ensure bucket exists
+            if not self.minio_client.ensure_bucket_exists(self.minio_bucket):
+                print(f"❌ Bucket {self.minio_bucket} does not exist")
+                return None
+            
+            # Check if object exists
+            if not self.minio_client.object_exists(self.minio_bucket, object_name):
+                print(f"❌ Object {object_name} does not exist in bucket")
+                return None
+            
+            # Generate presigned URL
+            url = self.minio_client.get_presigned_url(
+                self.minio_bucket,
+                object_name,
+                expires=expires
+            )
+            
+            return url
+            
+        except Exception as e:
+            print(f"❌ Error generating presigned URL: {e}")
             return None

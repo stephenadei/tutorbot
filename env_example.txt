@@ -94,6 +94,12 @@ PLANNING_PREMIUM_DAYS=21
 PLANNING_PREMIUM_STEP=60
 PLANNING_PREMIUM_EXCLUDE_WEEKENDS=False
 
+# MinIO Configuration
+MINIO_ENDPOINT=http://localhost:9000
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=<password>
+MINIO_SECURE=false
+
 # Instructies:
 # 1. Kopieer dit bestand naar .env
 # 2. Vervang de waarden met jouw echte Chatwoot gegevens

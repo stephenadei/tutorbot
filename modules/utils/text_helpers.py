@@ -203,6 +203,14 @@ def t(key, lang="nl", **kwargs):
             "nl": "❌ Er is een technische fout opgetreden. Laten we het stap-voor-stap proberen!",
             "en": "❌ A technical error occurred. Let's try step-by-step!"
         },
+        "intake_completed": {
+            "nl": "✅ Intake voltooid! Je informatie is opgeslagen.",
+            "en": "✅ Intake completed! Your information has been saved."
+        },
+        "intake_completed_fallback": {
+            "nl": "✅ Intake voltooid! Laten we verder gaan.",
+            "en": "✅ Intake completed! Let's continue."
+        },
         "intake_for_who_invalid": {
             "nl": "❓ Ik begrijp je niet helemaal. Kies alsjeblieft:",
             "en": "❓ I don't quite understand. Please choose:"
@@ -322,20 +330,20 @@ def t(key, lang="nl", **kwargs):
             "en": "More options"
         },
         "urgent_session_booked": {
-            "nl": "Perfect! Ik heb een spoed 2-uurs sessie ingepland op {slot}.\n\n💳 *Direct betalen:* {payment_link}\n\n📧 Voor de bevestiging heb ik nog je e-mailadres nodig. Kun je dat delen?",
-            "en": "Perfect! I've scheduled an urgent 2-hour session on {slot}.\n\n💳 *Pay now:* {payment_link}\n\n📧 For confirmation, I still need your email address. Can you share that?"
+            "nl": "Super! Ik heb een spoed 2-uurs sessie ingepland op {slot}.\n\n💳 *Direct betalen:* {payment_link}\n\n📧 Voor de bevestiging heb ik nog je e-mailadres nodig. Kun je dat delen?",
+            "en": "Great! I've scheduled an urgent 2-hour session on {slot}.\n\n💳 *Pay now:* {payment_link}\n\n📧 For confirmation, I still need your email address. Can you share that?"
         },
         "urgent_session_booked_no_payment": {
-            "nl": "Perfect! Ik heb een spoed 2-uurs sessie ingepland op {slot}.\n\n📧 Voor de bevestiging heb ik nog je e-mailadres nodig. Kun je dat delen?",
-            "en": "Perfect! I've scheduled an urgent 2-hour session on {slot}.\n\n📧 For confirmation, I still need your email address. Can you share that?"
+            "nl": "Gelukt! Ik heb een spoed 2-uurs sessie ingepland op {slot}.\n\n📧 Voor de bevestiging heb ik nog je e-mailadres nodig. Kun je dat delen?",
+            "en": "Done! I've scheduled an urgent 2-hour session on {slot}.\n\n📧 For confirmation, I still need your email address. Can you share that?"
         },
         "trial_lesson_booked": {
-            "nl": "Perfect! Ik heb een proefles ingepland op {slot}.",
-            "en": "Perfect! I've scheduled a trial lesson on {slot}."
+            "nl": "Helemaal goed! Ik heb een proefles ingepland op {slot}.",
+            "en": "Excellent! I've scheduled a trial lesson on {slot}."
         },
         "trial_lesson_confirmed": {
-            "nl": "Perfect! Je proefles is ingepland op {slot}.",
-            "en": "Perfect! Your trial lesson is scheduled on {slot}."
+            "nl": "Klaar! Je proefles is ingepland op {slot}.",
+            "en": "All set! Your trial lesson is scheduled on {slot}."
         },
         "email_thanks": {
             "nl": "Bedankt! Ik heb je e-mailadres ({email}) opgeslagen voor de bevestiging.",
@@ -450,24 +458,28 @@ def t(key, lang="nl", **kwargs):
             "en": "*📄 Information*\n\nWhat would you like to know more about?\n\n💡 *Tip:* You can also just type out your story and I'll help you further."
         },
         "info_tariffs": {
-            "nl": "💰 *Tarieven*\n\n📚 *Hoger onderwijs:*\n• 1 les (1 uur): €90\n• 2 lessen (2 uur): €140\n• 4 lessen (4 uur): €250\n\n🎓 *Voortgezet onderwijs 20+:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €230\n\n🎓 *Voortgezet onderwijs 20-:*\n• 1 les (1 uur): €75\n• 2 lessen (2 uur): €130\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €65 (1u) • €125 (2u) • €180 (4u)\n• 3-4 personen: €55 (1u) • €95 (2u) • €150 (4u)\n\n🎯 *MBO Rekentrajecten (alleen online, 18+):*\n• Spoedpakket: 1 week, 4 uur (€275)\n• Korte cursus: 4 weken, 4 uur (€225)\n• Volledig Commit: 12 weken, 13-14 uur (€550)\n• Volledig Flex: 12 weken, 13-14 uur (€690 in 3 termijnen)\n\n📊 *Scriptiebegeleiding:*\n• Statistiek & onderzoek: €90/uur\n• Data science & AI: €100/uur",
-            "en": "💰 *Rates*\n\n📚 *Higher education:*\n• 1 lesson (1 hour): €90\n• 2 lessons (2 hours): €140\n• 4 lessons (4 hours): €250\n\n🎓 *Secondary education 20+:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €230\n\n🎓 *Secondary education 20-:*\n• 1 lesson (1 hour): €75\n• 2 lessons (2 hours): €130\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €65 (1h) • €125 (2h) • €180 (4h)\n• 3-4 persons: €55 (1h) • €95 (2h) • €150 (4h)\n\n🎯 *MBO Math trajectories (online only, 18+):*\n• Emergency: 1 week, 4 hours (€275)\n• Short course: 4 weeks, 4 hours (€225)\n• Full Commit: 12 weeks, 13-14 hours (€550)\n• Full Flex: 12 weeks, 13-14 hours (€690 in 3 installments)\n\n📊 *Thesis guidance:*\n• Statistics & research: €90/hour\n• Data science & AI: €100/hour"
+            "nl": "💰 *Tarieven*\n\n📚 *Hoger onderwijs:*\n• 1 les (1 uur): €90\n• 2 lessen (2 uur): €140\n• 4 lessen (4 uur): €250\n\n🎓 *Voortgezet onderwijs 20+:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €200\n\n🎓 *Voortgezet onderwijs 20-:*\n• 1 les (1 uur): €75\n• 2 lessen (2 uur): €130\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €65 (1u) • €125 (2u) • €180 (4u)\n• 3-4 personen: €55 (1u) • €95 (2u) • €150 (4u)\n\n🎯 *MBO Rekentrajecten (alleen online, 18+):*\n• Spoedpakket: 1 week, 4 uur (€275)\n• Korte cursus: 4 weken, 4 uur (€225)\n• Volledig Commit: 12 weken, 13-14 uur (€550)\n• Volledig Flex: 12 weken, 13-14 uur (€690 in 3 termijnen)\n\n📊 *Scriptiebegeleiding:*\n• Statistiek & onderzoek: €90/uur\n• Data science & AI: €100/uur",
+            "en": "💰 *Rates*\n\n📚 *Higher education:*\n• 1 lesson (1 hour): €90\n• 2 lessons (2 hours): €140\n• 4 lessons (4 hours): €250\n\n🎓 *Secondary education 20+:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €200\n\n🎓 *Secondary education 20-:*\n• 1 lesson (1 hour): €75\n• 2 lessons (2 hours): €130\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €65 (1h) • €125 (2h) • €180 (4h)\n• 3-4 persons: €55 (1h) • €95 (2h) • €150 (4h)\n\n🎯 *MBO Math trajectories (online only, 18+):*\n• Emergency: 1 week, 4 hours (€275)\n• Short course: 4 weeks, 4 hours (€225)\n• Full Commit: 12 weeks, 13-14 hours (€550)\n• Full Flex: 12 weeks, 13-14 hours (€690 in 3 installments)\n\n📊 *Thesis guidance:*\n• Statistics & research: €90/hour\n• Data science & AI: €100/hour"
         },
         "info_tariffs_no_mbo": {
-            "nl": "💰 *Tarieven*\n\n📚 *Hoger onderwijs:*\n• 1 les (1 uur): €90\n• 2 lessen (2 uur): €140\n• 4 lessen (4 uur): €250\n\n🎓 *Voortgezet onderwijs 20+:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €230\n\n🎓 *Voortgezet onderwijs 20-:*\n• 1 les (1 uur): €75\n• 2 lessen (2 uur): €130\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €65 (1u) • €125 (2u) • €180 (4u)\n• 3-4 personen: €55 (1u) • €95 (2u) • €150 (4u)\n\n📊 *Scriptiebegeleiding:*\n• Statistiek & onderzoek: €90/uur\n• Data science & AI: €100/uur",
-            "en": "💰 *Rates*\n\n📚 *Higher education:*\n• 1 lesson (1 hour): €90\n• 2 lessons (2 hours): €140\n• 4 lessons (4 hours): €250\n\n🎓 *Secondary education 20+:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €230\n\n🎓 *Secondary education 20-:*\n• 1 lesson (1 hour): €75\n• 2 lessons (2 hours): €130\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €65 (1h) • €125 (2h) • €180 (4h)\n• 3-4 persons: €55 (1h) • €95 (2h) • €150 (4h)\n\n📊 *Thesis guidance:*\n• Statistics & research: €90/hour\n• Data science & AI: €100/hour"
+            "nl": "💰 *Tarieven*\n\n📚 *Hoger onderwijs:*\n• 1 les (1 uur): €90\n• 2 lessen (2 uur): €140\n• 4 lessen (4 uur): €250\n\n🎓 *Voortgezet onderwijs 20+:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €200\n\n🎓 *Voortgezet onderwijs 20-:*\n• 1 les (1 uur): €75\n• 2 lessen (2 uur): €130\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €65 (1u) • €125 (2u) • €180 (4u)\n• 3-4 personen: €55 (1u) • €95 (2u) • €150 (4u)\n\n📊 *Scriptiebegeleiding:*\n• Statistiek & onderzoek: €90/uur\n• Data science & AI: €100/uur",
+            "en": "💰 *Rates*\n\n📚 *Higher education:*\n• 1 lesson (1 hour): €90\n• 2 lessons (2 hours): €140\n• 4 lessons (4 hours): €250\n\n🎓 *Secondary education 20+:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €200\n\n🎓 *Secondary education 20-:*\n• 1 lesson (1 hour): €75\n• 2 lessons (2 hours): €130\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €65 (1h) • €125 (2h) • €180 (4h)\n• 3-4 persons: €55 (1h) • €95 (2h) • €150 (4h)\n\n📊 *Thesis guidance:*\n• Statistics & research: €90/hour\n• Data science & AI: €100/hour"
         },
         "info_tariffs_under_20": {
-            "nl": "💰 *Tarieven (Onder 20 jaar)*\n\n🎓 *Voortgezet onderwijs:*\n• 1 les (1 uur): €75\n• 2 lessen (2 uur): €130\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €55 (1u) • €110 (2u) • €165 (4u)\n• 3-4 personen: €45 (1u) • €80 (2u) • €125 (4u)",
-            "en": "💰 *Rates (Under 20 years)*\n\n🎓 *Secondary education:*\n• 1 lesson (1 hour): €75\n• 2 lessons (2 hours): €130\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €55 (1h) • €110 (2h) • €165 (4h)\n• 3-4 persons: €45 (1h) • €80 (2h) • €125 (4h)"
+            "nl": "💰 *Tarieven (Onder 20 jaar)*\n\n🎓 *Voortgezet onderwijs:*\n• 1 les (1 uur): €75\n• 2 lessen (2 uur): €130\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €45 (1u) • €90 (2u) • €135 (4u)\n• 3-4 personen: €40 (1u) • €70 (2u) • €120 (4u)",
+            "en": "💰 *Rates (Under 20 years)*\n\n🎓 *Secondary education:*\n• 1 lesson (1 hour): €75\n• 2 lessons (2 hours): €130\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €45 (1h) • €90 (2h) • €135 (4h)\n• 3-4 persons: €40 (1h) • €70 (2h) • €120 (4h)"
         },
         "info_tariffs_over_20": {
-            "nl": "💰 *Tarieven (20 jaar en ouder)*\n\n📚 *Hoger onderwijs:*\n• 1 les (1 uur): €90\n• 2 lessen (2 uur): €140\n• 4 lessen (4 uur): €250\n\n🎓 *Voortgezet onderwijs:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €230\n\n👥 *Groepslessen:*\n• 2 personen: €65 (1u) • €125 (2u) • €180 (4u)\n• 3-4 personen: €55 (1u) • €95 (2u) • €150 (4u)\n\n🎯 *MBO Rekentrajecten:*\n• Spoedpakket: 1 week, 4 uur (€275)\n• Korte cursus: 4 weken, 4 uur (€225)\n• Volledig Commit: 12 weken, 13-14 uur (€550)\n• Volledig Flex: 12 weken, 13-14 uur (€690 in 3 termijnen)\n\n📊 *Scriptiebegeleiding:*\n• Statistiek & onderzoek: €90/uur\n• Data science & AI: €100/uur",
-            "en": "💰 *Rates (20 years and older)*\n\n📚 *Higher education:*\n• 1 lesson (1 hour): €90\n• 2 lessons (2 hours): €140\n• 4 lessons (4 hours): €250\n\n🎓 *Secondary education:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €230\n\n👥 *Group lessons:*\n• 2 persons: €65 (1h) • €125 (2h) • €180 (4h)\n• 3-4 persons: €55 (1h) • €95 (2h) • €150 (4h)\n\n🎯 *MBO Math trajectories:*\n• Emergency: 1 week, 4 hours (€275)\n• Short course: 4 weeks, 4 hours (€225)\n• Full Commit: 12 weeks, 13-14 hours (€550)\n• Full Flex: 12 weeks, 13-14 hours (€690 in 3 installments)\n\n📊 *Thesis guidance:*\n• Statistics & research: €90/hour\n• Data science & AI: €100/hour"
+            "nl": "💰 *Tarieven (20 jaar en ouder)*\n\n📚 *Hoger onderwijs:*\n• 1 les (1 uur): €90\n• 2 lessen (2 uur): €140\n• 4 lessen (4 uur): €250\n\n🎓 *Voortgezet onderwijs:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €65 (1u) • €125 (2u) • €180 (4u)\n• 3-4 personen: €55 (1u) • €95 (2u) • €150 (4u)\n\n🎯 *MBO Rekentrajecten:*\n• Spoedpakket: 1 week, 4 uur (€275)\n• Korte cursus: 4 weken, 4 uur (€225)\n• Volledig Commit: 12 weken, 13-14 uur (€550)\n• Volledig Flex: 12 weken, 13-14 uur (€690 in 3 termijnen)\n\n📊 *Scriptiebegeleiding:*\n• Statistiek & onderzoek: €90/uur\n• Data science & AI: €100/uur",
+            "en": "💰 *Rates (20 years and older)*\n\n📚 *Higher education:*\n• 1 lesson (1 hour): €90\n• 2 lessons (2 hours): €140\n• 4 lessons (4 hours): €250\n\n🎓 *Secondary education:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €65 (1h) • €125 (2h) • €180 (4h)\n• 3-4 persons: €55 (1h) • €95 (2h) • €150 (4h)\n\n🎯 *MBO Math trajectories:*\n• Emergency: 1 week, 4 hours (€275)\n• Short course: 4 weeks, 4 hours (€225)\n• Full Commit: 12 weeks, 13-14 hours (€550)\n• Full Flex: 12 weeks, 13-14 hours (€690 in 3 installments)\n\n📊 *Thesis guidance:*\n• Statistics & research: €90/hour\n• Data science & AI: €100/hour"
         },
         "info_tariffs_over_20_no_mbo": {
-            "nl": "💰 *Tarieven (20 jaar en ouder)*\n\n📚 *Hoger onderwijs:*\n• 1 les (1 uur): €90\n• 2 lessen (2 uur): €140\n• 4 lessen (4 uur): €250\n\n🎓 *Voortgezet onderwijs:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €230\n\n👥 *Groepslessen:*\n• 2 personen: €65 (1u) • €125 (2u) • €180 (4u)\n• 3-4 personen: €55 (1u) • €95 (2u) • €150 (4u)\n\n📊 *Scriptiebegeleiding:*\n• Statistiek & onderzoek: €90/uur\n• Data science & AI: €100/uur",
-            "en": "💰 *Rates (20 years and older)*\n\n📚 *Higher education:*\n• 1 lesson (1 hour): €90\n• 2 lessons (2 hours): €140\n• 4 lessons (4 hours): €250\n\n🎓 *Secondary education:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €230\n\n👥 *Group lessons:*\n• 2 persons: €65 (1h) • €125 (2h) • €180 (4h)\n• 3-4 persons: €55 (1h) • €95 (2h) • €150 (4h)\n\n📊 *Thesis guidance:*\n• Statistics & research: €90/hour\n• Data science & AI: €100/hour"
+            "nl": "💰 *Tarieven (20 jaar en ouder)*\n\n📚 *Hoger onderwijs:*\n• 1 les (1 uur): €90\n• 2 lessen (2 uur): €140\n• 4 lessen (4 uur): €250\n\n🎓 *Voortgezet onderwijs:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €65 (1u) • €125 (2u) • €180 (4u)\n• 3-4 personen: €55 (1u) • €95 (2u) • €150 (4u)\n\n📊 *Scriptiebegeleiding:*\n• Statistiek & onderzoek: €90/uur\n• Data science & AI: €100/uur",
+            "en": "💰 *Rates (20 years and older)*\n\n📚 *Higher education:*\n• 1 lesson (1 hour): €90\n• 2 lessons (2 hours): €140\n• 4 lessons (4 hours): €250\n\n🎓 *Secondary education:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €65 (1h) • €125 (2h) • €180 (4h)\n• 3-4 persons: €55 (1h) • €95 (2h) • €150 (4h)\n\n📊 *Thesis guidance:*\n• Statistics & research: €90/hour\n• Data science & AI: €100/hour"
+        },
+        "info_tariffs_vmbo_onderbouw": {
+            "nl": "💰 *Tarieven voor middelbare school onderbouw*\n\n🎓 *Individuele lessen:*\n• 1 les (1 uur): €75\n• 2 lessen (2 uur): €130\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen (populair bij VMBO):*\n• 2 personen: €45 (1u) • €90 (2u) • €135 (4u)\n• 3-4 personen: €40 (1u) • €70 (2u) • €120 (4u)\n\n📚 Alle lessen zijn geschikt voor VMBO-niveau en kunnen zowel online als op locatie.",
+            "en": "💰 *Rates for lower secondary school*\n\n🎓 *Individual lessons:*\n• 1 lesson (1 hour): €75\n• 2 lessons (2 hours): €130\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons (popular with VMBO):*\n• 2 persons: €45 (1h) • €90 (2h) • €135 (4h)\n• 3-4 persons: €40 (1h) • €70 (2h) • €120 (4h)\n\n📚 All lessons are suitable for VMBO level and can be both online and on location."
         },
         "info_travel_costs": {
             "nl": "🚗 *Reiskosten:*\n\n• VU/UvA (niet SP): €20\n• Thuis (Amsterdam): €50\n• Science Park: €0",
@@ -522,8 +534,8 @@ def t(key, lang="nl", **kwargs):
             "en": "🌅 *Weekend Programs (Amsterdam Southeast)*\n\n🇬🇭 *Boa me na menboa mo (Ghanaian community):*\n• *50% discount* for Ghanaian youth: €30/hour instead of €60\n• *Location*: Douwe Egberts (Dubbelink 2) or at home in Gein\n• *Times*: Saturday and Sunday, flexible times\n• *Free trial lesson* of 30 minutes\n\n🌅 *Weekend Tutoring Southeast:*\n• *50% discount*: €30/hour instead of €60\n• *Same locations* and times\n• *For all residents* of Southeast\n\n📍 *Locations:*\n• Douwe Egberts (Dubbelink 2, Amsterdam Southeast)\n• At home in Gein and surrounding area\n• Bijlmerplein 888, 1102 MG Amsterdam\n\n⏰ *Availability:*\n• Saturday: 10:00–18:00\n• Sunday: 10:00–18:00\n• Flexible times possible\n\n🎯 *Special Features:*\n• *Community focus*: Accessible rates for different target groups\n• *Experience with special needs*: Experience with students with mild autism\n• *Structured and patient learning environment*\n• *Adaptation to specific needs*\n\n📞 *Contact:*\n• Phone: +31 6 47357426\n• Email: info@stephenadei.nl\n• Website: stephensprivelessen.nl"
         },
         "info_short_version": {
-            "nl": "📝 *Korte versie:*\n\nHO: 1× €90 • 2× €140 • 4× €250\nVO 20+: 1× €80 • 2× €135 • 4× €230\nVO 20-: 1× €75 • 2× €130 • 4× €200\n\nReiskosten: VU/UvA (niet SP) €20 • Thuis (AMS e.o.) €50 • Science Park €0\n\nLast-minute: <24u +20% • <12u +50%\n\nPakketten: 2× geldig 2 weken • 4× geldig 1 maand; bij directe planning loopt geldigheid vanaf 1e les. Flex-premium (alleen bij niet-direct plannen): +€15 (2×) / +€30 (4×).",
-            "en": "📝 *Short version:*\n\nHE: 1× €90 • 2× €140 • 4× €250\nSE 20+: 1× €80 • 2× €135 • 4× €230\nSE 20-: 1× €75 • 2× €130 • 4× €200\n\nTravel: VU/UvA (not SP) €20 • Home (AMS area) €50 • Science Park €0\n\nLast-minute: <24h +20% • <12h +50%\n\nPackages: 2× valid 2 weeks • 4× valid 1 month; with direct scheduling validity runs from 1st lesson. Flex-premium (only when not scheduling directly): +€15 (2×) / +€30 (4×)."
+            "nl": "📝 *Korte versie:*\n\nHO: 1× €90 • 2× €140 • 4× €250\nVO 20+: 1× €80 • 2× €135 • 4× €200\nVO 20-: 1× €75 • 2× €130 • 4× €200\n\nReiskosten: VU/UvA (niet SP) €20 • Thuis (AMS e.o.) €50 • Science Park €0\n\nLast-minute: <24u +20% • <12u +50%\n\nPakketten: 2× geldig 2 weken • 4× geldig 1 maand; bij directe planning loopt geldigheid vanaf 1e les. Flex-premium (alleen bij niet-direct plannen): +€15 (2×) / +€30 (4×).",
+            "en": "📝 *Short version:*\n\nHE: 1× €90 • 2× €140 • 4× €250\nSE 20+: 1× €80 • 2× €135 • 4× €200\nSE 20-: 1× €75 • 2× €130 • 4× €200\n\nTravel: VU/UvA (not SP) €20 • Home (AMS area) €50 • Science Park €0\n\nLast-minute: <24h +20% • <12h +50%\n\nPackages: 2× valid 2 weeks • 4× valid 1 month; with direct scheduling validity runs from 1st lesson. Flex-premium (only when not scheduling directly): +€15 (2×) / +€30 (4×)."
         },
         "info_personal_background": {
             "nl": "👨‍🏫 *Persoonlijke Achtergrond & Motivatie*\n\n*Stephen Adei* - MSc Mathematics (Gespecialiseerd in quantum informatie en discrete wiskunde)\n• *Master Leraar* (Eerstegraads bevoegdheid in één keer)\n• *10+ jaar ervaring* sinds 2012 in onderwijs en begeleiding\n• *Persoonlijke reis*: Van wiskunde-uitdagingen (gemiddelde 5 in 3e jaar) naar excellente resultaten (gemiddelde 10 in 4e/5e jaar)\n• *Expertise*: Wiskunde, quantum informatie, discrete wiskunde, statistiek, data-analyse, multidisciplinaire achtergrond\n• *Passie*: Deze ervaring inspireerde tot het helpen van anderen met vergelijkbare uitdagingen\n\n*Visie & Filosofie:*\n• *Onderwijs moet empoweren*, niet alleen kennis overdragen\n• *Elke student kan leren*, mits de juiste begeleiding en motivatie\n• *Persoonlijke groei* staat centraal in mijn aanpak\n• *Zelfvertrouwen* is de basis voor succesvol leren\n\n*Academische Kwalificaties:*\n• *MSc Mathematics*: Gespecialiseerd in quantum informatie en discrete wiskunde\n• *Master Leraar*: Eerstegraads bevoegdheid (volledige lesbevoegdheid)\n• *Evidence-based didactiek*: Wetenschappelijk onderbouwde onderwijsmethoden\n• *Academische achtergrond* gecombineerd met *praktische onderwijservaring*\n\n*Multidisciplinaire Achtergrond:*\n• *Wiskunde & Statistiek*: Academische achtergrond en praktische toepassingen\n• *Quantum informatie*: Geavanceerde wiskundige concepten en algoritmen\n• *Discrete wiskunde*: Combinatoriek, grafentheorie, algoritmen\n• *Programmeren*: Python, Java, C#, C++, web development\n• *Muziek & Creativiteit*: Muziekproductie, DJ, creatieve workshops\n• *Fotografie & Design*: Analoge fotografie, visuele storytelling\n• *AI & Innovatie*: Integratie van moderne technologie in onderwijs\n\n*Community Focus:*\n• *Ghanese gemeenschap*: Speciale programma's en ondersteuning\n• *Amsterdam Zuidoost*: Weekend programma's met toegankelijke tarieven\n• *Inclusiviteit*: Ervaring met diverse leerstijlen en speciale behoeften",
@@ -560,6 +572,26 @@ def t(key, lang="nl", **kwargs):
         "menu_tariffs": {
             "nl": "💰 Tarieven",
             "en": "💰 Rates"
+        },
+        "menu_all_tariffs": {
+            "nl": "💰 Alle tarieven bekijken",
+            "en": "💰 View all rates"
+        },
+        "show_all_tariffs": {
+            "nl": "💰 Alle tarieven bekijken",
+            "en": "💰 View all rates"
+        },
+        "plan_lesson_button": {
+            "nl": "📅 Les inplannen",
+            "en": "📅 Schedule lesson"
+        },
+        "back_to_info": {
+            "nl": "📖 Meer informatie",
+            "en": "📖 More information"
+        },
+        "handoff_to_stephen": {
+            "nl": "👨‍🏫 Stephen spreken",
+            "en": "👨‍🏫 Speak to Stephen"
         },
         "menu_work_method": {
             "nl": "🎯 Werkwijze",
@@ -676,8 +708,8 @@ def t(key, lang="nl", **kwargs):
             "en": "👨‍🏫 Stay with Stephen"
         },
         "handoff_stay_with_stephen": {
-            "nl": "👨‍🏫 Perfect! Stephen neemt het gesprek over. Je kunt hem direct vragen stellen.",
-            "en": "👨‍🏫 Perfect! Stephen will take over the conversation. You can ask him questions directly."
+            "nl": "👨‍🏫 Goed! Stephen neemt het gesprek over. Je kunt hem direct vragen stellen.",
+            "en": "👨‍🏫 Great! Stephen will take over the conversation. You can ask him questions directly."
         },
         "handoff_return_to_bot": {
             "nl": "🤖 *Terug naar de bot!* Ik help je verder.",
@@ -850,12 +882,12 @@ def t(key, lang="nl", **kwargs):
             "en": "🚨 Urgent: 2-hour session (€120)"
         },
         "prefill_action_menu_text": {
-            "nl": "✅ Perfect! Ik heb je informatie verwerkt en met Stephen gedeeld zodat hij je zo goed mogelijk kan helpen.\n\nOpties:\n• Gratis proefles (30 min): Kennismaking zonder verplichting\n• Spoedles: Directe hulp met betaling\n• Meer info: Over Stephen en zijn aanpak\n• Stephen spreken: Direct contact",
-            "en": "✅ Perfect! I've processed your information and shared it with Stephen so he can help you as best as possible.\n\nOptions:\n• Free trial lesson (30 min): Introduction without obligation\n• Urgent session: Immediate help with payment\n• More info: About Stephen and his approach\n• Speak to Stephen: Direct contact"
+            "nl": "✅ Helemaal goed! Ik heb je informatie verwerkt en met Stephen gedeeld zodat hij je zo goed mogelijk kan helpen.\n\nOpties:\n• Gratis proefles (30 min): Kennismaking zonder verplichting\n• Spoedles: Directe hulp met betaling\n• Meer info: Over Stephen en zijn aanpak\n• Stephen spreken: Direct contact",
+            "en": "✅ Great! I've processed your information and shared it with Stephen so he can help you as best as possible.\n\nOptions:\n• Free trial lesson (30 min): Introduction without obligation\n• Urgent session: Immediate help with payment\n• More info: About Stephen and his approach\n• Speak to Stephen: Direct contact"
         },
         "prefill_action_menu_title": {
-            "nl": "✅ Perfect! Kies je optie:",
-            "en": "✅ Perfect! Choose your option:"
+            "nl": "✅ Prima! Kies je optie:",
+            "en": "✅ Great! Choose your option:"
         },
         "preferences_check_title": {
             "nl": "⏰ Zijn je voorkeuren qua lesmomenten nog hetzelfde?",
@@ -964,7 +996,7 @@ def t(key, lang="nl", **kwargs):
                     "en": "For someone else"
                 },
                 "for_who_student": {
-                    "nl": "Voor iemand anders",
+                    "nl": "Voor een student",
                     "en": "For someone else"
                 },
                 "for_who_other": {
@@ -1014,16 +1046,16 @@ def t(key, lang="nl", **kwargs):
             "en": "❌ No, change"
         },
         "prefill_confirmed_message": {
-            "nl": "✅ Perfect! Ik heb je informatie verwerkt. Wat wil je nu doen?",
-            "en": "✅ Perfect! I've processed your information. What would you like to do now?"
+            "nl": "✅ Top! Ik heb je informatie verwerkt. Wat wil je nu doen?",
+            "en": "✅ Excellent! I've processed your information. What would you like to do now?"
         },
         "prefill_rejected": {
             "nl": "✅ Geen probleem! Laten we de informatie stap voor stap invullen.",
             "en": "✅ No problem! Let's fill in the information step by step."
         },
         "prefill_corrected_confirmed": {
-            "nl": "✅ Perfect! Ik heb je gecorrigeerde informatie verwerkt. Wat wil je nu doen?",
-            "en": "✅ Perfect! I've processed your corrected information. What would you like to do now?"
+            "nl": "✅ Geweldig! Ik heb je gecorrigeerde informatie verwerkt. Wat wil je nu doen?",
+            "en": "✅ Wonderful! I've processed your corrected information. What would you like to do now?"
         },
         
         # General greeting tip
@@ -1134,8 +1166,8 @@ def t(key, lang="nl", **kwargs):
             "en": "I'll assume the information is correct and continue with the intake. You can always adjust things later."
         },
         "planning_trial_lesson_intro": {
-            "nl": "🎯 Perfect! Laten we een gratis proefles van 30 minuten inplannen. Ik heb een paar vragen om de les goed voor te bereiden.",
-            "en": "🎯 Perfect! Let's schedule a free 30-minute trial lesson. I have a few questions to prepare the lesson well."
+            "nl": "🎯 Mooi! Laten we een gratis proefles van 30 minuten inplannen. Ik heb een paar vragen om de les goed voor te bereiden.",
+            "en": "🎯 Excellent! Let's schedule a free 30-minute trial lesson. I have a few questions to prepare the lesson well."
         },
         "trial_lesson_mode_question": {
             "nl": "📱 Wil je de proefles online of fysiek doen?\n\n💻 *Online*: Via Zoom/Google Meet met interactieve whiteboards\n🏫 *Fysiek*: Alleen mogelijk op Science Park (Amsterdam)\n\nKies je voorkeur:",
@@ -1154,12 +1186,12 @@ def t(key, lang="nl", **kwargs):
             "en": "✅ {mode} selected! Now I'll send available times."
         },
         "planning_premium_service": {
-            "nl": "📅 Perfect! Laten we alle lessen inplannen. Ik ga je helpen met het plannen van een volledig pakket.",
-            "en": "📅 Perfect! Let's schedule all lessons. I'll help you plan a complete package."
+            "nl": "📅 Goed zo! Laten we alle lessen inplannen. Ik ga je helpen met het plannen van een volledig pakket.",
+            "en": "📅 Great! Let's schedule all lessons. I'll help you plan a complete package."
         },
         "planning_urgent_session": {
-            "nl": "🚨 Perfect! Laten we een spoed 2-uurs sessie inplannen voor €120. Na het selecteren van een tijd krijg je direct een betaallink.",
-            "en": "🚨 Perfect! Let's schedule an urgent 2-hour session for €120. After selecting a time, you'll get a payment link immediately."
+            "nl": "🚨 Oké! Laten we een spoed 2-uurs sessie inplannen voor €120. Na het selecteren van een tijd krijg je direct een betaallink.",
+            "en": "🚨 Got it! Let's schedule an urgent 2-hour session for €120. After selecting a time, you'll get a payment link immediately."
         },
         "planning_premium_slots": {
             "nl": "Beschikbare tijden voor volledig pakket:",
@@ -1270,6 +1302,34 @@ def t(key, lang="nl", **kwargs):
         "prefill_confirm_no": {
             "nl": "❌ Nee, nog fouten",
             "en": "❌ No, still errors"
+        },
+        "info_tariffs_havo_vwo": {
+            "nl": "💰 *Tarieven voor HAVO/VWO*\n\n🎓 *Individuele lessen:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €65 per uur\n• 3-4 personen: €55 per uur\n\n✨ *Inclusief: eindexamenvoorbereiding, oefentoetsen en studieplanning*",
+            "en": "💰 *Rates for HAVO/VWO*\n\n🎓 *Individual lessons:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €65 per hour\n• 3-4 persons: €55 per hour\n\n✨ *Includes: final exam preparation, practice tests and study planning*"
+        },
+        "info_tariffs_adult": {
+            "nl": "💰 *Tarieven (18+ jaar)*\n\n📚 *Hoger onderwijs:*\n• 1 les (1 uur): €90\n• 2 lessen (2 uur): €140\n• 4 lessen (4 uur): €250\n\n🎓 *Voortgezet onderwijs:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €65 (1u) • €125 (2u) • €180 (4u)\n• 3-4 personen: €55 (1u) • €95 (2u) • €150 (4u)\n\n🎯 *MBO Rekentrajecten (alleen online):*\n• Spoedpakket: 1 week, 4 uur (€275)\n• Korte cursus: 4 weken, 4 uur (€225)\n• Volledig Commit: 12 weken, 13-14 uur (€550)\n• Volledig Flex: 12 weken, 13-14 uur (€690 in 3 termijnen)\n\n📊 *Scriptiebegeleiding:*\n• Statistiek & onderzoek: €90/uur\n• Data science & AI: €100/uur",
+            "en": "💰 *Rates (18+ years)*\n\n📚 *Higher education:*\n• 1 lesson (1 hour): €90\n• 2 lessons (2 hours): €140\n• 4 lessons (4 hours): €250\n\n🎓 *Secondary education:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €65 (1h) • €125 (2h) • €180 (4h)\n• 3-4 persons: €55 (1h) • €95 (2h) • €150 (4h)\n\n🎯 *MBO Math trajectories (online only):*\n• Emergency: 1 week, 4 hours (€275)\n• Short course: 4 weeks, 4 hours (€225)\n• Full Commit: 12 weeks, 13-14 hours (€550)\n• Full Flex: 12 weeks, 13-14 hours (€690 in 3 installments)\n\n📊 *Thesis guidance:*\n• Statistics & research: €90/hour\n• Data science & AI: €100/hour"
+        },
+        "tariffs_follow_up_title": {
+            "nl": "💰 *Tarieven*\n\nWat wil je weten over onze tarieven?",
+            "en": "💰 *Rates*\n\nWhat would you like to know about our rates?"
+        },
+        "info_tariffs_po": {
+            "nl": "💰 *Tarieven voor primair onderwijs*\n\n🎓 *Individuele lessen:*\n• 1 les (1 uur): €65\n• 2 lessen (2 uur): €120\n• 4 lessen (4 uur): €180\n\n👥 *Groepslessen:*\n• 2 personen: €40 (1u) • €80 (2u) • €120 (4u)\n• 3-4 personen: €35 (1u) • €65 (2u) • €100 (4u)",
+            "en": "💰 *Rates for primary education*\n\n🎓 *Individual lessons:*\n• 1 lesson (1 hour): €65\n• 2 lessons (2 hours): €120\n• 4 lessons (4 hours): €180\n\n👥 *Group lessons:*\n• 2 persons: €40 (1h) • €80 (2h) • €120 (4h)\n• 3-4 persons: €35 (1h) • €65 (2h) • €100 (4h)"
+        },
+        "info_tariffs_vmbo": {
+            "nl": "💰 *Tarieven voor VMBO*\n\n🎓 *Individuele lessen:*\n• 1 les (1 uur): €75\n• 2 lessen (2 uur): €130\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €45 (1u) • €90 (2u) • €135 (4u)\n• 3-4 personen: €40 (1u) • €70 (2u) • €120 (4u)",
+            "en": "💰 *Rates for VMBO*\n\n🎓 *Individual lessons:*\n• 1 lesson (1 hour): €75\n• 2 lessons (2 hours): €130\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €45 (1h) • €90 (2h) • €135 (4h)\n• 3-4 persons: €40 (1h) • €70 (2h) • €120 (4h)"
+        },
+        "info_tariffs_mbo": {
+            "nl": "💰 *Tarieven voor MBO*\n\n🎓 *Individuele lessen:*\n• 1 les (1 uur): €80\n• 2 lessen (2 uur): €135\n• 4 lessen (4 uur): €200\n\n👥 *Groepslessen:*\n• 2 personen: €50 (1u) • €100 (2u) • €150 (4u)\n• 3-4 personen: €45 (1u) • €85 (2u) • €130 (4u)\n\n🎯 *MBO Rekentrajecten (alleen online, 18+):*\n• Spoedpakket: 1 week, 4 uur (€275)\n• Korte cursus: 4 weken, 4 uur (€225)\n• Volledig Commit: 12 weken, 13-14 uur (€550)\n• Volledig Flex: 12 weken, 13-14 uur (€690 in 3 termijnen)",
+            "en": "💰 *Rates for MBO*\n\n🎓 *Individual lessons:*\n• 1 lesson (1 hour): €80\n• 2 lessons (2 hours): €135\n• 4 lessons (4 hours): €200\n\n👥 *Group lessons:*\n• 2 persons: €50 (1h) • €100 (2h) • €150 (4h)\n• 3-4 persons: €45 (1h) • €85 (2h) • €130 (4h)\n\n🎯 *MBO Math trajectories (online only, 18+):*\n• Emergency: 1 week, 4 hours (€275)\n• Short course: 4 weeks, 4 hours (€225)\n• Full Commit: 12 weeks, 13-14 hours (€550)\n• Full Flex: 12 weeks, 13-14 hours (€690 in 3 installments)"
+        },
+        "info_tariffs_university": {
+            "nl": "💰 *Tarieven voor hoger onderwijs*\n\n📚 *Hoger onderwijs:*\n• 1 les (1 uur): €90\n• 2 lessen (2 uur): €140\n• 4 lessen (4 uur): €250\n\n👥 *Groepslessen:*\n• 2 personen: €65 (1u) • €125 (2u) • €180 (4u)\n• 3-4 personen: €55 (1u) • €95 (2u) • €150 (4u)\n\n📊 *Scriptiebegeleiding:*\n• Statistiek & onderzoek: €90/uur\n• Data science & AI: €100/uur",
+            "en": "💰 *Rates for higher education*\n\n📚 *Higher education:*\n• 1 lesson (1 hour): €90\n• 2 lessons (2 hours): €140\n• 4 lessons (4 hours): €250\n\n👥 *Group lessons:*\n• 2 persons: €65 (1h) • €125 (2h) • €180 (4h)\n• 3-4 persons: €55 (1h) • €95 (2h) • €150 (4h)\n\n📊 *Thesis guidance:*\n• Statistics & research: €90/hour\n• Data science & AI: €100/hour"
         }
     }
     

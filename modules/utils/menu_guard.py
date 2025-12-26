@@ -77,6 +77,10 @@ def match_menu_selection(message_text: str, option_values_in_order: List[str]) -
         "oude voorkeuren": "old_preferences", "old preferences": "old_preferences",
         # Handoff
         "stephen spreken": "handoff", "spreek met stephen": "handoff", "menselijk": "handoff",
+        # Intake for_who options
+        "voor mezelf": "self", "for myself": "self", "mezelf": "self", "mij": "self", "ik": "self", "zelf": "self",
+        "voor mijn kind": "child", "for my child": "child", "mijn kind": "child", "mijn dochter": "child", "mijn zoon": "child",
+        "voor iemand anders": "other", "for someone else": "other", "iemand anders": "other", "ander": "other",
     }
     alias = synonyms.get(needle)
     if alias and alias in option_values_in_order:

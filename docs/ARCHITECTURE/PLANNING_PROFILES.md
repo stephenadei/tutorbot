@@ -6,12 +6,22 @@ The TutorBot uses a sophisticated planning profile system to customize lesson sc
 
 ## 👥 Customer Segments
 
-### **Segment Detection Logic** (`detect_segment()` - Line 1695)
+### **Segment Detection Logic** (`detect_segment()` - `modules/utils/mapping.py:283`)
 
 The system automatically detects customer segments based on contact attributes:
 
 ```python
 def detect_segment(contact_id):
+    """Detect segment based on contact attributes and history"""
+    from modules.utils.text_helpers import get_contact_attrs, set_contact_attrs
+    
+    contact_attrs = get_contact_attrs(contact_id)
+    
+    # Check if segment is already set (caching)
+    existing_segment = contact_attrs.get("segment")
+    if existing_segment:
+        return existing_segment
+    
     # 1. Weekend segment (whitelist check)
     if contact_attrs.get("weekend_whitelisted"):
         segment = "weekend"
@@ -22,12 +32,18 @@ def detect_segment(contact_id):
     elif (contact_attrs.get("customer_since") or 
           contact_attrs.get("has_paid_lesson") or
           contact_attrs.get("has_completed_intake") or
+          contact_attrs.get("intake_completed") or
           contact_attrs.get("trial_lesson_completed") or
-          contact_attrs.get("lesson_booked")):
+          contact_attrs.get("lesson_booked") or
+          contact_attrs.get("customer_status") == "active"):
         segment = "existing"
     # 4. Default to new
     else:
         segment = "new"
+    
+    # Cache segment for future calls
+    set_contact_attrs(contact_id, {"segment": segment})
+    return segment
 ```
 
 ### **Segment Types**
@@ -41,18 +57,28 @@ def detect_segment(contact_id):
 
 ## 📅 Planning Profiles
 
-### **Profile Configuration** (`PLANNING_PROFILES` - Line 1725)
+### **Profile Configuration** (`PLANNING_PROFILES` - `modules/core/config.py:189`)
 
 Each segment has a corresponding planning profile that defines scheduling rules:
 
 ```python
-PLANNING_PROFILES = {
-    "new": { ... },
-    "existing": { ... },
-    "returning_broadcast": { ... },
-    "weekend": { ... },
-    "premium": { ... }
-}
+# Planning profiles are dynamically generated based on environment variables
+PLANNING_PROFILES = _get_planning_profiles()
+
+def _get_planning_profiles():
+    """Get planning profiles with test defaults when environment variables are not set"""
+    # Development/testing defaults
+    if not os.getenv("PLANNING_NEW_DURATION"):
+        return {
+            "new": { "duration_minutes": 60, "earliest_hour": 10, ... },
+            "existing": { "duration_minutes": 60, "earliest_hour": 9, ... },
+            "returning_broadcast": { "duration_minutes": 60, ... },
+            "weekend": { "duration_minutes": 90, "allowed_weekdays": [5, 6], ... },
+            "premium": { "duration_minutes": 90, "earliest_hour": 8, ... }
+        }
+    else:
+        # Production values from environment variables
+        return { ... }
 ```
 
 ### **Profile Parameters**
@@ -147,15 +173,18 @@ PLANNING_PROFILES = {
 
 ## 🔄 Integration with Slot Generation
 
-### **Slot Generation Process** (`suggest_slots()` - Line 1786)
+### **Slot Generation Process** (`suggest_slots()` - `modules/integrations/calendar_integration.py:16`)
 
 1. **Profile Selection**: Based on detected segment
-2. **Time Range**: Apply earliest/latest hour constraints
-3. **Date Range**: Generate slots for specified days ahead
-4. **Weekend Filtering**: Apply weekend exclusion rules
-5. **Lead Time**: Filter slots based on minimum notice
-6. **User Preferences**: Apply time/day preferences
-7. **Slot Intervals**: Generate slots at specified intervals
+2. **Real Calendar Check**: Attempt real Google Calendar API first
+3. **Fallback to Mock**: If API unavailable, use mock implementation
+4. **Time Range**: Apply earliest/latest hour constraints
+5. **Date Range**: Generate slots for specified days ahead
+6. **Weekend Filtering**: Apply weekend exclusion rules
+7. **Lead Time**: Filter slots based on minimum notice
+8. **User Preferences**: Apply time/day preferences from conversation attributes
+9. **Slot Intervals**: Generate slots at specified intervals
+10. **Return Optimization**: Return more slots for premium customers (15 vs 6)
 
 ### **Example Slot Generation**
 

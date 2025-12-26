@@ -20,48 +20,81 @@ User sends message → OpenAI extracts info → Show confirmation menu → User 
 
 ## 🎯 Critical Functions
 
-### `show_prefill_action_menu(cid, contact_id, lang)`
+### `show_prefill_action_menu(cid, contact_id, lang)` - `modules/handlers/intake.py:64`
 
-**Purpose**: Primary entry point for prefill confirmation flow
+**Purpose**: Primary entry point for prefill confirmation flow (moved to modular architecture)
+
+**Current Location**: `modules/handlers/intake.py`
+**Imported via**: `main.py:105` → re-exported from intake handler
 
 **What it does**:
-- Sends confirmation question as text message
-- Sends interactive menu with confirmation options
-- Sets `pending_intent` to "prefill_confirmation"
+- Shows action menu after prefill processing
+- Proactively shows tariffs based on school level
+- Offers trial lesson or urgent session options
+- Sets `pending_intent` to "prefill_action"
 
-**Critical Implementation Details**:
+**Current Implementation**:
 ```python
-# Step 1: Send confirmation question
-confirmation_text = t("prefill_confirmation_question", lang)
-send_text_with_duplicate_check(cid, confirmation_text)
+def show_prefill_action_menu(cid, contact_id, lang):
+    """Show action menu after prefill confirmation"""
+    try:
+        set_conv_attrs(cid, {"pending_intent": "prefill_action"})
+    except Exception:
+        pass
 
-# Step 2: Send interactive menu (CRITICAL FOR WHATSAPP BUTTONS)
-menu_options = [
-    (t("prefill_confirm_all", lang), "confirm_all"),
-    (t("prefill_correct_all", lang), "correct_all"),
-    (t("prefill_correct_partial", lang), "correct_partial")
-]
-send_input_select_only(cid, menu_title, menu_options)
+    # Show tariffs if we have school level info
+    contact_attrs = get_contact_attrs(contact_id)
+    school_level = contact_attrs.get("school_level", "")
+    is_adult = contact_attrs.get("is_adult", False)
+    if school_level:
+        age_over_20 = is_adult or ("university" in str(school_level).lower())
+        tariffs_key = get_appropriate_tariffs_key(school_level, age_over_20)
+        if tariffs_key:
+            send_text_with_duplicate_check(cid, t(tariffs_key, lang), persist=False)
+
+    # Show action menu
+    action_menu_options = [
+        (t("prefill_action_trial_first", lang), "plan_trial_lesson"),
+        (t("prefill_action_urgent_session", lang), "urgent_session"),
+        (t("prefill_action_main_menu", lang), "go_to_main_menu"),
+        (t("prefill_action_handoff", lang), "handoff"),
+    ]
+    send_input_select_only(cid, action_menu_title, action_menu_options)
 ```
 
-### `send_input_select_only(conversation_id, text, options)`
+### `send_input_select_only(conversation_id, text, options)` - `modules/utils/text_helpers.py:74`
 
-**Purpose**: Send interactive menu buttons in WhatsApp
+**Purpose**: Send interactive menu buttons in WhatsApp (moved to utility module)
+
+**Current Location**: `modules/utils/text_helpers.py`
+**Imported via**: Multiple handlers import this utility function
 
 **Critical Features**:
 - Uses `ChatwootAPI.send_message()` for proper SSL handling
 - Prevents SSL errors that were causing menu failures
 - Ensures WhatsApp displays interactive buttons, not just text
+- Now centralized in utilities for reuse across handlers
 
-**Implementation**:
+**Current Implementation**:
 ```python
-# CRITICAL: Use ChatwootAPI instead of direct HTTP requests
-success = ChatwootAPI.send_message(
-    conversation_id, 
-    text, 
-    "input_select", 
-    content_attributes
-)
+def send_input_select_only(cid, text, options):
+    """Send interactive menu using ChatwootAPI for SSL safety"""
+    try:
+        content_attributes = {
+            "items": [{"title": title, "value": value} for title, value in options]
+        }
+        
+        # CRITICAL: Use ChatwootAPI instead of direct HTTP requests
+        success = ChatwootAPI.send_message(
+            cid, 
+            text, 
+            "input_select", 
+            content_attributes
+        )
+        return success
+    except Exception as e:
+        print(f"❌ Error sending input_select: {e}")
+        return False
 ```
 
 ## 🚨 Important Notes
@@ -131,8 +164,10 @@ CW_ADMIN_TOKEN=your_admin_token
 
 ### Dependencies
 
-- `scripts/cw_api.py` - ChatwootAPI class for SSL-safe requests
-- `main.py` - Core flow functions
+- `modules/utils/cw_api.py` - ChatwootAPI class for SSL-safe requests
+- `modules/handlers/intake.py` - Core prefill flow functions
+- `modules/utils/text_helpers.py` - Menu and messaging utilities
+- `modules/utils/mapping.py` - Tariff and segment mapping
 - Translation system (`t()` function) for multilingual support
 
 ### Error Handling

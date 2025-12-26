@@ -85,40 +85,22 @@ def get_appropriate_tariffs_key(school_level: str, age_over_20: bool = False) ->
     Returns:
         str: Tariffs key for pricing information
     """
-    # MBO students should see MBO trajectories
-    if school_level == "mbo":
-        if age_over_20:
-            return "info_tariffs_over_20"
-        else:
-            return "info_tariffs"
-    
-    # Higher education students (HBO, WO, university) should NOT see MBO trajectories
-    elif school_level in ["university_hbo", "university_wo"]:
-        if age_over_20:
-            return "info_tariffs_over_20_no_mbo"
-        else:
-            return "info_tariffs_no_mbo"
-    
-    # Secondary education (HAVO, VWO) should NOT see MBO trajectories
-    elif school_level in ["havo", "vwo"]:
-        if age_over_20:
-            return "info_tariffs_over_20_no_mbo"
-        else:
-            return "info_tariffs_no_mbo"
-    
-    # VMBO students might be interested in MBO trajectories, so show them
+    # Map specific school levels to their tariff categories
+    if school_level == "po":
+        return "info_tariffs_po"
     elif school_level == "vmbo":
-        if age_over_20:
-            return "info_tariffs_over_20"
-        else:
-            return "info_tariffs"
-    
-    # Primary education and adults - show all options
+        return "info_tariffs_vmbo"
+    elif school_level in ["havo", "vwo"]:
+        return "info_tariffs_havo_vwo"
+    elif school_level == "mbo":
+        return "info_tariffs_mbo"
+    elif school_level in ["university_hbo", "university_wo"]:
+        return "info_tariffs_university"
+    elif school_level == "adult":
+        return "info_tariffs_adult"
     else:
-        if age_over_20:
-            return "info_tariffs_over_20"
-        else:
-            return "info_tariffs"
+        # Default fallback for unknown levels
+        return "info_tariffs_adult"
 
 def map_topic(topic_text: str) -> str:
     """

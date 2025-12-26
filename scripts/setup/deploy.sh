@@ -3,7 +3,7 @@
 echo "🚀 Starting TutorBot deployment..."
 
 # Navigate to project directory
-cd /home/stephen/tutorbot
+cd /home/stephen/projects/tutorbot
 
 # Pull latest changes
 echo "📥 Pulling latest changes..."
