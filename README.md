@@ -270,6 +270,24 @@ Voor vragen of problemen:
 - Controleer environment variables
 - Verificeer Chatwoot/Stripe/Google configuratie
 
+## 🛠️ Workspace Utilities
+
+Dit project heeft toegang tot workspace-wide utility scripts via `scripts/workspace/`:
+
+- **MinIO utilities**: `scripts/workspace/root/minio/` - MinIO data lake management
+- **Git utilities**: `scripts/workspace/root/git/` - Repository management tools
+
+Zie [Workspace Scripts README](../../scripts/README.md) voor volledige documentatie.
+
+**Voorbeelden:**
+```bash
+# Open MinIO Console
+./scripts/workspace/root/minio/open-minio.sh
+
+# Push alle projecten naar Git
+python3 ./scripts/workspace/root/git/push_all_projects.py
+```
+
 ## 📄 License
 
 Private - Stephen's Privélessen # Updated at Thu Aug  7 01:06:22 CEST 2025
