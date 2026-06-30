@@ -1,8 +1,15 @@
 name: Deploy Tutorbot
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 on:
   push:
     branches: [ master, main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
   workflow_dispatch:
 
 jobs:
@@ -38,7 +45,7 @@ jobs:
         echo "Tests completed!"
         
     - name: Deploy to server
-      uses: appleboy/ssh-action@v1.0.3
+      uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262  # v1.0.3
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
