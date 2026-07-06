@@ -63,3 +63,7 @@ Thumbs.db
 
 # Logs
 *.log 
+# Google service-account keys — never commit (leaked once, rotated 2026-07-06)
+config/gcal-service-account.json
+config/*-service-account.json
+!config/*-service-account.json.example
