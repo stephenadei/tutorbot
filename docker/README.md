@@ -17,6 +17,33 @@ The following Docker files must remain in the project root for proper functional
 
 ## 🐳 Docker Configuration
 
+```mermaid
+graph TB
+    Root[Project Root] --> Dockerfile[Dockerfile<br/>Image Definition]
+    Root --> Compose[docker-compose.yml<br/>Service Config]
+    Root --> DockerDir[docker/<br/>Documentation]
+    
+    Dockerfile --> Build[Build Process]
+    Build --> Image[Python 3.9 Image]
+    Image --> App[TutorBot App<br/>Port 5000]
+    
+    Compose --> Services[Docker Services]
+    Services --> Tutorbot[TutorBot Service]
+    Tutorbot --> Ports[Port Mapping<br/>5000:5000]
+    Tutorbot --> Env[Environment<br/>FLASK_ENV]
+    Tutorbot --> Volumes[Volume Mounts<br/>.:/app]
+    
+    DockerDir --> Docs[Documentation]
+    Docs --> Commands[Commands Guide]
+    Docs --> Troubleshooting[Troubleshooting]
+    Docs --> BestPractices[Best Practices]
+    
+    style Root fill:#e1f5ff
+    style Dockerfile fill:#fff4e1
+    style Compose fill:#e8f5e9
+    style DockerDir fill:#f3e5f5
+```
+
 ### Main Dockerfile
 Located at `../Dockerfile`:
 ```dockerfile
@@ -45,6 +72,31 @@ services:
 ```
 
 ## 🚀 Docker Commands
+
+```mermaid
+flowchart TD
+    Start[Docker Command] --> Action{Action Type?}
+    
+    Action -->|Build & Start| Build[docker-compose up --build]
+    Action -->|Background| Background[docker-compose up -d]
+    Action -->|Stop| Stop[docker-compose down]
+    Action -->|Logs| Logs[docker-compose logs -f]
+    Action -->|Restart| Restart[docker-compose restart]
+    Action -->|Debug| Debug[docker-compose exec<br/>bash/python]
+    
+    Build --> Running[Container Running]
+    Background --> Running
+    Restart --> Running
+    
+    Logs --> View[View Output]
+    Debug --> Inspect[Inspect Container]
+    
+    Stop --> Stopped[Container Stopped]
+    
+    style Start fill:#e1f5ff
+    style Running fill:#e8f5e9
+    style Stopped fill:#fff4e1
+```
 
 ### Basic Commands
 ```bash
@@ -135,6 +187,32 @@ This allows for:
 - Implement health checks
 
 ## 🔍 Troubleshooting
+
+```mermaid
+flowchart TD
+    Problem[Problem Detected] --> Diagnose{Diagnose Issue}
+    
+    Diagnose -->|Container Won't Start| Check1[Check Logs<br/>docker-compose logs]
+    Diagnose -->|Port in Use| Check2[Check Port<br/>netstat -tulpn]
+    Diagnose -->|Permission Issues| Check3[Check Permissions<br/>chmod -R 755]
+    Diagnose -->|Build Fails| Check4[Clean Build<br/>--no-cache]
+    
+    Check1 --> Solution1[Fix Environment<br/>or Dependencies]
+    Check2 --> Solution2[Change Port<br/>or Stop Process]
+    Check3 --> Solution3[Fix Permissions<br/>or User]
+    Check4 --> Solution4[Fix Dockerfile<br/>or Requirements]
+    
+    Solution1 --> Test[Test Solution]
+    Solution2 --> Test
+    Solution3 --> Test
+    Solution4 --> Test
+    
+    Test -->|Success| Resolved[Problem Resolved]
+    Test -->|Fail| Diagnose
+    
+    style Problem fill:#fce4ec
+    style Resolved fill:#e8f5e9
+```
 
 ### Common Issues
 
