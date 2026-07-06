@@ -54,8 +54,8 @@ jobs:
         script: |
           echo "🚀 Starting deployment..."
           
-          # Navigate to project directory
-          cd /home/stephen/tutorbot
+          # Navigate to project directory (canonical path per audit: projects/tutorbot)
+          cd /home/stephen/projects/tutorbot
           
           # Pull latest changes
           echo "📥 Pulling latest changes..."
