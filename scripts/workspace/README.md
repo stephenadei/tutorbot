@@ -7,7 +7,7 @@ Deze directory bevat symlinks naar workspace-wide utility scripts.
 Via de symlink `root/` heb je toegang tot alle workspace utilities:
 
 ```bash
-# MinIO utilities
+# S3 utilities
 ./scripts/workspace/root/minio/open-minio.sh
 ./scripts/workspace/root/minio/setup-minio.sh
 
@@ -30,6 +30,9 @@ cd scripts/workspace/root
 ./minio/open-minio.sh
 python3 git/push_all_projects.py
 ```
+
+
+
 
 
 

@@ -2,15 +2,101 @@
 
 Een geavanceerde WhatsApp-bot voor Stephen's bijles diensten, geïntegreerd met Chatwoot, Google Calendar en Stripe betalingen.
 
+## Architecture
+
+```mermaid
+graph TB
+    WhatsApp["WhatsApp"] --> Chatwoot["Chatwoot<br/>CRM Platform"]
+    
+    Chatwoot -->|Webhook| Bot["TutorBot<br/>Python/Flask"]
+    
+    Bot --> Segment["Segment Detection"]
+    Bot --> Intake["Intake Flow"]
+    Bot --> Planning["Planning"]
+    Bot --> Payment["Payment"]
+    
+    Segment --> DB[("PostgreSQL<br/>Students")]
+    Intake --> DB
+    Planning --> Calendar["Google Calendar<br/>API"]
+    Payment --> Stripe["Stripe<br/>Payment Links"]
+    
+    Stripe -->|Webhook| Bot
+    Calendar -->|Events| Bot
+    
+    Bot --> Chatwoot_Update["Update Chatwoot<br/>Labels/Status"]
+    
+    style Bot fill:#1976d2,stroke:#0d47a1,stroke-width:2px,color:#fff
+    style Chatwoot fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#fff
+    style Calendar fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#fff
+    style Stripe fill:#7b1fa2,stroke:#4a148c,stroke-width:2px,color:#fff
+    style DB fill:#616161,stroke:#212121,stroke-width:2px,color:#fff
+```
+
 ## 🎯 Functies
 
 ### Segment-detectie & Persoonlijke Benadering
+
+```mermaid
+flowchart TD
+    Start["Message Received"] --> Check{"Segment Detection"}
+    
+    Check -->|New| New["New Customer<br/>Full Intake Flow"]
+    Check -->|Existing| Existing["Existing Customer<br/>Quick Planning"]
+    Check -->|Returning| Returning["Returning Customer<br/>Broadcast Flow"]
+    Check -->|Weekend| Weekend["Weekend Customer<br/>Confidential Flow"]
+    
+    New --> Intake["Intake Process"]
+    Existing --> QuickPlan["Quick Planning"]
+    Returning --> Broadcast["Broadcast Message"]
+    Weekend --> WeekendPlan["Weekend Planning"]
+    
+    Intake --> Calendar["Google Calendar"]
+    QuickPlan --> Calendar
+    WeekendPlan --> Calendar
+    
+    Calendar --> Payment["Stripe Payment"]
+    Payment --> Complete["Complete"]
+    
+    style New fill:#1976d2,stroke:#0d47a1,stroke-width:2px,color:#fff
+    style Existing fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#fff
+    style Returning fill:#7b1fa2,stroke:#4a148c,stroke-width:2px,color:#fff
+    style Weekend fill:#c2185b,stroke:#880e4f,stroke-width:2px,color:#fff
+    style Start fill:#616161,stroke:#212121,stroke-width:2px,color:#fff
+    style Complete fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#fff
+```
+
 - **Nieuwe klanten**: Volledige intake flow
 - **Bestaande klanten**: Snelle planning op basis van voorkeuren
 - **Terugkerende klanten**: Begin schooljaar broadcast flow
 - **Weekend-klanten**: Vertrouwelijke stroom met speciale tarieven
 
 ### Interactieve Intake
+
+```mermaid
+flowchart LR
+    Start["Start Intake"] --> Lang["Language<br/>NL/EN"]
+    Lang --> Self{"For Yourself?"}
+    
+    Self -->|Yes| Age{"18+?"}
+    Self -->|No| Relation["Relationship<br/>to Learner"]
+    
+    Age -->|Yes| Level["School Level"]
+    Age -->|No| Guardian["Guardian Contact"]
+    
+    Relation --> Level
+    Guardian --> Level
+    
+    Level --> Subjects["Subjects"]
+    Subjects --> Goals["Goals & Preferences"]
+    Goals --> Mode["Lesson Mode<br/>Online/Fysiek/Hybrid"]
+    Mode --> Complete["Intake Complete"]
+    
+    style Start fill:#1976d2,stroke:#0d47a1,stroke-width:2px,color:#fff
+    style Complete fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#fff
+    style Lang fill:#616161,stroke:#212121,stroke-width:2px,color:#fff
+    style Level fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#fff
+```
+
 - Taal selectie (NL/EN)
 - Voor jezelf / voor iemand anders
 - 18+ verificatie
@@ -197,6 +283,17 @@ python3 scripts/analyze_logs.py raw 50
 
 ### Log Format
 
+```mermaid
+pie title Log Event Distribution
+    "Event Received" : 25
+    "Message Processing" : 30
+    "Segment Detection" : 15
+    "Intake Flow" : 10
+    "Planning" : 10
+    "Errors" : 5
+    "Other" : 5
+```
+
 De logs gebruiken emoji's voor snelle identificatie:
 - 🔔 **Event received** - Webhook event ontvangen
 - 💬 **Message processing** - Bericht verwerking
@@ -210,6 +307,23 @@ De logs gebruiken emoji's voor snelle identificatie:
 - ⚠️ **Warnings** - Waarschuwingen
 
 ## 📋 Testscenario's
+
+```mermaid
+journey
+    title Nieuwe Klant Flow (<18)
+    section Intake
+      Taal Selectie: 5: Bot
+      Voor Mezelf: 4: Bot
+      18+ Check: 3: Bot
+      Ouder Contact: 5: Bot
+    section Planning
+      Intake Voltooien: 4: Bot
+      Slots Tonen: 5: Bot
+      Tentatieve Boeking: 5: Bot
+    section Betaling
+      Betaalverzoek: 4: Bot
+      Betaling: 5: Stripe
+```
 
 ### 1. Nieuwe klant - proefles voor mezelf (<18)
 - Taal selectie
@@ -274,14 +388,14 @@ Voor vragen of problemen:
 
 Dit project heeft toegang tot workspace-wide utility scripts via `scripts/workspace/`:
 
-- **MinIO utilities**: `scripts/workspace/root/minio/` - MinIO data lake management
+- **S3 utilities**: `scripts/workspace/root/minio/` - S3 data lake management
 - **Git utilities**: `scripts/workspace/root/git/` - Repository management tools
 
 Zie [Workspace Scripts README](../../scripts/README.md) voor volledige documentatie.
 
 **Voorbeelden:**
 ```bash
-# Open MinIO Console
+# Open S3 Console
 ./scripts/workspace/root/minio/open-minio.sh
 
 # Push alle projecten naar Git

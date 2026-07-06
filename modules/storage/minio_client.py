@@ -1,5 +1,5 @@
 """
-MinIO Client wrapper for data lake operations.
+S3 (via MinIO SDK) client wrapper for data lake operations.
 Handles connection, bucket creation, and file operations.
 """
 import os
@@ -13,28 +13,41 @@ from minio.deleteobjects import DeleteObject
 
 
 class MinIOClient:
-    """MinIO client wrapper for data lake operations"""
+    """S3 (via MinIO SDK) client wrapper for data lake operations"""
     
     def __init__(self):
-        """Initialize MinIO client with configuration from environment variables"""
-        self.endpoint = os.environ.get("MINIO_ENDPOINT", "http://localhost:9000")
-        self.access_key = os.environ.get("MINIO_ACCESS_KEY", "minioadmin")
-        self.secret_key = os.environ.get("MINIO_SECRET_KEY", "minioadmin")
-        self.secure = os.environ.get("MINIO_SECURE", "false").lower() == "true"
-        
-        # Remove http:// or https:// from endpoint for MinIO client
-        endpoint_url = self.endpoint.replace("http://", "").replace("https://", "")
-        
+        """Initialize client. S3 is primary when AWS_ACCESS_KEY_ID is set; else MinIO (legacy)."""
+        aws_key = os.environ.get("AWS_ACCESS_KEY_ID")
+        aws_secret = os.environ.get("AWS_SECRET_ACCESS_KEY")
+        aws_region = os.environ.get("AWS_REGION", "eu-west-3")
+
+        if aws_key and aws_secret:
+            endpoint_url = f"s3.{aws_region}.amazonaws.com"
+            access_key, secret_key = aws_key, aws_secret
+            secure = True
+            region = aws_region
+            backend = "S3"
+        else:
+            endpoint = os.environ.get("MINIO_ENDPOINT", "http://localhost:9000")
+            endpoint_url = endpoint.replace("http://", "").replace("https://", "")
+            access_key = os.environ.get("MINIO_ACCESS_KEY", "minioadmin")
+            secret_key = os.environ.get("MINIO_SECRET_KEY", "minioadmin")
+            secure = os.environ.get("MINIO_SECURE", "false").lower() == "true"
+            region = None
+            backend = "MinIO"
+
         try:
-            self.client = Minio(
-                endpoint_url,
-                access_key=self.access_key,
-                secret_key=self.secret_key,
-                secure=self.secure
-            )
-            print(f"✅ MinIO client initialized: {self.endpoint}")
+            kwargs = {"access_key": access_key, "secret_key": secret_key, "secure": secure}
+            if region:
+                kwargs["region"] = region
+            self.client = Minio(endpoint_url, **kwargs)
+            self.endpoint = endpoint_url
+            self.access_key = access_key
+            self.secret_key = secret_key
+            self.secure = secure
+            print(f"✅ S3 client initialized: {backend} ({endpoint_url})")
         except Exception as e:
-            print(f"❌ Failed to initialize MinIO client: {e}")
+            print(f"❌ Failed to initialize S3 client: {e}")
             self.client = None
     
     def ensure_bucket_exists(self, bucket_name: str) -> bool:
@@ -65,7 +78,7 @@ class MinIOClient:
     def upload_file(self, bucket_name: str, object_name: str, file_path: str, 
                    content_type: Optional[str] = None) -> bool:
         """
-        Upload a file to MinIO bucket
+        Upload a file to S3 bucket (via MinIO SDK)
         
         Args:
             bucket_name: Name of the bucket
@@ -101,7 +114,7 @@ class MinIOClient:
     def upload_data(self, bucket_name: str, object_name: str, data: bytes,
                    content_type: Optional[str] = None) -> bool:
         """
-        Upload data (bytes) to MinIO bucket
+        Upload data (bytes) to S3 bucket (via MinIO SDK)
         
         Args:
             bucket_name: Name of the bucket
@@ -138,7 +151,7 @@ class MinIOClient:
     def download_file(self, bucket_name: str, object_name: str, 
                      file_path: str) -> bool:
         """
-        Download a file from MinIO bucket
+        Download a file from S3 bucket (via MinIO SDK)
         
         Args:
             bucket_name: Name of the bucket
@@ -164,7 +177,7 @@ class MinIOClient:
     
     def download_data(self, bucket_name: str, object_name: str) -> Optional[bytes]:
         """
-        Download data from MinIO bucket as bytes
+        Download data from S3 bucket (via MinIO SDK) as bytes
         
         Args:
             bucket_name: Name of the bucket

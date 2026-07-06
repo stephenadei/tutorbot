@@ -12,3 +12,11 @@ services:
       - /app/.git
     env_file:
       - .env
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@platform-postgres:5432/platform
+    networks:
+      - data-network
+
+networks:
+  data-network:
+    external: true

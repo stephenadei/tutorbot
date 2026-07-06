@@ -4,6 +4,50 @@ Welcome to the TutorBot documentation! This comprehensive guide covers everythin
 
 ## 🗂️ **Documentation Structure**
 
+```mermaid
+graph TB
+    Docs[TutorBot Documentation] --> Getting[Getting Started]
+    Docs --> Arch[Architecture & Setup]
+    Docs --> Dev[Development]
+    Docs --> Int[Integration]
+    Docs --> API[API Reference]
+    Docs --> Deploy[Deployment]
+    Docs --> Ref[Reference]
+    
+    Getting --> G1[Quick Start Guide]
+    Getting --> G2[Environment Setup]
+    Getting --> G3[Docker Setup]
+    Getting --> G4[Chatwoot Setup]
+    
+    Arch --> A1[Project Organization]
+    Arch --> A2[Planning Profiles]
+    Arch --> A3[Prefill Confirmation Flow]
+    Arch --> A4[Webhook System]
+    Arch --> A5[Age Verification]
+    
+    Dev --> D1[Git Workflow]
+    Dev --> D2[Testing Structure]
+    Dev --> D3[Workflow Documentation]
+    
+    Int --> I1[Integration Roadmap]
+    Int --> I2[Stripe Payment]
+    Int --> I3[WhatsApp Formatting]
+    
+    API --> API1[Mocked Functions]
+    
+    Deploy --> Dep1[Troubleshooting]
+    
+    Ref --> R1[Documentation Structure]
+    Ref --> R2[Email Conventions]
+    Ref --> R3[Calendar Email Conventions]
+    
+    style Docs fill:#e1f5ff
+    style Getting fill:#e8f5e9
+    style Arch fill:#fff4e1
+    style Dev fill:#f3e5f5
+    style Int fill:#fce4ec
+```
+
 ### 🚀 **Getting Started**
 - **[Quick Start Guide](SETUP/QUICK_START.md)** - Get up and running in minutes
 - **[Environment Setup](SETUP/ENVIRONMENT.md)** - Configure your development environment
@@ -40,6 +84,35 @@ Welcome to the TutorBot documentation! This comprehensive guide covers everythin
 
 ## 🎯 **Quick Navigation**
 
+```mermaid
+flowchart TD
+    User[User Type?] --> New{New User?}
+    User --> Dev{Developer?}
+    User --> Deploy{Deploying?}
+    
+    New -->|Yes| New1[1. Quick Start Guide]
+    New1 --> New2[2. Environment Setup]
+    New2 --> New3[3. Chatwoot Setup]
+    New3 --> NewDone[Ready to Use]
+    
+    Dev -->|Yes| Dev1[1. Project Organization]
+    Dev1 --> Dev2[2. Planning Profiles]
+    Dev2 --> Dev3[3. Prefill Confirmation Flow]
+    Dev3 --> Dev4[4. Webhook System]
+    Dev4 --> Dev5[5. Git Workflow]
+    Dev5 --> Dev6[6. Testing Structure]
+    Dev6 --> DevDone[Ready to Develop]
+    
+    Deploy -->|Yes| Dep1[1. Docker Setup]
+    Dep1 --> Dep2[2. Git Workflow]
+    Dep2 --> Dep3[3. Troubleshooting]
+    Dep3 --> DepDone[Ready to Deploy]
+    
+    style New fill:#e8f5e9
+    style Dev fill:#fff4e1
+    style Deploy fill:#f3e5f5
+```
+
 ### **For New Users:**
 1. Start with [Quick Start Guide](SETUP/QUICK_START.md)
 2. Set up your [Environment](SETUP/ENVIRONMENT.md)
@@ -59,6 +132,25 @@ Welcome to the TutorBot documentation! This comprehensive guide covers everythin
 3. Check [Troubleshooting](DEPLOYMENT/TROUBLESHOOTING.md) if issues arise
 
 ## 🛠️ **Development Workflow**
+
+```mermaid
+gitgraph
+    commit id: "Initial"
+    branch develop
+    checkout develop
+    commit id: "Setup"
+    branch feature/my-feature
+    checkout feature/my-feature
+    commit id: "Add feature"
+    commit id: "Fix bugs"
+    checkout develop
+    merge feature/my-feature
+    commit id: "Test on develop"
+    branch main
+    checkout main
+    merge develop
+    commit id: "Deploy to production"
+```
 
 ### **Safe Development Process:**
 ```bash

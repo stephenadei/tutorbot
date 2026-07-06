@@ -4,6 +4,49 @@ This directory contains all utility scripts organized by functionality.
 
 ## 📁 Directory Structure
 
+```mermaid
+graph TD
+    A[scripts/] --> B[cw_api.py<br/>Core API]
+    A --> C[help.sh<br/>Help Script]
+    A --> D[dev/]
+    A --> E[data/]
+    A --> F[debug/]
+    A --> G[setup/]
+    A --> H[analysis/]
+    A --> I[testing/]
+    
+    D --> D1[dev.sh<br/>Shortcuts]
+    D --> D2[export_env.sh<br/>Environment]
+    
+    E --> E1[wipe.sh<br/>Quick Wipe]
+    E --> E2[wipe_all.sh<br/>Full Wipe]
+    E --> E3[wipe_contacts.py<br/>Manual Wipe]
+    E --> E4[cleanup_all.py<br/>Cleanup]
+    
+    F --> F1[debug_*.sh<br/>Debug Mode]
+    F --> F2[confirm_*.sh<br/>Confirmation]
+    
+    G --> G1[setup_all.py<br/>Complete Setup]
+    G --> G2[setup_attributes.py<br/>Attributes]
+    G --> G3[setup_labels.py<br/>Labels]
+    G --> G4[setup_chatwoot.py<br/>Chatwoot]
+    
+    H --> H1[analyze_logs.py<br/>Log Analysis]
+    H --> H2[validate_structure.py<br/>Validation]
+    H --> H3[audit_attributes.py<br/>Audit]
+    
+    I --> I1[test_bot.py<br/>Bot Testing]
+    I --> I2[test_chatwoot_api.py<br/>API Testing]
+    I --> I3[show_prefill_overview.py<br/>Prefill Test]
+    
+    style A fill:#e1f5ff
+    style D fill:#e8f5e9
+    style E fill:#fff4e1
+    style G fill:#f3e5f5
+    style H fill:#fce4ec
+    style I fill:#e1f5ff
+```
+
 ```
 scripts/
 ├── cw_api.py              # Chatwoot API utilities (core)
@@ -113,6 +156,31 @@ All aliases in `~/.bashrc` have been updated to point to the new locations:
 - `confirm*` → `./scripts/debug/confirm_*.sh`
 
 ## 🎯 Benefits of Organization
+
+```mermaid
+mindmap
+  root((Script Organization))
+    Clear Separation
+      Dev Scripts
+      Data Scripts
+      Setup Scripts
+    Easy Navigation
+      By Category
+      By Function
+      Quick Access
+    Better Maintenance
+      Grouped Logic
+      Related Files
+      Easy Updates
+    Scalability
+      Add New Scripts
+      Extend Categories
+      Maintain Structure
+    Documentation
+      Per Category
+      Usage Examples
+      Clear Purpose
+```
 
 1. **Clear Separation** - Each category has its own folder
 2. **Easy Navigation** - Find scripts by functionality

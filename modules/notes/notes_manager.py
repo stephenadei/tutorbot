@@ -22,13 +22,13 @@ class NotesManager:
         self.lessons_folder_id = None
         self._initialize_drive_service()
         
-        # Initialize MinIO client for read operations
+        # Initialize S3 client (via MinIO SDK) for read operations
         try:
             from modules.storage.minio_client import MinIOClient
             self.minio_client = MinIOClient()
             self.minio_bucket = "raw-notability"
         except Exception as e:
-            print(f"⚠️  MinIO client not available: {e}")
+            print(f"⚠️  S3 client not available: {e}")
             self.minio_client = None
     
     def _initialize_drive_service(self):
@@ -325,12 +325,12 @@ class NotesManager:
             return None
     
     # ============================================================================
-    # MinIO Read-Only Methods
+    # S3 Read-Only Methods
     # ============================================================================
     
     def list_notability_files(self, student_name: Optional[str] = None) -> List[Dict[str, Any]]:
         """
-        List Notability files from MinIO data lake
+        List Notability files from S3 data lake
         
         Args:
             student_name: Optional student name to filter files (searches in object names)
@@ -343,7 +343,7 @@ class NotesManager:
                 - etag: Object ETag
         """
         if not self.minio_client or not self.minio_client.client:
-            print("⚠️  MinIO client not available")
+            print("⚠️  S3 client not available")
             return []
         
         try:
@@ -377,7 +377,7 @@ class NotesManager:
     def get_notability_file(self, object_name: str, 
                            download_path: Optional[str] = None) -> Optional[str]:
         """
-        Download a Notability file from MinIO
+        Download a Notability file from S3 data lake
         
         Args:
             object_name: Object name/path in the bucket
@@ -388,7 +388,7 @@ class NotesManager:
             Path to downloaded file if successful, None otherwise
         """
         if not self.minio_client or not self.minio_client.client:
-            print("⚠️  MinIO client not available")
+            print("⚠️  S3 client not available")
             return None
         
         try:
@@ -437,7 +437,7 @@ class NotesManager:
             Presigned URL if successful, None otherwise
         """
         if not self.minio_client or not self.minio_client.client:
-            print("⚠️  MinIO client not available")
+            print("⚠️  S3 client not available")
             return None
         
         try:
