@@ -14,21 +14,20 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    # PUBLIC repo + self-hosted runner: push/dispatch only, never a fork PR.
+    if: github.event_name != 'pull_request'
+    runs-on: [self-hosted, vps]
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-        
+    # System python3 + per-job venv (the VPS has no setup-python tool cache).
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        python3 -m venv "$RUNNER_TEMP/venv"
+        "$RUNNER_TEMP/venv/bin/pip" install -q -r requirements.txt
+        echo "$RUNNER_TEMP/venv/bin" >> "$GITHUB_PATH"
         
     - name: Run syntax check
       run: |
@@ -45,13 +44,8 @@ jobs:
         echo "Tests completed!"
         
     - name: Deploy to server
-      uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262  # v1.0.3
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        port: ${{ secrets.PORT }}
-        script: |
+      # Runs on the VPS runner itself (user stephen); same commands the SSH hop ran.
+      run: |
           echo "🚀 Starting deployment..."
           
           # Navigate to project directory (canonical path per audit: projects/tutorbot)
@@ -60,10 +54,6 @@ jobs:
           # Pull latest changes
           echo "📥 Pulling latest changes..."
           git pull origin master
-          
-          # Install/update dependencies
-          echo "📦 Installing dependencies..."
-          pip3 install -r requirements.txt
           
           # Restart Docker container
           echo "🔄 Restarting Docker container..."
